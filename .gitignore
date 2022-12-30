@@ -1,0 +1,8 @@
+app
+.env
+/bin
+/coverage
+/upload
+/dummy
+/log
+.DS_Store
