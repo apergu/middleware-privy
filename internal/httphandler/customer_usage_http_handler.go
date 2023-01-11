@@ -24,6 +24,7 @@ type CustomerUsageHttpHandler struct {
 func NewCustomerUsageHttpHandler(prop HTTPHandlerProperty) http.Handler {
 	ucProp := usecase.CustomerUsageUsecaseProperty{
 		CustomerUsageRepo: repository.NewCustomerUsageRepositoryPostgre(prop.DBPool),
+		CustomerPrivy:     prop.DefaultCredential,
 	}
 
 	handler := CustomerUsageHttpHandler{

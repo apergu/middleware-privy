@@ -8,21 +8,24 @@ import (
 	"gitlab.com/mohamadikbal/project-privy/internal/entity"
 	"gitlab.com/mohamadikbal/project-privy/internal/model"
 	"gitlab.com/mohamadikbal/project-privy/internal/repository"
+	"gitlab.com/mohamadikbal/project-privy/pkg/credential"
 	"gitlab.com/rteja-library3/rapperror"
 )
 
 type CustomerUsageCommandUsecaseGeneral struct {
-	custRepo repository.CustomerUsageCommandRepository
+	custUsageRepo repository.CustomerUsageCommandRepository
+	customerPrivy credential.Customer
 }
 
 func NewCustomerUsageCommandUsecaseGeneral(prop CustomerUsageUsecaseProperty) *CustomerUsageCommandUsecaseGeneral {
 	return &CustomerUsageCommandUsecaseGeneral{
-		custRepo: prop.CustomerUsageRepo,
+		custUsageRepo: prop.CustomerUsageRepo,
+		customerPrivy: prop.CustomerPrivy,
 	}
 }
 
 func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust model.CustomerUsage) (int64, interface{}, error) {
-	tx, err := r.custRepo.BeginTx(ctx)
+	tx, err := r.custUsageRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -46,9 +49,9 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		UpdatedAt:     tmNow,
 	}
 
-	roleId, err := r.custRepo.Create(ctx, insertCustomerUsage, tx)
+	custId, err := r.custUsageRepo.Create(ctx, insertCustomerUsage, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.custUsageRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -61,9 +64,45 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		return 0, nil, err
 	}
 
-	err = r.custRepo.CommitTx(ctx, tx)
+	crdCustParam := credential.CustomerParam{
+		Recordtype:                     "customer",
+		Customform:                     "2",
+		EntityID:                       cust.CustomerID,
+		IsPerson:                       "F",
+		CompanyName:                    cust.CustomerName,
+		EntityStatus:                   cust.EntityStatus,
+		Comments:                       "",
+		URL:                            cust.URL,
+		Email:                          cust.Email,
+		Phone:                          cust.Phone,
+		AltPhone:                       cust.AltPhone,
+		Fax:                            cust.Fax,
+		CustEntityPrivyCustomerBalance: int(cust.Balance),
+		CustEntityPrivyCustomerUsage:   int(cust.Usage),
+	}
+
+	if cust.IsPerson {
+		crdCustParam.IsPerson = "T"
+	}
+
+	_, err = r.customerPrivy.CreateCustomer(ctx, crdCustParam)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.custUsageRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerCommandUsecaseGeneral.Create",
+				"src":   "customerPrivy.CreateCustomer",
+				"param": crdCustParam,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	err = r.custUsageRepo.CommitTx(ctx, tx)
+	if err != nil {
+		r.custUsageRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -80,11 +119,11 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		)
 	}
 
-	return roleId, nil, nil
+	return custId, nil, nil
 }
 
 func (r *CustomerUsageCommandUsecaseGeneral) Update(ctx context.Context, id int64, cust model.CustomerUsage) (int64, interface{}, error) {
-	tx, err := r.custRepo.BeginTx(ctx)
+	tx, err := r.custUsageRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -106,9 +145,9 @@ func (r *CustomerUsageCommandUsecaseGeneral) Update(ctx context.Context, id int6
 		UpdatedAt:     tmNow,
 	}
 
-	err = r.custRepo.Update(ctx, id, updatedCustomerUsage, tx)
+	err = r.custUsageRepo.Update(ctx, id, updatedCustomerUsage, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.custUsageRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -121,9 +160,9 @@ func (r *CustomerUsageCommandUsecaseGeneral) Update(ctx context.Context, id int6
 		return 0, nil, err
 	}
 
-	err = r.custRepo.CommitTx(ctx, tx)
+	err = r.custUsageRepo.CommitTx(ctx, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.custUsageRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -144,14 +183,14 @@ func (r *CustomerUsageCommandUsecaseGeneral) Update(ctx context.Context, id int6
 }
 
 func (r *CustomerUsageCommandUsecaseGeneral) Delete(ctx context.Context, id int64) (int64, interface{}, error) {
-	tx, err := r.custRepo.BeginTx(ctx)
+	tx, err := r.custUsageRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
 	}
 
-	err = r.custRepo.Delete(ctx, id, tx)
+	err = r.custUsageRepo.Delete(ctx, id, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.custUsageRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -164,9 +203,9 @@ func (r *CustomerUsageCommandUsecaseGeneral) Delete(ctx context.Context, id int6
 		return 0, nil, err
 	}
 
-	err = r.custRepo.CommitTx(ctx, tx)
+	err = r.custUsageRepo.CommitTx(ctx, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.custUsageRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{

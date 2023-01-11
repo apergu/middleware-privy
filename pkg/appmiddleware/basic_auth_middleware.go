@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/sirupsen/logrus"
 	"gitlab.com/mohamadikbal/project-privy/internal/constants"
 	"gitlab.com/rteja-library3/rapperror"
 	"gitlab.com/rteja-library3/rdecoder"
@@ -29,6 +30,13 @@ func basicAuthHandler(next http.Handler, basicUsername, basicPassword string, de
 				nil,
 			)
 
+			logrus.
+				WithFields(logrus.Fields{
+					"at":  "basicAuthHandler",
+					"src": "r.BasicAuth()",
+				}).
+				Error(err)
+
 			response := rresponser.NewResponserError(err)
 			rdecoder.EncodeRestWithResponser(w, decorder, response)
 			return
@@ -44,6 +52,13 @@ func basicAuthHandler(next http.Handler, basicUsername, basicPassword string, de
 				"",
 				nil,
 			)
+
+			logrus.
+				WithFields(logrus.Fields{
+					"at":  "basicAuthHandler",
+					"src": "!usernameMatch || !passwordMatch",
+				}).
+				Error(err)
 
 			response := rresponser.NewResponserError(err)
 			rdecoder.EncodeRestWithResponser(w, decorder, response)

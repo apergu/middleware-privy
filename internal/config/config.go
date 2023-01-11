@@ -10,12 +10,13 @@ import (
 type Getenv func(string) string
 
 type Config struct {
-	Application Application
-	Database    Database
-	Cors        cors.Options
-	Jwt         JWT
-	RefreshJWT  RefreshJWT
-	BasicAuth   BasicAuth
+	Application     Application
+	Database        Database
+	Cors            cors.Options
+	Jwt             JWT
+	RefreshJWT      RefreshJWT
+	BasicAuth       BasicAuth
+	CredentialPrivy CredentialPrivy
 }
 
 func Init() *Config {
@@ -31,6 +32,7 @@ func Init() *Config {
 	appConfig.Jwt = ReadJWTConfig(os.Getenv)
 	appConfig.RefreshJWT = ReadRefreshJWTConfig(os.Getenv)
 	appConfig.BasicAuth = ReadBasicAuthConfig(os.Getenv)
+	appConfig.CredentialPrivy = ReadCredentialPrivyConfig(os.Getenv)
 
 	return appConfig
 }

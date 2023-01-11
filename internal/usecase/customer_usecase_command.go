@@ -44,7 +44,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		UpdatedAt:    tmNow,
 	}
 
-	roleId, err := r.custRepo.Create(ctx, insertCustomer, tx)
+	custId, err := r.custRepo.Create(ctx, insertCustomer, tx)
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)
 
@@ -78,7 +78,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		)
 	}
 
-	return roleId, nil, nil
+	return custId, nil, nil
 }
 
 func (r *CustomerCommandUsecaseGeneral) Update(ctx context.Context, id int64, cust model.Customer) (int64, interface{}, error) {

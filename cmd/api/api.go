@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -15,6 +16,7 @@ import (
 	"gitlab.com/mohamadikbal/project-privy/internal/config"
 	"gitlab.com/mohamadikbal/project-privy/internal/httphandler"
 	"gitlab.com/mohamadikbal/project-privy/pkg/appemail"
+	"gitlab.com/mohamadikbal/project-privy/pkg/credential"
 	"gitlab.com/mohamadikbal/project-privy/pkg/pgxdb"
 	"gitlab.com/rteja-library3/rcache"
 	"gitlab.com/rteja-library3/rdecoder"
@@ -70,6 +72,14 @@ func Execute() {
 			SetPath("upload"),
 	)
 
+	// create credential privy
+	credPrivy := credential.NewCredentialPrivy(credential.CredentialPrivyProperty{
+		Host:     cfg.CredentialPrivy.Host,
+		Client:   http.DefaultClient,
+		Username: cfg.CredentialPrivy.Username,
+		Password: cfg.CredentialPrivy.Password,
+	})
+
 	root, _ := os.Getwd()
 	path := filepath.Join(root, "upload")
 	if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -93,6 +103,7 @@ func Execute() {
 		DefaultEmailer:      defaultEmailSender,
 		DefaultRefreshToken: defaultRefreshToken,
 		DefaultStorage:      defaultStorage,
+		DefaultCredential:   credPrivy,
 	}
 
 	handler := InitHttpHandler(pool, cfg.Cors, httpProperty, jwtAuth, cfg.BasicAuth)

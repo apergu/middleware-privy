@@ -2,6 +2,7 @@ package httphandler
 
 import (
 	"github.com/jackc/pgx/v5/pgxpool"
+	"gitlab.com/mohamadikbal/project-privy/pkg/credential"
 	"gitlab.com/rteja-library3/rcache"
 	"gitlab.com/rteja-library3/rdecoder"
 	"gitlab.com/rteja-library3/remailer"
@@ -19,4 +20,5 @@ type HTTPHandlerProperty struct {
 	DefaultToken        rtoken.Token
 	DefaultRefreshToken rtoken.Token
 	DefaultStorage      rstorager.Storage
+	DefaultCredential   credential.Credential
 }

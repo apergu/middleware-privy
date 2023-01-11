@@ -7,6 +7,13 @@ type CustomerUsage struct {
 	CustomerName  string    `json:"customerName"`
 	ProductID     string    `json:"productId"`
 	ProductName   string    `json:"productName"`
+	IsPerson      bool      `json:"isPerson"`
+	EntityStatus  string    `json:"entityStatus"`
+	URL           string    `json:"url"`
+	Email         string    `json:"email"`
+	Phone         string    `json:"phone"`
+	AltPhone      *string   `json:"altPhone"`
+	Fax           *string   `json:"fax"`
 	TransactionAt time.Time `json:"transactionAt"`
 	Balance       int64     `json:"balance"`
 	BalanceAmount float64   `json:"balanceAmount"`
