@@ -23,7 +23,6 @@ import (
 	"gitlab.com/rteja-library3/remailer"
 	"gitlab.com/rteja-library3/rpassword"
 	"gitlab.com/rteja-library3/rserver"
-	"gitlab.com/rteja-library3/rstorager"
 	"gitlab.com/rteja-library3/rtoken"
 )
 
@@ -67,11 +66,6 @@ func Execute() {
 
 	var defaultEmailSender remailer.Remail = appemail.AppDummyEmail{}
 
-	var defaultStorage rstorager.Storage = rstorager.NewLocalStorager(
-		rstorager.NewLocalStorageOptions().
-			SetPath("upload"),
-	)
-
 	// create credential privy
 	credPrivy := credential.NewCredentialPrivy(credential.CredentialPrivyProperty{
 		Host:     cfg.CredentialPrivy.Host,
@@ -102,7 +96,6 @@ func Execute() {
 		DefaultPwdEncryptor: defaultPwdEncryptor,
 		DefaultEmailer:      defaultEmailSender,
 		DefaultRefreshToken: defaultRefreshToken,
-		DefaultStorage:      defaultStorage,
 		DefaultCredential:   credPrivy,
 	}
 

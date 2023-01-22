@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -13,14 +14,14 @@ import (
 )
 
 type CustomerUsageCommandUsecaseGeneral struct {
-	custUsageRepo repository.CustomerUsageCommandRepository
-	customerPrivy credential.Customer
+	custUsageRepo      repository.CustomerUsageCommandRepository
+	customerUsagePrivy credential.CustomerUsage
 }
 
 func NewCustomerUsageCommandUsecaseGeneral(prop CustomerUsageUsecaseProperty) *CustomerUsageCommandUsecaseGeneral {
 	return &CustomerUsageCommandUsecaseGeneral{
-		custUsageRepo: prop.CustomerUsageRepo,
-		customerPrivy: prop.CustomerPrivy,
+		custUsageRepo:      prop.CustomerUsageRepo,
+		customerUsagePrivy: prop.CustomerPrivy,
 	}
 }
 
@@ -64,36 +65,28 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		return 0, nil, err
 	}
 
-	crdCustParam := credential.CustomerParam{
-		Recordtype:                     "customer",
-		Customform:                     "2",
-		EntityID:                       cust.CustomerID,
-		IsPerson:                       "F",
-		CompanyName:                    cust.CustomerName,
-		EntityStatus:                   cust.EntityStatus,
-		Comments:                       "",
-		URL:                            cust.URL,
-		Email:                          cust.Email,
-		Phone:                          cust.Phone,
-		AltPhone:                       cust.AltPhone,
-		Fax:                            cust.Fax,
-		CustEntityPrivyCustomerBalance: int(cust.Balance),
-		CustEntityPrivyCustomerUsage:   int(cust.Usage),
+	custPrivyUsgProdId, _ := strconv.Atoi(cust.ProductID)
+
+	custPrivyUsgParam := credential.CustomerUsageParam{
+		RecordType:                      "customrecordprivy_product_list",
+		CustrecordPrivyCustomerName:     cust.CustomerName,
+		CustrecordPrivyIdProduct:        custPrivyUsgProdId,
+		CustrecordPrivyProductName:      cust.ProductName,
+		CustrecordPrivyTransactionUsage: cust.TransactionAt.Format("02/01/2006"),
+		CustrecordPrivyQuantityUsage:    cust.Usage,
+		CustrecordPrivyAmount:           int64(cust.UsageAmount),
+		CustrecordPrivySoTransaction:    int(cust.Transaction),
 	}
 
-	if cust.IsPerson {
-		crdCustParam.IsPerson = "T"
-	}
-
-	_, err = r.customerPrivy.CreateCustomer(ctx, crdCustParam)
+	_, err = r.customerUsagePrivy.CreateCustomerUsage(ctx, custPrivyUsgParam)
 	if err != nil {
 		r.custUsageRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
-				"at":    "CustomerCommandUsecaseGeneral.Create",
-				"src":   "customerPrivy.CreateCustomer",
-				"param": crdCustParam,
+				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
+				"src":   "customerPrivy.CreateCustomerUsage",
+				"param": custPrivyUsgParam,
 			}).
 			Error(err)
 

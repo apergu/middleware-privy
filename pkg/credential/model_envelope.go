@@ -23,3 +23,9 @@ type EnvelopeCustomer struct {
 	SuccessTransaction []CustomerResponse       `json:"success_transaction"`
 	FailedTransaction  []CustomerFailedResponse `json:"failed_transaction"`
 }
+
+type EnvelopeCustomerUsage struct {
+	MainEnvelope
+	SuccessTransaction []CustomerUsageResponse       `json:"success_transaction"`
+	FailedTransaction  []CustomerUsageFailedResponse `json:"failed_transaction"`
+}

@@ -6,10 +6,12 @@ import (
 	"gitlab.com/mohamadikbal/project-privy/internal/entity"
 	"gitlab.com/mohamadikbal/project-privy/internal/model"
 	"gitlab.com/mohamadikbal/project-privy/internal/repository"
+	"gitlab.com/mohamadikbal/project-privy/pkg/credential"
 )
 
 type CustomerUsecaseProperty struct {
-	CustomerRepo repository.CustomerRepository
+	CustomerRepo  repository.CustomerRepository
+	CustomerPrivy credential.Credential
 }
 
 type CustomerQueryUsecase interface {

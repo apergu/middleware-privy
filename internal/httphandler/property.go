@@ -7,7 +7,6 @@ import (
 	"gitlab.com/rteja-library3/rdecoder"
 	"gitlab.com/rteja-library3/remailer"
 	"gitlab.com/rteja-library3/rpassword"
-	"gitlab.com/rteja-library3/rstorager"
 	"gitlab.com/rteja-library3/rtoken"
 )
 
@@ -19,6 +18,5 @@ type HTTPHandlerProperty struct {
 	DefaultCache        rcache.Cache
 	DefaultToken        rtoken.Token
 	DefaultRefreshToken rtoken.Token
-	DefaultStorage      rstorager.Storage
 	DefaultCredential   credential.Credential
 }

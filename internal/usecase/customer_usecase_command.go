@@ -8,16 +8,19 @@ import (
 	"gitlab.com/mohamadikbal/project-privy/internal/entity"
 	"gitlab.com/mohamadikbal/project-privy/internal/model"
 	"gitlab.com/mohamadikbal/project-privy/internal/repository"
+	"gitlab.com/mohamadikbal/project-privy/pkg/credential"
 	"gitlab.com/rteja-library3/rapperror"
 )
 
 type CustomerCommandUsecaseGeneral struct {
-	custRepo repository.CustomerCommandRepository
+	custRepo      repository.CustomerCommandRepository
+	customerPrivy credential.Customer
 }
 
 func NewCustomerCommandUsecaseGeneral(prop CustomerUsecaseProperty) *CustomerCommandUsecaseGeneral {
 	return &CustomerCommandUsecaseGeneral{
-		custRepo: prop.CustomerRepo,
+		custRepo:      prop.CustomerRepo,
+		customerPrivy: prop.CustomerPrivy,
 	}
 }
 
@@ -53,6 +56,38 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 				"at":    "CustomerCommandUsecaseGeneral.Create",
 				"src":   "custRepo.Create",
 				"param": insertCustomer,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	crdCustParam := credential.CustomerParam{
+		Recordtype:                     "customer",
+		Customform:                     "2",
+		EntityID:                       cust.CustomerID,
+		IsPerson:                       "F",
+		CompanyName:                    cust.CustomerName,
+		Comments:                       "",
+		Email:                          cust.Email,
+		EntityStatus:                   cust.EntityStatus,
+		URL:                            cust.URL,
+		Phone:                          cust.PhoneNo,
+		AltPhone:                       cust.AltPhone,
+		Fax:                            cust.Fax,
+		CustEntityPrivyCustomerBalance: cust.Balance,
+		CustEntityPrivyCustomerUsage:   cust.Usage,
+	}
+
+	_, err = r.customerPrivy.CreateCustomer(ctx, crdCustParam)
+	if err != nil {
+		r.custRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerCommandUsecaseGeneral.Create",
+				"src":   "customerPrivy.CreateCustomer",
+				"param": crdCustParam,
 			}).
 			Error(err)
 
