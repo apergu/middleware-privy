@@ -75,7 +75,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		CustrecordPrivyTransactionUsage: cust.TransactionAt.Format("02/01/2006"),
 		CustrecordPrivyQuantityUsage:    cust.Usage,
 		CustrecordPrivyAmount:           int64(cust.UsageAmount),
-		CustrecordPrivySoTransaction:    int(cust.Transaction),
+		CustrecordPrivySoTransaction:    int(cust.SalesOrderReference),
 	}
 
 	_, err = r.customerUsagePrivy.CreateCustomerUsage(ctx, custPrivyUsgParam)

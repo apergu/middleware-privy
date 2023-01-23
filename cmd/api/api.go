@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 
 	"github.com/go-chi/jwtauth"
@@ -73,20 +72,6 @@ func Execute() {
 		Username: cfg.CredentialPrivy.Username,
 		Password: cfg.CredentialPrivy.Password,
 	})
-
-	root, _ := os.Getwd()
-	path := filepath.Join(root, "upload")
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		err := os.Mkdir(path, os.ModeDir)
-		if err != nil {
-			defaultCache.Close()
-			pool.Close()
-			canc()
-
-			fmt.Fprintf(os.Stderr, "Unable to create upload folder: %v\n", err)
-			os.Exit(1)
-		}
-	}
 
 	httpProperty := httphandler.HTTPHandlerProperty{
 		DBPool:              pool,
