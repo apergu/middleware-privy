@@ -60,6 +60,8 @@ func (c *CustomerRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.Co
 			&data.Email,
 			&data.PhoneNo,
 			&data.Address,
+			&data.CRMLeadID,
+			&data.EnterprisePrivyID,
 			&data.CreatedBy,
 			&data.CreatedAt,
 			&data.UpdatedBy,
@@ -103,6 +105,8 @@ func (c *CustomerRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand
 			&data.Email,
 			&data.PhoneNo,
 			&data.Address,
+			&data.CRMLeadID,
+			&data.EnterprisePrivyID,
 			&data.CreatedBy,
 			&data.CreatedAt,
 			&data.UpdatedBy,
@@ -171,6 +175,8 @@ func (c *CustomerRepositoryPostgre) Find(ctx context.Context, filter CustomerFil
 		customers.email,
 		customers.phone_no,
 		customers."address",
+		customers."crm_lead_id",
+		customers."enterprise_privy_id",
 		customers.created_by,
 		customers.created_at,
 		customers.updated_by,
@@ -242,6 +248,8 @@ func (c *CustomerRepositoryPostgre) FindOneById(ctx context.Context, id int64, t
 		customers.email,
 		customers.phone_no,
 		customers."address",
+		customers."crm_lead_id",
+		customers."enterprise_privy_id",
 		customers.created_by,
 		customers.created_at,
 		customers.updated_by,
@@ -288,6 +296,8 @@ func (c *CustomerRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, id
 		customers.email,
 		customers.phone_no,
 		customers."address",
+		customers."crm_lead_id",
+		customers."enterprise_privy_id",
 		customers.created_by,
 		customers.created_at,
 		customers.updated_by,
@@ -319,10 +329,12 @@ func (c *CustomerRepositoryPostgre) Create(ctx context.Context, cust entity.Cust
 		email,
 		phone_no,
 		"address",
+		"crm_lead_id",
+		"enterprise_privy_id",
 		created_by, created_at, updated_by, updated_at
 	) values (
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-		,$11 ,$12
+		,$11 ,$12, $13 ,$14
 	) RETURNING id`
 
 	err := cmd.
@@ -337,6 +349,8 @@ func (c *CustomerRepositoryPostgre) Create(ctx context.Context, cust entity.Cust
 			cust.Email,
 			cust.PhoneNo,
 			cust.Address,
+			cust.CRMLeadID,
+			cust.EnterprisePrivyID,
 			cust.CreatedBy,
 			cust.CreatedAt,
 			cust.UpdatedBy,
@@ -366,23 +380,24 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 
 	query := `update customers
 	set
-		customer_id = $1,
-		customer_type = $2,
-		customer_name = $3,
-		first_name = $4,
-		last_name = $5,
-		email = $6,
-		phone_no = $7,
-		"address" = $8,
-		updated_by = $9,
-		updated_at = $10
+		customer_type = $1,
+		customer_name = $2,
+		first_name = $3,
+		last_name = $4,
+		email = $5,
+		phone_no = $6,
+		"address" = $7,
+		"crm_lead_id" = $8,
+		"enterprise_privy_id" = $9,
+		updated_by = $10,
+		updated_at = $11
 	where
-		id = $11`
+		id = $12`
 
 	_, err := cmd.Exec(
 		ctx,
 		query,
-		cust.CustomerID,
+		// cust.CustomerID,
 		cust.CustomerType,
 		cust.CustomerName,
 		cust.FirstName,
@@ -390,6 +405,8 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 		cust.Email,
 		cust.PhoneNo,
 		cust.Address,
+		cust.CRMLeadID,
+		cust.EnterprisePrivyID,
 		cust.UpdatedBy,
 		cust.UpdatedAt,
 		id,

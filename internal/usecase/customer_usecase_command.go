@@ -33,18 +33,20 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 	tmNow := time.Now().UnixNano() / 1000000
 
 	insertCustomer := entity.Customer{
-		CustomerID:   cust.CustomerID,
-		CustomerType: cust.CustomerType,
-		CustomerName: cust.CustomerName,
-		FirstName:    cust.FirstName,
-		LastName:     cust.LastName,
-		Email:        cust.Email,
-		PhoneNo:      cust.PhoneNo,
-		Address:      cust.Address,
-		CreatedBy:    cust.CreatedBy,
-		CreatedAt:    tmNow,
-		UpdatedBy:    cust.CreatedBy,
-		UpdatedAt:    tmNow,
+		CustomerID:        cust.CustomerID,
+		CustomerType:      cust.CustomerType,
+		CustomerName:      cust.CustomerName,
+		FirstName:         cust.FirstName,
+		LastName:          cust.LastName,
+		Email:             cust.Email,
+		PhoneNo:           cust.PhoneNo,
+		Address:           cust.Address,
+		CRMLeadID:         cust.CRMLeadID,
+		EnterprisePrivyID: cust.EnterprisePrivyID,
+		CreatedBy:         cust.CreatedBy,
+		CreatedAt:         tmNow,
+		UpdatedBy:         cust.CreatedBy,
+		UpdatedAt:         tmNow,
 	}
 
 	custId, err := r.custRepo.Create(ctx, insertCustomer, tx)
@@ -125,16 +127,18 @@ func (r *CustomerCommandUsecaseGeneral) Update(ctx context.Context, id int64, cu
 	tmNow := time.Now().UnixNano() / 1000000
 
 	updatedCustomer := entity.Customer{
-		CustomerID:   cust.CustomerID,
-		CustomerType: cust.CustomerType,
-		CustomerName: cust.CustomerName,
-		FirstName:    cust.FirstName,
-		LastName:     cust.LastName,
-		Email:        cust.Email,
-		PhoneNo:      cust.PhoneNo,
-		Address:      cust.Address,
-		UpdatedBy:    cust.CreatedBy,
-		UpdatedAt:    tmNow,
+		CustomerID:        cust.CustomerID,
+		CustomerType:      cust.CustomerType,
+		CustomerName:      cust.CustomerName,
+		FirstName:         cust.FirstName,
+		LastName:          cust.LastName,
+		Email:             cust.Email,
+		PhoneNo:           cust.PhoneNo,
+		Address:           cust.Address,
+		CRMLeadID:         cust.CRMLeadID,
+		EnterprisePrivyID: cust.EnterprisePrivyID,
+		UpdatedBy:         cust.CreatedBy,
+		UpdatedAt:         tmNow,
 	}
 
 	err = r.custRepo.Update(ctx, id, updatedCustomer, tx)
