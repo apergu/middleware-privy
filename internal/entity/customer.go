@@ -12,6 +12,11 @@ type Customer struct {
 	Address           string `json:"address"`
 	CRMLeadID         string `json:"crmLeadId"`
 	EnterprisePrivyID string `json:"enterprisePrivyId"`
+	NPWP              string `json:"npwp"`
+	Address1          string `json:"address1"`
+	State             string `json:"state"`
+	City              string `json:"city"`
+	ZipCode           string `json:"zip"`
 	CreatedBy         int64  `json:"-"`
 	CreatedAt         int64  `json:"createdAt"`
 	UpdatedBy         int64  `json:"-"`

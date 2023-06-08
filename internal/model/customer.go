@@ -18,6 +18,11 @@ type Customer struct {
 	Usage             int     `json:"usageAmount"`
 	CRMLeadID         string  `json:"crmLeadId"`
 	EnterprisePrivyID string  `json:"enterprisePrivyId"`
+	Address1          string  `json:"address1"`
+	NPWP              string  `json:"npwp"`
+	State             string  `json:"state"`
+	City              string  `json:"city"`
+	ZipCode           string  `json:"zip"`
 	CreatedBy         int64   `json:"-"`
 }
 

@@ -331,10 +331,15 @@ func (c *CustomerRepositoryPostgre) Create(ctx context.Context, cust entity.Cust
 		"address",
 		"crm_lead_id",
 		"enterprise_privy_id",
+		"address_1",
+		"npwp",
+		"state",
+		"city",
+		"zip_code",
 		created_by, created_at, updated_by, updated_at
 	) values (
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-		,$11 ,$12, $13 ,$14
+		,$11, $12 ,$13, $14, $15, $16, $17, $18, $19
 	) RETURNING id`
 
 	err := cmd.
@@ -351,6 +356,11 @@ func (c *CustomerRepositoryPostgre) Create(ctx context.Context, cust entity.Cust
 			cust.Address,
 			cust.CRMLeadID,
 			cust.EnterprisePrivyID,
+			cust.Address1,
+			cust.NPWP,
+			cust.State,
+			cust.City,
+			cust.ZipCode,
 			cust.CreatedBy,
 			cust.CreatedAt,
 			cust.UpdatedBy,
@@ -389,6 +399,11 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 		"address" = $7,
 		"crm_lead_id" = $8,
 		"enterprise_privy_id" = $9,
+		"address_1" = $13,
+		"npwp" = $14,
+		"state" = $15,
+		"city" = $16,
+		"zip_code" = $17,
 		updated_by = $10,
 		updated_at = $11
 	where
@@ -410,6 +425,11 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 		cust.UpdatedBy,
 		cust.UpdatedAt,
 		id,
+		cust.Address1,
+		cust.NPWP,
+		cust.State,
+		cust.City,
+		cust.ZipCode,
 	)
 
 	if err != nil {

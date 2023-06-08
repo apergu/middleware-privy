@@ -87,7 +87,7 @@ func Execute() {
 	handler := InitHttpHandler(pool, cfg.Cors, httpProperty, jwtAuth, cfg.BasicAuth)
 
 	// migrate
-	err := migration.MigrateUp(cfg.Database.Dsn)
+	err := migration.MigrateUpWithDBName(cfg.Database.Dsn, cfg.Database.DBName)
 	if err != nil {
 		defaultCache.Close()
 		pool.Close()

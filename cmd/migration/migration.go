@@ -86,6 +86,10 @@ func (m migrationLogger) Verbose() bool {
 }
 
 func InitMigration(dsn string) *migrate.Migrate {
+	return InitMigrationWithDBName(dsn, "jatis")
+}
+
+func InitMigrationWithDBName(dsn, dbname string) *migrate.Migrate {
 	db := &pgx.Postgres{}
 
 	driver, err := db.Open(dsn)
@@ -96,7 +100,7 @@ func InitMigration(dsn string) *migrate.Migrate {
 
 	m, err := migrate.NewWithDatabaseInstance(
 		"file://migration",
-		"jatis",
+		dbname,
 		driver,
 	)
 	if err != nil {
@@ -107,6 +111,25 @@ func InitMigration(dsn string) *migrate.Migrate {
 	m.Log = migrationLogger{logrus.StandardLogger()}
 
 	return m
+}
+
+func MigrateUpWithDBName(url, dbname string) error {
+	logrus.Info("[migration] Start Migrate Up")
+	defer logrus.Info("[migration] Finish Migrate Up")
+
+	err := InitMigrationWithDBName(url, dbname).Up()
+	if err == migrate.ErrNoChange {
+		return nil
+	}
+
+	if err != nil {
+		logrus.
+			Error("[migration] Migrate Up Error : ", err)
+
+		return err
+	}
+
+	return nil
 }
 
 func MigrateUp(url string) error {

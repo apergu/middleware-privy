@@ -43,6 +43,10 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		Address:           cust.Address,
 		CRMLeadID:         cust.CRMLeadID,
 		EnterprisePrivyID: cust.EnterprisePrivyID,
+		NPWP:              cust.NPWP,
+		Address1:          cust.Address1,
+		State:             cust.State,
+		City:              cust.City,
 		CreatedBy:         cust.CreatedBy,
 		CreatedAt:         tmNow,
 		UpdatedBy:         cust.CreatedBy,
@@ -79,6 +83,20 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		Fax:                            cust.Fax,
 		CustEntityPrivyCustomerBalance: cust.Balance,
 		CustEntityPrivyCustomerUsage:   cust.Usage,
+		EnterprisePrivyID:              cust.EnterprisePrivyID,
+		NPWP:                           cust.NPWP,
+		Address1:                       cust.Address1,
+		State:                          cust.State,
+		City:                           cust.City,
+		ZipCode:                        cust.ZipCode,
+		CompanyNameLong:                cust.CustomerName,
+		BankAccount:                    "103",
+		AddressBook: credential.AddressBook{
+			Addr1: cust.Address1,
+			State: cust.State,
+			City:  cust.City,
+			Zip:   cust.ZipCode,
+		},
 	}
 
 	_, err = r.customerPrivy.CreateCustomer(ctx, crdCustParam)
@@ -137,6 +155,10 @@ func (r *CustomerCommandUsecaseGeneral) Update(ctx context.Context, id int64, cu
 		Address:           cust.Address,
 		CRMLeadID:         cust.CRMLeadID,
 		EnterprisePrivyID: cust.EnterprisePrivyID,
+		NPWP:              cust.NPWP,
+		Address1:          cust.Address1,
+		State:             cust.State,
+		City:              cust.City,
 		UpdatedBy:         cust.CreatedBy,
 		UpdatedAt:         tmNow,
 	}

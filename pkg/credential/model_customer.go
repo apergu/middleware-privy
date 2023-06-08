@@ -15,20 +15,29 @@ type AddressBook struct {
 }
 
 type CustomerParam struct {
-	Recordtype                     string  `json:"recordtype"`
-	Customform                     string  `json:"customform"`
-	EntityID                       string  `json:"entityid"`
-	IsPerson                       string  `json:"isperson"`
-	CompanyName                    string  `json:"companyname"`
-	EntityStatus                   string  `json:"entitystatus"`
-	Comments                       string  `json:"comments"`
-	URL                            string  `json:"url"`
-	Email                          string  `json:"email"`
-	Phone                          string  `json:"phone"`
-	AltPhone                       *string `json:"altphone"`
-	Fax                            *string `json:"fax"`
-	CustEntityPrivyCustomerBalance int     `json:"custentity_privy_customer_balance"`
-	CustEntityPrivyCustomerUsage   int     `json:"custentityprivy_customer_usage"`
+	Recordtype                     string      `json:"recordtype"`
+	Customform                     string      `json:"customform"`
+	EntityID                       string      `json:"entityid"`
+	IsPerson                       string      `json:"isperson"`
+	CompanyName                    string      `json:"companyname"`
+	EntityStatus                   string      `json:"entitystatus"`
+	Comments                       string      `json:"comments"`
+	URL                            string      `json:"url"`
+	Email                          string      `json:"email"`
+	Phone                          string      `json:"phone"`
+	EnterprisePrivyID              string      `json:"custentity_privy_enterprise_id"`
+	NPWP                           string      `json:"custentity_privy_npwp"`
+	AddressBook                    AddressBook `json:"addressbook"`
+	Address1                       string      `json:"addr1"`
+	State                          string      `json:"state"`
+	City                           string      `json:"city"`
+	ZipCode                        string      `json:"zip"`
+	BankAccount                    string      `json:"custentity_privy_bankaccount"`
+	CompanyNameLong                string      `json:"custentityprivy_companyname"`
+	AltPhone                       *string     `json:"altphone"`
+	Fax                            *string     `json:"fax"`
+	CustEntityPrivyCustomerBalance int         `json:"custentity_privy_customer_balance"`
+	CustEntityPrivyCustomerUsage   int         `json:"custentityprivy_customer_usage"`
 }
 
 type CustomerResponseDetail struct {
