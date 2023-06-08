@@ -13,11 +13,9 @@ type CustomerUsage struct {
 	Usage               int64     `json:"usage"`
 	UsageAmount         float64   `json:"usageAmount"`
 	SalesOrderReference int64     `json:"salesOrderReference"`
-	// ProductName         string    `json:"productName"`
-	// ProductName         string    `json:"productName"`
-	// ProductName         string    `json:"productName"`
-	// ProductName         string    `json:"productName"`
-	CreatedBy int64 `json:"-"`
+	MerchantName        string    `json:"merchantName"`
+	TypeTrans           int64     `json:"typeTrans"`
+	CreatedBy           int64     `json:"-"`
 }
 
 func (c CustomerUsage) Validate() error {

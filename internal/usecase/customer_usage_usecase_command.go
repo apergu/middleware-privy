@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"strconv"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -65,17 +64,24 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		return 0, nil, err
 	}
 
-	custPrivyUsgProdId, _ := strconv.Atoi(cust.ProductID)
+	// custPrivyUsgProdId, _ := strconv.Atoi(cust.ProductID)
 
 	custPrivyUsgParam := credential.CustomerUsageParam{
-		RecordType:                      "customrecordprivy_product_list",
-		CustrecordPrivyCustomerName:     cust.CustomerName,
-		CustrecordPrivyIdProduct:        custPrivyUsgProdId,
-		CustrecordPrivyProductName:      cust.ProductName,
-		CustrecordPrivyTransactionUsage: cust.TransactionAt.Format("02/01/2006"),
-		CustrecordPrivyQuantityUsage:    cust.Usage,
-		CustrecordPrivyAmount:           int64(cust.UsageAmount),
-		CustrecordPrivySoTransaction:    int(cust.SalesOrderReference),
+		RecordType: "customrecord_privy_integrasi_usage",
+		// CustrecordPrivyCustomerName:     cust.CustomerName,
+		// CustrecordPrivyIdProduct:        custPrivyUsgProdId,
+		// CustrecordPrivyProductName:      cust.ProductName,
+		// CustrecordPrivyTransactionUsage: cust.TransactionAt.Format("02/01/2006"),
+		// CustrecordPrivyQuantityUsage:    cust.Usage,
+		// CustrecordPrivyAmount:           int64(cust.UsageAmount),
+		// CustrecordPrivySoTransaction:    int(cust.SalesOrderReference),
+
+		CustrecordPrivyUsageDateIntegrasi:    cust.TransactionAt.Format("02/01/2006"),
+		CustrecordPrivyCustomerNameIntegrasi: cust.CustomerName,
+		CustrecordPrivyMerchantNameIntgrasi:  cust.MerchantName,
+		CustrecordPrivyServiceIntegrasi:      cust.ProductName,
+		CustrecordPrivyQuantityIntegrasi:     int64(cust.UsageAmount),
+		CustrecordPrivyTypeTransIntegrasi:    int64(cust.TypeTrans),
 	}
 
 	_, err = r.customerUsagePrivy.CreateCustomerUsage(ctx, custPrivyUsgParam)
