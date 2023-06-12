@@ -27,6 +27,7 @@ type CustomerParam struct {
 	Phone                          string      `json:"phone"`
 	EnterprisePrivyID              string      `json:"custentity_privy_enterprise_id"`
 	NPWP                           string      `json:"custentity_privy_npwp"`
+	CRMLeadID                      string      `json:"custentity_privy_crm_lead_id"`
 	AddressBook                    AddressBook `json:"addressbook"`
 	Address1                       string      `json:"addr1"`
 	State                          string      `json:"state"`

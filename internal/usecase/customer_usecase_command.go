@@ -33,7 +33,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 	tmNow := time.Now().UnixNano() / 1000000
 
 	insertCustomer := entity.Customer{
-		CustomerID:        cust.CustomerID,
+		CustomerID:        cust.EnterprisePrivyID,
 		CustomerType:      cust.CustomerType,
 		CustomerName:      cust.CustomerName,
 		FirstName:         cust.FirstName,
@@ -71,12 +71,12 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 	crdCustParam := credential.CustomerParam{
 		Recordtype:                     "customer",
 		Customform:                     "2",
-		EntityID:                       cust.CustomerID,
+		EntityID:                       cust.EnterprisePrivyID,
 		IsPerson:                       "F",
 		CompanyName:                    cust.CustomerName,
 		Comments:                       "",
 		Email:                          cust.Email,
-		EntityStatus:                   cust.EntityStatus,
+		EntityStatus:                   "13",
 		URL:                            cust.URL,
 		Phone:                          cust.PhoneNo,
 		AltPhone:                       cust.AltPhone,
@@ -90,6 +90,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		City:                           cust.City,
 		ZipCode:                        cust.ZipCode,
 		CompanyNameLong:                cust.CustomerName,
+		CRMLeadID:                      cust.CRMLeadID,
 		BankAccount:                    "103",
 		AddressBook: credential.AddressBook{
 			Addr1: cust.Address1,
@@ -145,7 +146,7 @@ func (r *CustomerCommandUsecaseGeneral) Update(ctx context.Context, id int64, cu
 	tmNow := time.Now().UnixNano() / 1000000
 
 	updatedCustomer := entity.Customer{
-		CustomerID:        cust.CustomerID,
+		CustomerID:        cust.EnterprisePrivyID,
 		CustomerType:      cust.CustomerType,
 		CustomerName:      cust.CustomerName,
 		FirstName:         cust.FirstName,

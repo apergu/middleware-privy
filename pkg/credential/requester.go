@@ -56,7 +56,7 @@ func (r *requester) Do(ctx context.Context, req *http.Request, env Envelope) err
 			"",
 			"Something went wrong",
 			"",
-			nil,
+			env,
 		)
 	}
 
@@ -73,7 +73,7 @@ func (r *requester) Do(ctx context.Context, req *http.Request, env Envelope) err
 			"",
 			"Something went wrong",
 			"",
-			nil,
+			env,
 		)
 	}
 
@@ -89,7 +89,7 @@ func (r *requester) Do(ctx context.Context, req *http.Request, env Envelope) err
 			"",
 			"Something went wrong",
 			"",
-			nil,
+			env,
 		)
 	}
 

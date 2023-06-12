@@ -80,7 +80,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		CustrecordPrivyCustomerNameIntegrasi: cust.CustomerName,
 		CustrecordPrivyMerchantNameIntgrasi:  cust.MerchantName,
 		CustrecordPrivyServiceIntegrasi:      cust.ProductName,
-		CustrecordPrivyQuantityIntegrasi:     int64(cust.UsageAmount),
+		CustrecordPrivyQuantityIntegrasi:     int64(cust.Usage),
 		CustrecordPrivyTypeTransIntegrasi:    int64(cust.TypeTrans),
 	}
 
