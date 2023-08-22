@@ -90,6 +90,7 @@ func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.
 				r.Mount("/sales-order", httphandler.NewSalesOrderHttpHandler(prop))
 				r.Mount("/merchant", httphandler.NewMerchantHttpHandler(prop))
 				r.Mount("/channel", httphandler.NewChannelHttpHandler(prop))
+				r.Mount("/divission", httphandler.NewDivissionHttpHandler(prop))
 			})
 
 			r.Group(func(r chi.Router) {
