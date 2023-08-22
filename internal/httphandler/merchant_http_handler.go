@@ -36,8 +36,8 @@ func NewMerchantHttpHandler(prop HTTPHandlerProperty) http.Handler {
 	r := chi.NewRouter()
 
 	r.Post("/", handler.Create)
-	// r.Put("/id/{id}", handler.Update)
-	// r.Delete("/id/{id}", handler.Delete)
+	r.Put("/id/{id}", handler.Update)
+	r.Delete("/id/{id}", handler.Delete)
 
 	r.Get("/", handler.Find)
 	r.Get("/id/{id}", handler.FindById)
