@@ -1,17 +1,12 @@
 ALTER TABLE merchants
-DROP CONSTRAINT merchants_enterprise_id_key;
-
+DROP CONSTRAINT if exists merchants_enterprise_id_key;
 ALTER TABLE merchants
-DROP CONSTRAINT fk_customer;
-
+DROP CONSTRAINT if exists fk_customer;
 ALTER TABLE channels
-DROP CONSTRAINT fk_merchant;
-
+DROP CONSTRAINT if exists fk_merchant;
 ALTER TABLE divissions
-DROP CONSTRAINT fk_channel;
-
+DROP CONSTRAINT if exists fk_channel;
 ALTER TABLE channels
-DROP COLUMN merchant_id;
-
+DROP COLUMN if exists merchant_id;
 ALTER TABLE channels
-ADD merchant_id text NOT NULL;
+ADD merchant_id text NOT null default '';
