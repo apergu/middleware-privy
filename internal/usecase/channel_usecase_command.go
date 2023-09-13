@@ -34,6 +34,7 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, merchant mode
 
 	insertChannel := entity.Channel{
 		MerchantID:  merchant.MerchantID,
+		ChannelCode: merchant.ChannelCode,
 		ChannelID:   merchant.ChannelID,
 		ChannelName: merchant.ChannelName,
 		Address:     merchant.Address,
@@ -123,6 +124,7 @@ func (r *ChannelCommandUsecaseGeneral) Update(ctx context.Context, id int64, mer
 
 	updatedChannel := entity.Channel{
 		MerchantID:  merchant.MerchantID,
+		ChannelCode: merchant.ChannelCode,
 		ChannelID:   merchant.ChannelID,
 		ChannelName: merchant.ChannelName,
 		Address:     merchant.Address,

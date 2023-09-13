@@ -15,7 +15,12 @@ type CustomerUsageParam struct {
 	CustrecordPrivyMerchantNameIntgrasi  string `json:"custrecord_privy_merchantname_intgrasi"`
 	CustrecordPrivyServiceIntegrasi      string `json:"custrecord_privy_service_integrasi"`  // CustrecordPrivyProductName
 	CustrecordPrivyQuantityIntegrasi     int64  `json:"custrecord_privy_quantity_integrasi"` // CustrecordPrivyQuantityUsage
-	CustrecordPrivyTypeTransIntegrasi    int64  `json:"custrecord_privy_typetrans_integrasi"`
+	CustrecordPrivyChannelNameIntgrasi   string `json:"custrecord_privy_channelname_intgrasi"`
+	CustrecordPrivyTypeTransIntegrasi    bool   `json:"custrecord_privy_typetrans_integrasi"`
+	CcustrecordPrivyTrxIdIntegrasi       string `json:"custrecord_privy_trxid_integrasi"`
+	CustrecordEnterpriseeID              string `json:"custrecordenterprisee_id"`
+	CustrecordServiceID                  string `json:"custrecordservice_id"`
+	CustrecordUnitPrice                  string `json:"custrecordunit_price"`
 }
 
 type CustomerUsageResponse struct {

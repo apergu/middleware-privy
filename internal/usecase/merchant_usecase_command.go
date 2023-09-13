@@ -35,6 +35,7 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 	insertMerchant := entity.Merchant{
 		CustomerID:   merchant.CustomerID,
 		EnterpriseID: merchant.EnterpriseID,
+		MerchantCode: merchant.MerchantCode,
 		MerchantID:   merchant.MerchantID,
 		MerchantName: merchant.MerchantName,
 		Address:      merchant.Address,

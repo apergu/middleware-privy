@@ -53,6 +53,7 @@ func (c *ChannelRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.Com
 		err := rows.Scan(
 			&data.ID,
 			&data.MerchantID,
+			&data.ChannelCode,
 			&data.ChannelID,
 			&data.ChannelName,
 			&data.Address,
@@ -97,6 +98,7 @@ func (c *ChannelRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand.
 		Scan(
 			&data.ID,
 			&data.MerchantID,
+			&data.ChannelCode,
 			&data.ChannelID,
 			&data.ChannelName,
 			&data.Address,
@@ -166,6 +168,7 @@ func (c *ChannelRepositoryPostgre) Find(ctx context.Context, filter ChannelFilte
 	query := `select
 		channels.id,
 		channels.merchant_id,
+		channels.channel_code,
 		channels.channel_id,
 		channels.channel_name,
 		channels."address",
@@ -238,6 +241,7 @@ func (c *ChannelRepositoryPostgre) FindOneById(ctx context.Context, id int64, tx
 	query := `select
 		channels.id,
 		channels.merchant_id,
+		channels.channel_code,
 		channels.channel_id,
 		channels.channel_name,
 		channels."address",
@@ -285,6 +289,7 @@ func (c *ChannelRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, id 
 	query := `select
 		channels."id",
 		channels.merchant_id,
+		channels.channel_code,
 		channels.channel_id,
 		channels.channel_name,
 		channels."address",
@@ -316,6 +321,7 @@ func (c *ChannelRepositoryPostgre) Create(ctx context.Context, channel entity.Ch
 	var id int64
 	query := `insert into channels (
 		merchant_id,
+		channel_code,
 		channel_id,
 		channel_name,
 		"address",
@@ -327,7 +333,7 @@ func (c *ChannelRepositoryPostgre) Create(ctx context.Context, channel entity.Ch
 		created_by, created_at, updated_by, updated_at
 	) values (
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-		,$11, $12 ,$13
+		,$11, $12 ,$13,$14
 	) RETURNING id`
 
 	err := cmd.
@@ -335,6 +341,7 @@ func (c *ChannelRepositoryPostgre) Create(ctx context.Context, channel entity.Ch
 			ctx,
 			query,
 			channel.MerchantID,
+			channel.ChannelCode,
 			channel.ChannelID,
 			channel.ChannelName,
 			channel.Address,
@@ -372,6 +379,7 @@ func (c *ChannelRepositoryPostgre) Update(ctx context.Context, id int64, channel
 
 	query := `update channels
 	set
+		channel_code = $12,
 		channel_id = $1,
 		channel_name = $2,
 		address = $3,
@@ -399,6 +407,7 @@ func (c *ChannelRepositoryPostgre) Update(ctx context.Context, id int64, channel
 		channel.UpdatedBy,
 		channel.UpdatedAt,
 		id,
+		channel.ChannelCode,
 	)
 
 	if err != nil {

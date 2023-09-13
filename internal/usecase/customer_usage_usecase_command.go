@@ -34,19 +34,25 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 	transAt := cust.TransactionAt.UnixNano() / 1000000
 
 	insertCustomerUsage := entity.CustomerUsage{
-		CustomerID:    cust.CustomerID,
-		CustomerName:  cust.CustomerName,
-		ProductID:     cust.ProductID,
-		ProductName:   cust.ProductName,
-		TransactionAt: transAt,
-		Balance:       cust.Balance,
-		BalanceAmount: cust.BalanceAmount,
-		Usage:         cust.Usage,
-		UsageAmount:   cust.UsageAmount,
-		CreatedBy:     cust.CreatedBy,
-		CreatedAt:     tmNow,
-		UpdatedBy:     cust.CreatedBy,
-		UpdatedAt:     tmNow,
+		CustomerID:     cust.CustomerID,
+		CustomerName:   cust.CustomerName,
+		ProductID:      cust.ProductID,
+		ProductName:    cust.ProductName,
+		TransactionAt:  transAt,
+		Balance:        cust.Balance,
+		BalanceAmount:  cust.BalanceAmount,
+		Usage:          cust.Usage,
+		UsageAmount:    cust.UsageAmount,
+		EnterpriseID:   cust.EnterpriseID,
+		EnterpriseName: cust.EnterpriseName,
+		ChannelName:    cust.ChannelName,
+		TrxId:          cust.TrxId,
+		ServiceID:      cust.ServiceID,
+		UnitPrice:      cust.UnitPrice,
+		CreatedBy:      cust.CreatedBy,
+		CreatedAt:      tmNow,
+		UpdatedBy:      cust.CreatedBy,
+		UpdatedAt:      tmNow,
 	}
 
 	custId, err := r.custUsageRepo.Create(ctx, insertCustomerUsage, tx)
@@ -77,11 +83,16 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		// CustrecordPrivySoTransaction:    int(cust.SalesOrderReference),
 
 		CustrecordPrivyUsageDateIntegrasi:    cust.TransactionAt.Format("02/01/2006"),
-		CustrecordPrivyCustomerNameIntegrasi: cust.CustomerName,
-		CustrecordPrivyMerchantNameIntgrasi:  cust.MerchantName,
+		CustrecordPrivyCustomerNameIntegrasi: cust.EnterpriseName,
 		CustrecordPrivyServiceIntegrasi:      cust.ProductName,
+		CustrecordPrivyMerchantNameIntgrasi:  cust.MerchantName,
 		CustrecordPrivyQuantityIntegrasi:     int64(cust.Usage),
-		CustrecordPrivyTypeTransIntegrasi:    int64(cust.TypeTrans),
+		CustrecordPrivyTypeTransIntegrasi:    false,
+		CustrecordPrivyChannelNameIntgrasi:   cust.ChannelName,
+		CcustrecordPrivyTrxIdIntegrasi:       cust.TrxId,
+		CustrecordEnterpriseeID:              cust.EnterpriseID,
+		CustrecordServiceID:                  cust.ServiceID,
+		CustrecordUnitPrice:                  cust.UnitPrice,
 	}
 
 	_, err = r.customerUsagePrivy.CreateCustomerUsage(ctx, custPrivyUsgParam)
@@ -131,17 +142,23 @@ func (r *CustomerUsageCommandUsecaseGeneral) Update(ctx context.Context, id int6
 	transAt := cust.TransactionAt.UnixNano() / 1000000
 
 	updatedCustomerUsage := entity.CustomerUsage{
-		CustomerID:    cust.CustomerID,
-		CustomerName:  cust.CustomerName,
-		ProductID:     cust.ProductID,
-		ProductName:   cust.ProductName,
-		TransactionAt: transAt,
-		Balance:       cust.Balance,
-		BalanceAmount: cust.BalanceAmount,
-		Usage:         cust.Usage,
-		UsageAmount:   cust.UsageAmount,
-		UpdatedBy:     cust.CreatedBy,
-		UpdatedAt:     tmNow,
+		CustomerID:     cust.CustomerID,
+		CustomerName:   cust.CustomerName,
+		ProductID:      cust.ProductID,
+		ProductName:    cust.ProductName,
+		TransactionAt:  transAt,
+		Balance:        cust.Balance,
+		BalanceAmount:  cust.BalanceAmount,
+		Usage:          cust.Usage,
+		UsageAmount:    cust.UsageAmount,
+		EnterpriseID:   cust.EnterpriseID,
+		EnterpriseName: cust.EnterpriseName,
+		ChannelName:    cust.ChannelName,
+		TrxId:          cust.TrxId,
+		ServiceID:      cust.ServiceID,
+		UnitPrice:      cust.UnitPrice,
+		UpdatedBy:      cust.CreatedBy,
+		UpdatedAt:      tmNow,
 	}
 
 	err = r.custUsageRepo.Update(ctx, id, updatedCustomerUsage, tx)

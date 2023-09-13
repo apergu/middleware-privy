@@ -4,6 +4,7 @@ type Merchant struct {
 	ID           int64  `json:"id"`
 	CustomerID   int64  `json:"customerId"`
 	EnterpriseID string `json:"enterpriseId"`
+	MerchantCode string `json:"merchantCode"`
 	MerchantID   string `json:"merchantId"`
 	MerchantName string `json:"merchantName"`
 	Address      string `json:"address"`

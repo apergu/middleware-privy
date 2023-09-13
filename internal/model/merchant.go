@@ -3,6 +3,7 @@ package model
 type Merchant struct {
 	CustomerID   int64  `json:"customerId"`
 	EnterpriseID string `json:"enterpriseId"`
+	MerchantCode string `json:"merchantCode"`
 	MerchantID   string `json:"merchantId"`
 	MerchantName string `json:"merchantName"`
 	Address      string `json:"address"`

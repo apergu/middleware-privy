@@ -2,6 +2,7 @@ package model
 
 type Channel struct {
 	MerchantID  string `json:"merchantId"`
+	ChannelCode string `json:"channelCode"`
 	ChannelID   string `json:"channelId"`
 	ChannelName string `json:"channelName"`
 	Address     string `json:"address"`

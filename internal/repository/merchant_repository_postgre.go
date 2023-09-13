@@ -54,6 +54,7 @@ func (c *MerchantRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.Co
 			&data.ID,
 			&data.CustomerID,
 			&data.EnterpriseID,
+			&data.MerchantCode,
 			&data.MerchantID,
 			&data.MerchantName,
 			&data.Address,
@@ -99,6 +100,7 @@ func (c *MerchantRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand
 			&data.ID,
 			&data.CustomerID,
 			&data.EnterpriseID,
+			&data.MerchantCode,
 			&data.MerchantID,
 			&data.MerchantName,
 			&data.Address,
@@ -169,6 +171,7 @@ func (c *MerchantRepositoryPostgre) Find(ctx context.Context, filter MerchantFil
 		merchants.id,
 		merchants.customer_id,
 		merchants.enterprise_id,
+		merchants.merchant_code,
 		merchants.merchant_id,
 		merchants.merchant_name,
 		merchants."address",
@@ -242,6 +245,7 @@ func (c *MerchantRepositoryPostgre) FindOneById(ctx context.Context, id int64, t
 		merchants.id,
 		merchants.customer_id,
 		merchants.enterprise_id,
+		merchants.merchant_code,
 		merchants.merchant_id,
 		merchants.merchant_name,
 		merchants."address",
@@ -322,6 +326,7 @@ func (c *MerchantRepositoryPostgre) Create(ctx context.Context, merchant entity.
 	query := `insert into merchants (
 		customer_id,
 		enterprise_id,
+		merchant_code,
 		merchant_id,
 		merchant_name,
 		"address",
@@ -333,7 +338,7 @@ func (c *MerchantRepositoryPostgre) Create(ctx context.Context, merchant entity.
 		created_by, created_at, updated_by, updated_at
 	) values (
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-		,$11, $12 ,$13, $14
+		,$11, $12 ,$13, $14, $15
 	) RETURNING id`
 
 	err := cmd.
@@ -342,6 +347,7 @@ func (c *MerchantRepositoryPostgre) Create(ctx context.Context, merchant entity.
 			query,
 			merchant.CustomerID,
 			merchant.EnterpriseID,
+			merchant.MerchantCode,
 			merchant.MerchantID,
 			merchant.MerchantName,
 			merchant.Address,
@@ -379,6 +385,7 @@ func (c *MerchantRepositoryPostgre) Update(ctx context.Context, id int64, mercha
 
 	query := `update merchants
 	set
+		merchant_code = $12,
 		merchant_id = $1,
 		merchant_name = $2,
 		address = $3,
@@ -406,6 +413,7 @@ func (c *MerchantRepositoryPostgre) Update(ctx context.Context, id int64, mercha
 		merchant.UpdatedBy,
 		merchant.UpdatedAt,
 		id,
+		merchant.MerchantCode,
 	)
 
 	if err != nil {

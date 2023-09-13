@@ -15,4 +15,11 @@ type CustomerUsage struct {
 	CreatedAt     int64   `json:"createdAt"`
 	UpdatedBy     int64   `json:"-"`
 	UpdatedAt     int64   `json:"updatedAt"`
+
+	EnterpriseID   string `json:"enterpriseId"`
+	EnterpriseName string `json:"enterpriseName"`
+	ChannelName    string `json:"channelName"`
+	TrxId          string `json:"trxId"`
+	ServiceID      string `json:"serviceId"`
+	UnitPrice      string `json:"unitPrice"`
 }

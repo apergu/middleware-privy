@@ -14,6 +14,12 @@ type CustomerUsage struct {
 	UsageAmount         float64   `json:"usageAmount"`
 	SalesOrderReference int64     `json:"salesOrderReference"`
 	MerchantName        string    `json:"merchantName"`
+	EnterpriseID        string    `json:"enterpriseId"`
+	EnterpriseName      string    `json:"enterpriseName"`
+	ChannelName         string    `json:"channelName"`
+	TrxId               string    `json:"trxId"`
+	ServiceID           string    `json:"serviceId"`
+	UnitPrice           string    `json:"unitPrice"`
 	TypeTrans           int64     `json:"typeTrans"`
 	CreatedBy           int64     `json:"-"`
 }
