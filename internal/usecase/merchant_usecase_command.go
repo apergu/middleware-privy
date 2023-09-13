@@ -8,16 +8,19 @@ import (
 	"gitlab.com/mohamadikbal/project-privy/internal/entity"
 	"gitlab.com/mohamadikbal/project-privy/internal/model"
 	"gitlab.com/mohamadikbal/project-privy/internal/repository"
+	"gitlab.com/mohamadikbal/project-privy/pkg/credential"
 	"gitlab.com/rteja-library3/rapperror"
 )
 
 type MerchantCommandUsecaseGeneral struct {
-	custRepo repository.MerchantCommandRepository
+	custRepo      repository.MerchantCommandRepository
+	merchantPrivy credential.Merchant
 }
 
 func NewMerchantCommandUsecaseGeneral(prop MerchantUsecaseProperty) *MerchantCommandUsecaseGeneral {
 	return &MerchantCommandUsecaseGeneral{
-		custRepo: prop.MerchantRepo,
+		custRepo:      prop.MerchantRepo,
+		merchantPrivy: prop.MerchantPrivy,
 	}
 }
 
@@ -60,6 +63,34 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 
 		return 0, nil, err
 	}
+
+	// privyParam := credential.MerchantParam{
+	// 	RecordType:             "customrecord_customer_hierarchy",
+	// 	CustRecordEnterpriseID: merchant.EnterpriseID,
+	// 	CustRecordMerchantID:   merchant.MerchantID,
+	// 	CustRecordMerchantName: merchant.MerchantName,
+	// 	CustRecordAddress:      merchant.Address,
+	// 	CustRecordEmail:        merchant.Email,
+	// 	CustRecordPhone:        merchant.PhoneNo,
+	// 	CustRecordState:        merchant.State,
+	// 	CustRecordCity:         merchant.City,
+	// 	CustRecordZip:          merchant.ZipCode,
+	// }
+
+	// err = r.merchantPrivy.CreateMerchant(ctx, privyParam)
+	// if err != nil {
+	// 	r.custRepo.RollbackTx(ctx, tx)
+
+	// 	logrus.
+	// 		WithFields(logrus.Fields{
+	// 			"at":    "MerchantCommandUsecaseGeneral.Create",
+	// 			"src":   "merchantPrivy.CreateMerchant",
+	// 			"param": privyParam,
+	// 		}).
+	// 		Error(err)
+
+	// 	return 0, nil, err
+	// }
 
 	err = r.custRepo.CommitTx(ctx, tx)
 	if err != nil {

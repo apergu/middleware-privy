@@ -8,16 +8,19 @@ import (
 	"gitlab.com/mohamadikbal/project-privy/internal/entity"
 	"gitlab.com/mohamadikbal/project-privy/internal/model"
 	"gitlab.com/mohamadikbal/project-privy/internal/repository"
+	"gitlab.com/mohamadikbal/project-privy/pkg/credential"
 	"gitlab.com/rteja-library3/rapperror"
 )
 
 type ChannelCommandUsecaseGeneral struct {
-	custRepo repository.ChannelCommandRepository
+	custRepo     repository.ChannelCommandRepository
+	channelPrivy credential.Channel
 }
 
 func NewChannelCommandUsecaseGeneral(prop ChannelUsecaseProperty) *ChannelCommandUsecaseGeneral {
 	return &ChannelCommandUsecaseGeneral{
-		custRepo: prop.ChannelRepo,
+		custRepo:     prop.ChannelRepo,
+		channelPrivy: prop.ChannelPrivy,
 	}
 }
 
@@ -59,6 +62,34 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, merchant mode
 
 		return 0, nil, err
 	}
+
+	// privyParam := credential.ChannelParam{
+	// 	RecordType:            "customrecord_customer_hierarchy",
+	// 	CustRecordMerchantID:  merchant.MerchantID,
+	// 	CustRecordChannelID:   merchant.ChannelID,
+	// 	CustRecordChannelName: merchant.ChannelName,
+	// 	CustRecordAddress:     merchant.Address,
+	// 	CustRecordEmail:       merchant.Email,
+	// 	CustRecordPhone:       merchant.PhoneNo,
+	// 	CustRecordState:       merchant.State,
+	// 	CustRecordCity:        merchant.City,
+	// 	CustRecordZip:         merchant.ZipCode,
+	// }
+
+	// err = r.channelPrivy.CreateChannel(ctx, privyParam)
+	// if err != nil {
+	// 	r.custRepo.RollbackTx(ctx, tx)
+
+	// 	logrus.
+	// 		WithFields(logrus.Fields{
+	// 			"at":    "ChannelCommandUsecaseGeneral.Create",
+	// 			"src":   "channelPrivy.CreateChannel",
+	// 			"param": privyParam,
+	// 		}).
+	// 		Error(err)
+
+	// 	return 0, nil, err
+	// }
 
 	err = r.custRepo.CommitTx(ctx, tx)
 	if err != nil {

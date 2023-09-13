@@ -2,7 +2,7 @@ package entity
 
 type Channel struct {
 	ID          int64  `json:"id"`
-	MerchantID  int64  `json:"merchantID"`
+	MerchantID  string `json:"merchantID"`
 	ChannelID   string `json:"channelId"`
 	ChannelName string `json:"channelName"`
 	Address     string `json:"address"`
