@@ -1,0 +1,45 @@
+# Use a base image that includes Node.js and Go
+FROM node:14
+
+# Update the package repository and install Git
+RUN apt-get update && apt-get install -y git
+
+# Install NVM and Node.js 14
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash \
+    && . ~/.nvm/nvm.sh \
+    && nvm install 14 \
+    && nvm alias default 14 \
+    && nvm use default
+
+# Install PostgreSQL client (assuming you only need the client)
+RUN apt-get install -y postgresql-client
+
+# Create a directory for your project
+WORKDIR /app
+
+# Clone your Git repository
+RUN git clone https://gitlab.com/mohamadikbal/project-privy.git
+
+# Change directory to project-privy
+WORKDIR /app/project-privy
+
+# Copy the .env.example file
+COPY .env.example .env
+
+# Modify .env if needed (you may need to use a script to automate this)
+# RUN nano .env
+
+# Install Node.js dependencies
+WORKDIR /app/project-privy/x_node
+RUN npm install
+
+# Change back to the project directory
+WORKDIR /app/project-privy
+
+# Build your Go application
+# Note: This step assumes your Go application source code is in this directory
+# and your Go application is already set up properly.
+RUN go build
+
+# Define the command to run when the container starts
+CMD ["./your-go-executable"]
