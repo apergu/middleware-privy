@@ -63,6 +63,8 @@ func (c *MerchantRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.Co
 			&data.State,
 			&data.City,
 			&data.ZipCode,
+			&data.MerchantInternalID,
+			&data.CustomerInternalID,
 			&data.CreatedBy,
 			&data.CreatedAt,
 			&data.UpdatedBy,
@@ -109,6 +111,8 @@ func (c *MerchantRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand
 			&data.State,
 			&data.City,
 			&data.ZipCode,
+			&data.MerchantInternalID,
+			&data.CustomerInternalID,
 			&data.CreatedBy,
 			&data.CreatedAt,
 			&data.UpdatedBy,
@@ -138,6 +142,13 @@ func (c *MerchantRepositoryPostgre) buildFilter(filter MerchantFilter) (string, 
 	condBuilder := &strings.Builder{}
 	conds := make([]string, 0, 4) // set for 2 capacity is posible max filter
 	condArgs := make([]interface{}, 0, 4)
+
+	if filter.MerchantID != nil {
+		condArgs = append(condArgs, *filter.MerchantID)
+		idx := "$" + strconv.Itoa(len(condArgs))
+
+		conds = append(conds, "merchant_id = "+idx)
+	}
 
 	if len(conds) > 0 {
 		condBuilder.WriteString("where ")
@@ -180,6 +191,8 @@ func (c *MerchantRepositoryPostgre) Find(ctx context.Context, filter MerchantFil
 		merchants.state,
 		merchants.city,
 		merchants.zip_code,
+		merchants.merchant_internalid,
+		merchants.customer_internalid,
 		merchants.created_by,
 		merchants.created_at,
 		merchants.updated_by,
@@ -254,6 +267,8 @@ func (c *MerchantRepositoryPostgre) FindOneById(ctx context.Context, id int64, t
 		merchants.state,
 		merchants.city,
 		merchants.zip_code,
+		merchants.merchant_internalid,
+		merchants.customer_internalid,
 		merchants.created_by,
 		merchants.created_at,
 		merchants.updated_by,
@@ -302,6 +317,8 @@ func (c *MerchantRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, id
 		merchants.state,
 		merchants.city,
 		merchants.zip_code,
+		merchants.merchant_internalid,
+		merchants.customer_internalid,
 		merchants.created_by,
 		merchants.created_at,
 		merchants.updated_by,
@@ -335,10 +352,12 @@ func (c *MerchantRepositoryPostgre) Create(ctx context.Context, merchant entity.
 		"state",
 		"city",
 		"zip_code",
+		merchant_internalid,
+		customer_internalid,
 		created_by, created_at, updated_by, updated_at
 	) values (
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-		,$11, $12 ,$13, $14, $15
+		,$11, $12 ,$13, $14, $15, $16, $17
 	) RETURNING id`
 
 	err := cmd.
@@ -356,6 +375,8 @@ func (c *MerchantRepositoryPostgre) Create(ctx context.Context, merchant entity.
 			merchant.State,
 			merchant.City,
 			merchant.ZipCode,
+			merchant.MerchantInternalID,
+			merchant.CustomerInternalID,
 			merchant.CreatedBy,
 			merchant.CreatedAt,
 			merchant.UpdatedBy,
@@ -385,7 +406,6 @@ func (c *MerchantRepositoryPostgre) Update(ctx context.Context, id int64, mercha
 
 	query := `update merchants
 	set
-		merchant_code = $12,
 		merchant_id = $1,
 		merchant_name = $2,
 		address = $3,
@@ -394,6 +414,9 @@ func (c *MerchantRepositoryPostgre) Update(ctx context.Context, id int64, mercha
 		state = $6,
 		"city" = $7,
 		"zip_code" = $8,
+		merchant_code = $12,
+		"merchant_internalid" = $13,
+		"customer_internalid" = $14,
 		updated_by = $9,
 		updated_at = $10
 	where
@@ -414,6 +437,8 @@ func (c *MerchantRepositoryPostgre) Update(ctx context.Context, id int64, mercha
 		merchant.UpdatedAt,
 		id,
 		merchant.MerchantCode,
+		merchant.MerchantInternalID,
+		merchant.CustomerInternalID,
 	)
 
 	if err != nil {

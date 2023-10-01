@@ -8,7 +8,8 @@ import (
 )
 
 type MerchantFilter struct {
-	Sort string
+	Sort       string
+	MerchantID *string
 }
 
 type MerchantQueryRepository interface {

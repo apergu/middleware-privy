@@ -11,6 +11,7 @@ import (
 
 type MerchantUsecaseProperty struct {
 	MerchantRepo  repository.MerchantRepository
+	CustomerRepo  repository.CustomerRepository
 	MerchantPrivy credential.Credential
 }
 

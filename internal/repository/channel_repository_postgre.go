@@ -62,6 +62,9 @@ func (c *ChannelRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.Com
 			&data.State,
 			&data.City,
 			&data.ZipCode,
+			&data.CustomerInternalID,
+			&data.MerchantID,
+			&data.ChannelInternalID,
 			&data.CreatedBy,
 			&data.CreatedAt,
 			&data.UpdatedBy,
@@ -107,6 +110,9 @@ func (c *ChannelRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand.
 			&data.State,
 			&data.City,
 			&data.ZipCode,
+			&data.CustomerInternalID,
+			&data.MerchantID,
+			&data.ChannelInternalID,
 			&data.CreatedBy,
 			&data.CreatedAt,
 			&data.UpdatedBy,
@@ -177,6 +183,9 @@ func (c *ChannelRepositoryPostgre) Find(ctx context.Context, filter ChannelFilte
 		channels.state,
 		channels.city,
 		channels.zip_code,
+		channels.customer_internalid,
+		channels.merchant_internalid,
+		channels.channel_internalid,
 		channels.created_by,
 		channels.created_at,
 		channels.updated_by,
@@ -250,6 +259,9 @@ func (c *ChannelRepositoryPostgre) FindOneById(ctx context.Context, id int64, tx
 		channels.state,
 		channels."city",
 		channels.zip_code,
+		channels.customer_internalid,
+		channels.merchant_internalid,
+		channels.channel_internalid,
 		channels.created_by,
 		channels.created_at,
 		channels.updated_by,
@@ -298,6 +310,9 @@ func (c *ChannelRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, id 
 		channels.state,
 		channels."city",
 		channels.zip_code,
+		channels.customer_internalid,
+		channels.merchant_internalid,
+		channels.channel_internalid,
 		channels.created_by,
 		channels.created_at,
 		channels.updated_by,
@@ -330,10 +345,13 @@ func (c *ChannelRepositoryPostgre) Create(ctx context.Context, channel entity.Ch
 		"state",
 		"city",
 		"zip_code",
+		customer_internalid,
+		merchant_internalid,
+		channel_internalid,
 		created_by, created_at, updated_by, updated_at
 	) values (
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-		,$11, $12 ,$13,$14
+		,$11, $12, $13, $14, $15, $16, $17
 	) RETURNING id`
 
 	err := cmd.
@@ -350,6 +368,9 @@ func (c *ChannelRepositoryPostgre) Create(ctx context.Context, channel entity.Ch
 			channel.State,
 			channel.City,
 			channel.ZipCode,
+			channel.CustomerInternalID,
+			channel.MerchantInternalID,
+			channel.ChannelInternalID,
 			channel.CreatedBy,
 			channel.CreatedAt,
 			channel.UpdatedBy,
@@ -379,7 +400,6 @@ func (c *ChannelRepositoryPostgre) Update(ctx context.Context, id int64, channel
 
 	query := `update channels
 	set
-		channel_code = $12,
 		channel_id = $1,
 		channel_name = $2,
 		address = $3,
@@ -388,6 +408,10 @@ func (c *ChannelRepositoryPostgre) Update(ctx context.Context, id int64, channel
 		state = $6,
 		"city" = $7,
 		"zip_code" = $8,
+		channel_code = $12,
+		customer_internalid = $13,
+		merchant_internalid = $14,
+		channel_internalid = $15,
 		updated_by = $9,
 		updated_at = $10
 	where
@@ -408,6 +432,9 @@ func (c *ChannelRepositoryPostgre) Update(ctx context.Context, id int64, channel
 		channel.UpdatedAt,
 		id,
 		channel.ChannelCode,
+		channel.CustomerInternalID,
+		channel.MerchantInternalID,
+		channel.ChannelInternalID,
 	)
 
 	if err != nil {

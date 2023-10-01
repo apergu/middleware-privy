@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -13,19 +14,21 @@ import (
 )
 
 type MerchantCommandUsecaseGeneral struct {
-	custRepo      repository.MerchantCommandRepository
+	merchantRepo  repository.MerchantCommandRepository
+	custRepo      repository.CustomerQueryRepository
 	merchantPrivy credential.Merchant
 }
 
 func NewMerchantCommandUsecaseGeneral(prop MerchantUsecaseProperty) *MerchantCommandUsecaseGeneral {
 	return &MerchantCommandUsecaseGeneral{
-		custRepo:      prop.MerchantRepo,
+		merchantRepo:  prop.MerchantRepo,
 		merchantPrivy: prop.MerchantPrivy,
+		custRepo:      prop.CustomerRepo,
 	}
 }
 
 func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant model.Merchant) (int64, interface{}, error) {
-	tx, err := r.custRepo.BeginTx(ctx)
+	tx, err := r.merchantRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -50,9 +53,9 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 		UpdatedAt:    tmNow,
 	}
 
-	custId, err := r.custRepo.Create(ctx, insertMerchant, tx)
+	merchantId, err := r.merchantRepo.Create(ctx, insertMerchant, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.merchantRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -65,37 +68,69 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 		return 0, nil, err
 	}
 
-	// privyParam := credential.MerchantParam{
-	// 	RecordType:             "customrecord_customer_hierarchy",
-	// 	CustRecordEnterpriseID: merchant.EnterpriseID,
-	// 	CustRecordMerchantID:   merchant.MerchantID,
-	// 	CustRecordMerchantName: merchant.MerchantName,
-	// 	CustRecordAddress:      merchant.Address,
-	// 	CustRecordEmail:        merchant.Email,
-	// 	CustRecordPhone:        merchant.PhoneNo,
-	// 	CustRecordState:        merchant.State,
-	// 	CustRecordCity:         merchant.City,
-	// 	CustRecordZip:          merchant.ZipCode,
-	// }
+	// find customer by merchant.EnterpriseID
+	customer_filter := repository.CustomerFilter{
+		EnterprisePrivyID: &merchant.EnterpriseID,
+	}
+	customers, _ := r.custRepo.Find(ctx, customer_filter, 1, 0, nil)
 
-	// err = r.merchantPrivy.CreateMerchant(ctx, privyParam)
-	// if err != nil {
-	// 	r.custRepo.RollbackTx(ctx, tx)
+	var customer entity.Customer
+	if len(customers) > 0 {
+		customer = customers[0]
+	}
 
-	// 	logrus.
-	// 		WithFields(logrus.Fields{
-	// 			"at":    "MerchantCommandUsecaseGeneral.Create",
-	// 			"src":   "merchantPrivy.CreateMerchant",
-	// 			"param": privyParam,
-	// 		}).
-	// 		Error(err)
+	// custrecordcustomer_name ambil dari customer
 
-	// 	return 0, nil, err
-	// }
+	privyParam := credential.MerchantParam{
+		RecordType:                  "customrecord_customer_hierarchy",
+		CustRecordCustomerName:      strconv.Itoa(int(customer.CustomerInternalID)),
+		CustRecordMerchantID:        merchant.MerchantID,
+		CustRecordPrivyCodeMerchant: merchant.MerchantCode,
+		CustRecordMerchantName:      merchant.MerchantName,
+		CustRecordAddress:           merchant.Address,
+		CustRecordEmail:             merchant.Email,
+		CustRecordPhone:             merchant.PhoneNo,
+		CustRecordState:             merchant.State,
+		CustRecordCity:              merchant.City,
+		CustRecordZip:               merchant.ZipCode,
+	}
 
-	err = r.custRepo.CommitTx(ctx, tx)
+	resp, err := r.merchantPrivy.CreateMerchant(ctx, privyParam)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.merchantRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "MerchantCommandUsecaseGeneral.Create",
+				"src":   "merchantPrivy.CreateMerchant",
+				"param": privyParam,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	insertMerchant.MerchantInternalID = resp.Data.RecordID
+	insertMerchant.CustomerInternalID = customer.CustomerInternalID
+
+	err = r.merchantRepo.Update(ctx, merchantId, insertMerchant, tx)
+	if err != nil {
+		r.merchantRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "MerchantCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Update",
+				"param": insertMerchant,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	err = r.merchantRepo.CommitTx(ctx, tx)
+	if err != nil {
+		r.merchantRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -112,11 +147,11 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 		)
 	}
 
-	return custId, nil, nil
+	return merchantId, nil, nil
 }
 
 func (r *MerchantCommandUsecaseGeneral) Update(ctx context.Context, id int64, merchant model.Merchant) (int64, interface{}, error) {
-	tx, err := r.custRepo.BeginTx(ctx)
+	tx, err := r.merchantRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -136,9 +171,9 @@ func (r *MerchantCommandUsecaseGeneral) Update(ctx context.Context, id int64, me
 		UpdatedAt:    tmNow,
 	}
 
-	err = r.custRepo.Update(ctx, id, updatedMerchant, tx)
+	err = r.merchantRepo.Update(ctx, id, updatedMerchant, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.merchantRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -151,9 +186,9 @@ func (r *MerchantCommandUsecaseGeneral) Update(ctx context.Context, id int64, me
 		return 0, nil, err
 	}
 
-	err = r.custRepo.CommitTx(ctx, tx)
+	err = r.merchantRepo.CommitTx(ctx, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.merchantRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -174,14 +209,14 @@ func (r *MerchantCommandUsecaseGeneral) Update(ctx context.Context, id int64, me
 }
 
 func (r *MerchantCommandUsecaseGeneral) Delete(ctx context.Context, id int64) (int64, interface{}, error) {
-	tx, err := r.custRepo.BeginTx(ctx)
+	tx, err := r.merchantRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
 	}
 
-	err = r.custRepo.Delete(ctx, id, tx)
+	err = r.merchantRepo.Delete(ctx, id, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.merchantRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -194,9 +229,9 @@ func (r *MerchantCommandUsecaseGeneral) Delete(ctx context.Context, id int64) (i
 		return 0, nil, err
 	}
 
-	err = r.custRepo.CommitTx(ctx, tx)
+	err = r.merchantRepo.CommitTx(ctx, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.merchantRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{

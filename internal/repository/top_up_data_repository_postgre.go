@@ -61,6 +61,9 @@ func (c *TopUpDataRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.C
 			&data.ServiceName,
 			&data.Quantity,
 			&data.TransactionDate,
+			&data.MerchantCode,
+			&data.ChannelID,
+			&data.ChannelCode,
 			&data.CreatedBy,
 			&data.CreatedAt,
 			&data.UpdatedBy,
@@ -105,6 +108,9 @@ func (c *TopUpDataRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcomman
 			&data.ServiceName,
 			&data.Quantity,
 			&data.TransactionDate,
+			&data.MerchantCode,
+			&data.ChannelID,
+			&data.ChannelCode,
 			&data.CreatedBy,
 			&data.CreatedAt,
 			&data.UpdatedBy,
@@ -174,6 +180,9 @@ func (c *TopUpDataRepositoryPostgre) Find(ctx context.Context, filter TopUpDataF
 		top_up_datas.service_name,
 		top_up_datas.quantity,
 		top_up_datas.transaction_date,
+		top_up_datas.merchant_code,
+		top_up_datas.channel_id,
+		top_up_datas.channel_code,
 		top_up_datas.created_by,
 		top_up_datas.created_at,
 		top_up_datas.updated_by,
@@ -246,6 +255,9 @@ func (c *TopUpDataRepositoryPostgre) FindOneById(ctx context.Context, id int64, 
 		top_up_datas.service_name,
 		top_up_datas.quantity,
 		top_up_datas.transaction_date,
+		top_up_datas.merchant_code,
+		top_up_datas.channel_id,
+		top_up_datas.channel_code,
 		top_up_datas.created_by,
 		top_up_datas.created_at,
 		top_up_datas.updated_by,
@@ -293,6 +305,9 @@ func (c *TopUpDataRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, i
 		top_up_datas.service_name,
 		top_up_datas.quantity,
 		top_up_datas.transaction_date,
+		top_up_datas.merchant_code,
+		top_up_datas.channel_id,
+		top_up_datas.channel_code,
 		top_up_datas.created_by,
 		top_up_datas.created_at,
 		top_up_datas.updated_by,
@@ -324,10 +339,13 @@ func (c *TopUpDataRepositoryPostgre) Create(ctx context.Context, channel entity.
 		"service_name",
 		"quantity",
 		"transaction_date",
+		merchant_code,
+		channel_id,
+		channel_code,
 		created_by, created_at, updated_by, updated_at
 	) values (
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-		,$11, $12 ,$13
+		,$11, $12, $13, $14, $15, $16
 	) RETURNING id`
 
 	err := cmd.
@@ -343,6 +361,9 @@ func (c *TopUpDataRepositoryPostgre) Create(ctx context.Context, channel entity.
 			channel.ServiceName,
 			channel.Quantity,
 			channel.TransactionDate,
+			channel.MerchantCode,
+			channel.ChannelID,
+			channel.ChannelCode,
 			channel.CreatedBy,
 			channel.CreatedAt,
 			channel.UpdatedBy,
@@ -381,6 +402,9 @@ func (c *TopUpDataRepositoryPostgre) Update(ctx context.Context, id int64, chann
 		"service_name" = $7,
 		"quantity" = $8,
 		transaction_date = $9,
+		merchant_code = $13,
+		channel_id = $14,
+		channel_code = $15,
 		updated_by = $10,
 		updated_at = $11
 	where
@@ -401,6 +425,9 @@ func (c *TopUpDataRepositoryPostgre) Update(ctx context.Context, id int64, chann
 		channel.UpdatedBy,
 		channel.UpdatedAt,
 		id,
+		channel.MerchantCode,
+		channel.ChannelID,
+		channel.ChannelCode,
 	)
 
 	if err != nil {

@@ -11,6 +11,9 @@ type TopUpData struct {
 	ServiceName       string `json:"serviceName"`
 	Quantity          int64  `json:"quantity"`
 	TransactionDate   int64  `json:"transactionDate"`
+	MerchantCode      string `json:"merchantCode"`
+	ChannelID         string `json:"channelId"`
+	ChannelCode       string `json:"channelCode"`
 	CreatedBy         int64  `json:"-"`
 	CreatedAt         int64  `json:"createdAt"`
 	UpdatedBy         int64  `json:"-"`

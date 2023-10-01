@@ -271,11 +271,3 @@ func (c *CredentialPrivy) CreateCustomerUsage(ctx context.Context, param Custome
 
 	return custResp.SuccessTransaction[0], nil
 }
-
-func (c *CredentialPrivy) CreateMerchant(ctx context.Context, param MerchantParam) error {
-	return nil
-}
-
-func (c *CredentialPrivy) CreateChannel(ctx context.Context, param ChannelParam) error {
-	return nil
-}

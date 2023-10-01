@@ -41,6 +41,7 @@ func (r *requester) Do(ctx context.Context, req *http.Request, env Envelope) err
 		WithFields(logrus.Fields{
 			"at":  "requester.Do",
 			"src": "json.NewDecoder(resp.Body).Decode(env)",
+			"cde": resp.StatusCode,
 		}).
 		Info(fmt.Sprintf("%+v", env))
 
