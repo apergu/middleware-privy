@@ -8,7 +8,8 @@ import (
 )
 
 type CustomerFilter struct {
-	Sort string
+	Sort              string
+	EnterprisePrivyID *string
 }
 
 type CustomerQueryRepository interface {

@@ -25,6 +25,7 @@ func NewChannelHttpHandler(prop HTTPHandlerProperty) http.Handler {
 	ucProp := usecase.ChannelUsecaseProperty{
 		ChannelRepo:  repository.NewChannelRepositoryPostgre(prop.DBPool),
 		ChannelPrivy: prop.DefaultCredential,
+		MerchantRepo: repository.NewMerchantRepositoryPostgre(prop.DBPool),
 	}
 
 	handler := ChannelHttpHandler{

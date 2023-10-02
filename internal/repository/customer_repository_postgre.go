@@ -62,6 +62,7 @@ func (c *CustomerRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.Co
 			&data.Address,
 			&data.CRMLeadID,
 			&data.EnterprisePrivyID,
+			&data.CustomerInternalID,
 			&data.CreatedBy,
 			&data.CreatedAt,
 			&data.UpdatedBy,
@@ -107,6 +108,7 @@ func (c *CustomerRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand
 			&data.Address,
 			&data.CRMLeadID,
 			&data.EnterprisePrivyID,
+			&data.CustomerInternalID,
 			&data.CreatedBy,
 			&data.CreatedAt,
 			&data.UpdatedBy,
@@ -136,6 +138,13 @@ func (c *CustomerRepositoryPostgre) buildFilter(filter CustomerFilter) (string, 
 	condBuilder := &strings.Builder{}
 	conds := make([]string, 0, 4) // set for 2 capacity is posible max filter
 	condArgs := make([]interface{}, 0, 4)
+
+	if filter.EnterprisePrivyID != nil {
+		condArgs = append(condArgs, *filter.EnterprisePrivyID)
+		idx := "$" + strconv.Itoa(len(condArgs))
+
+		conds = append(conds, "enterprise_privy_id = "+idx)
+	}
 
 	if len(conds) > 0 {
 		condBuilder.WriteString("where ")
@@ -177,6 +186,7 @@ func (c *CustomerRepositoryPostgre) Find(ctx context.Context, filter CustomerFil
 		customers."address",
 		customers."crm_lead_id",
 		customers."enterprise_privy_id",
+		customers."customer_internalid",
 		customers.created_by,
 		customers.created_at,
 		customers.updated_by,
@@ -250,6 +260,7 @@ func (c *CustomerRepositoryPostgre) FindOneById(ctx context.Context, id int64, t
 		customers."address",
 		customers."crm_lead_id",
 		customers."enterprise_privy_id",
+		customers."customer_internalid",
 		customers.created_by,
 		customers.created_at,
 		customers.updated_by,
@@ -298,6 +309,7 @@ func (c *CustomerRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, id
 		customers."address",
 		customers."crm_lead_id",
 		customers."enterprise_privy_id",
+		customers."customer_internalid",
 		customers.created_by,
 		customers.created_at,
 		customers.updated_by,
@@ -336,10 +348,11 @@ func (c *CustomerRepositoryPostgre) Create(ctx context.Context, cust entity.Cust
 		"state",
 		"city",
 		"zip_code",
+		"customer_internalid",
 		created_by, created_at, updated_by, updated_at
 	) values (
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-		,$11, $12 ,$13, $14, $15, $16, $17, $18, $19
+		,$11, $12 ,$13, $14, $15, $16, $17, $18, $19, $20
 	) RETURNING id`
 
 	err := cmd.
@@ -361,6 +374,7 @@ func (c *CustomerRepositoryPostgre) Create(ctx context.Context, cust entity.Cust
 			cust.State,
 			cust.City,
 			cust.ZipCode,
+			cust.CustomerInternalID,
 			cust.CreatedBy,
 			cust.CreatedAt,
 			cust.UpdatedBy,
@@ -404,6 +418,7 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 		"state" = $15,
 		"city" = $16,
 		"zip_code" = $17,
+		"customer_internalid" = $18,
 		updated_by = $10,
 		updated_at = $11
 	where
@@ -430,6 +445,7 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 		cust.State,
 		cust.City,
 		cust.ZipCode,
+		cust.CustomerInternalID,
 	)
 
 	if err != nil {

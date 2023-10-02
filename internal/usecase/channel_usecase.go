@@ -12,6 +12,7 @@ import (
 type ChannelUsecaseProperty struct {
 	ChannelRepo  repository.ChannelRepository
 	ChannelPrivy credential.Credential
+	MerchantRepo repository.MerchantRepository
 }
 
 type ChannelQueryUsecase interface {

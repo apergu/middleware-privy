@@ -42,7 +42,7 @@ type CustomerParam struct {
 }
 
 type CustomerResponseDetail struct {
-	CustomerInternalID int    `json:"customer_internalid"`
+	CustomerInternalID int64  `json:"customer_internalid"`
 	Customerid         string `json:"customerid"`
 }
 

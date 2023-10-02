@@ -100,7 +100,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		},
 	}
 
-	_, err = r.customerPrivy.CreateCustomer(ctx, crdCustParam)
+	privyResp, err := r.customerPrivy.CreateCustomer(ctx, crdCustParam)
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)
 
@@ -109,6 +109,22 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 				"at":    "CustomerCommandUsecaseGeneral.Create",
 				"src":   "customerPrivy.CreateCustomer",
 				"param": crdCustParam,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	insertCustomer.CustomerInternalID = privyResp.Details.CustomerInternalID
+	err = r.custRepo.Update(ctx, custId, insertCustomer, tx)
+	if err != nil {
+		r.custRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Update",
+				"param": custId,
 			}).
 			Error(err)
 

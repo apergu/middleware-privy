@@ -11,11 +11,11 @@ type CustomerUsage interface {
 }
 
 type Merchant interface {
-	CreateMerchant(ctx context.Context, param MerchantParam) error
+	CreateMerchant(ctx context.Context, param MerchantParam) (MerchantResponse, error)
 }
 
 type Channel interface {
-	CreateChannel(ctx context.Context, param ChannelParam) error
+	CreateChannel(ctx context.Context, param ChannelParam) (ChannelResponse, error)
 }
 
 type Credential interface {

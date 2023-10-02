@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -13,19 +14,21 @@ import (
 )
 
 type ChannelCommandUsecaseGeneral struct {
-	custRepo     repository.ChannelCommandRepository
+	channelRepo  repository.ChannelCommandRepository
 	channelPrivy credential.Channel
+	merchantRepo repository.MerchantQueryRepository
 }
 
 func NewChannelCommandUsecaseGeneral(prop ChannelUsecaseProperty) *ChannelCommandUsecaseGeneral {
 	return &ChannelCommandUsecaseGeneral{
-		custRepo:     prop.ChannelRepo,
+		channelRepo:  prop.ChannelRepo,
 		channelPrivy: prop.ChannelPrivy,
+		merchantRepo: prop.MerchantRepo,
 	}
 }
 
-func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, merchant model.Channel) (int64, interface{}, error) {
-	tx, err := r.custRepo.BeginTx(ctx)
+func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam model.Channel) (int64, interface{}, error) {
+	tx, err := r.channelRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -33,25 +36,25 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, merchant mode
 	tmNow := time.Now().UnixNano() / 1000000
 
 	insertChannel := entity.Channel{
-		MerchantID:  merchant.MerchantID,
-		ChannelCode: merchant.ChannelCode,
-		ChannelID:   merchant.ChannelID,
-		ChannelName: merchant.ChannelName,
-		Address:     merchant.Address,
-		Email:       merchant.Email,
-		PhoneNo:     merchant.PhoneNo,
-		State:       merchant.State,
-		City:        merchant.City,
-		ZipCode:     merchant.ZipCode,
-		CreatedBy:   merchant.CreatedBy,
+		MerchantID:  channelParam.MerchantID,
+		ChannelCode: channelParam.ChannelCode,
+		ChannelID:   channelParam.ChannelID,
+		ChannelName: channelParam.ChannelName,
+		Address:     channelParam.Address,
+		Email:       channelParam.Email,
+		PhoneNo:     channelParam.PhoneNo,
+		State:       channelParam.State,
+		City:        channelParam.City,
+		ZipCode:     channelParam.ZipCode,
+		CreatedBy:   channelParam.CreatedBy,
 		CreatedAt:   tmNow,
-		UpdatedBy:   merchant.CreatedBy,
+		UpdatedBy:   channelParam.CreatedBy,
 		UpdatedAt:   tmNow,
 	}
 
-	custId, err := r.custRepo.Create(ctx, insertChannel, tx)
+	channelId, err := r.channelRepo.Create(ctx, insertChannel, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.channelRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -64,37 +67,68 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, merchant mode
 		return 0, nil, err
 	}
 
-	// privyParam := credential.ChannelParam{
-	// 	RecordType:            "customrecord_customer_hierarchy",
-	// 	CustRecordMerchantID:  merchant.MerchantID,
-	// 	CustRecordChannelID:   merchant.ChannelID,
-	// 	CustRecordChannelName: merchant.ChannelName,
-	// 	CustRecordAddress:     merchant.Address,
-	// 	CustRecordEmail:       merchant.Email,
-	// 	CustRecordPhone:       merchant.PhoneNo,
-	// 	CustRecordState:       merchant.State,
-	// 	CustRecordCity:        merchant.City,
-	// 	CustRecordZip:         merchant.ZipCode,
-	// }
+	// find merchant by merchant.EnterpriseID
+	merchant_filter := repository.MerchantFilter{
+		MerchantID: &channelParam.MerchantID,
+	}
+	merchants, _ := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
 
-	// err = r.channelPrivy.CreateChannel(ctx, privyParam)
-	// if err != nil {
-	// 	r.custRepo.RollbackTx(ctx, tx)
+	var merchant entity.Merchant
+	if len(merchants) > 0 {
+		merchant = merchants[0]
+	}
 
-	// 	logrus.
-	// 		WithFields(logrus.Fields{
-	// 			"at":    "ChannelCommandUsecaseGeneral.Create",
-	// 			"src":   "channelPrivy.CreateChannel",
-	// 			"param": privyParam,
-	// 		}).
-	// 		Error(err)
+	privyParam := credential.ChannelParam{
+		RecordType:                 "customrecord_customer_hierarchy",
+		CustRecordCustomerName:     strconv.Itoa(int(merchant.CustomerInternalID)),
+		CustRecordChannelID:        channelParam.ChannelID,
+		CustRecordPrivyCodeChannel: channelParam.ChannelCode,
+		CustRecordChannelName:      channelParam.ChannelName,
+		CustRecordAddress:          channelParam.Address,
+		CustRecordEmail:            channelParam.Email,
+		CustRecordPhone:            channelParam.PhoneNo,
+		CustRecordState:            channelParam.State,
+		CustRecordCity:             channelParam.City,
+		CustRecordZip:              channelParam.ZipCode,
+	}
 
-	// 	return 0, nil, err
-	// }
-
-	err = r.custRepo.CommitTx(ctx, tx)
+	resp, err := r.channelPrivy.CreateChannel(ctx, privyParam)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.channelRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "ChannelCommandUsecaseGeneral.Create",
+				"src":   "channelPrivy.CreateChannel",
+				"param": privyParam,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	insertChannel.ChannelInternalID = resp.Data.RecordID
+	insertChannel.CustomerInternalID = merchant.CustomerInternalID
+	insertChannel.MerchantInternalID = merchant.MerchantInternalID
+
+	err = r.channelRepo.Update(ctx, channelId, insertChannel, tx)
+	if err != nil {
+		r.channelRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "MerchantCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Update",
+				"param": insertChannel,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	err = r.channelRepo.CommitTx(ctx, tx)
+	if err != nil {
+		r.channelRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -111,11 +145,11 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, merchant mode
 		)
 	}
 
-	return custId, nil, nil
+	return channelId, nil, nil
 }
 
 func (r *ChannelCommandUsecaseGeneral) Update(ctx context.Context, id int64, merchant model.Channel) (int64, interface{}, error) {
-	tx, err := r.custRepo.BeginTx(ctx)
+	tx, err := r.channelRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -137,9 +171,9 @@ func (r *ChannelCommandUsecaseGeneral) Update(ctx context.Context, id int64, mer
 		UpdatedAt:   tmNow,
 	}
 
-	err = r.custRepo.Update(ctx, id, updatedChannel, tx)
+	err = r.channelRepo.Update(ctx, id, updatedChannel, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.channelRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -152,9 +186,9 @@ func (r *ChannelCommandUsecaseGeneral) Update(ctx context.Context, id int64, mer
 		return 0, nil, err
 	}
 
-	err = r.custRepo.CommitTx(ctx, tx)
+	err = r.channelRepo.CommitTx(ctx, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.channelRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -175,14 +209,14 @@ func (r *ChannelCommandUsecaseGeneral) Update(ctx context.Context, id int64, mer
 }
 
 func (r *ChannelCommandUsecaseGeneral) Delete(ctx context.Context, id int64) (int64, interface{}, error) {
-	tx, err := r.custRepo.BeginTx(ctx)
+	tx, err := r.channelRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
 	}
 
-	err = r.custRepo.Delete(ctx, id, tx)
+	err = r.channelRepo.Delete(ctx, id, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.channelRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -195,9 +229,9 @@ func (r *ChannelCommandUsecaseGeneral) Delete(ctx context.Context, id int64) (in
 		return 0, nil, err
 	}
 
-	err = r.custRepo.CommitTx(ctx, tx)
+	err = r.channelRepo.CommitTx(ctx, tx)
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		r.channelRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
