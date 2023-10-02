@@ -64,7 +64,7 @@ WORKDIR /root/project-privy
 RUN go build
 
 # Expose the port that the application will listen on
-EXPOSE 8080
+EXPOSE 9002
 
 # Start Supervisor to manage processes
 CMD ["/usr/bin/supervisord"]
