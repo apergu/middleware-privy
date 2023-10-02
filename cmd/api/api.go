@@ -17,6 +17,7 @@ import (
 	"gitlab.com/mohamadikbal/project-privy/pkg/appemail"
 	"gitlab.com/mohamadikbal/project-privy/pkg/credential"
 	"gitlab.com/mohamadikbal/project-privy/pkg/pgxdb"
+	"gitlab.com/mohamadikbal/project-privy/pkg/privy"
 	"gitlab.com/rteja-library3/rcache"
 	"gitlab.com/rteja-library3/rdecoder"
 	"gitlab.com/rteja-library3/remailer"
@@ -73,6 +74,13 @@ func Execute() {
 		Password: cfg.CredentialPrivy.Password,
 	})
 
+	defaultPrivy := privy.NewPrivyGeneral(privy.PrivyProperty{
+		Host:     cfg.Privy.Host,
+		Client:   http.DefaultClient,
+		Username: cfg.Privy.Username,
+		Password: cfg.Privy.Password,
+	})
+
 	httpProperty := httphandler.HTTPHandlerProperty{
 		DBPool:              pool,
 		DefaultDecoder:      rdecoder.NewJSONEncoder(),
@@ -82,6 +90,7 @@ func Execute() {
 		DefaultEmailer:      defaultEmailSender,
 		DefaultRefreshToken: defaultRefreshToken,
 		DefaultCredential:   credPrivy,
+		DefaultPrivy:        defaultPrivy,
 	}
 
 	handler := InitHttpHandler(pool, cfg.Cors, httpProperty, jwtAuth, cfg.BasicAuth)

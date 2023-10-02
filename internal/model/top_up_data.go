@@ -3,7 +3,7 @@ package model
 import "time"
 
 type TopUpData struct {
-	MerchantID        int64     `json:"merchantId"`
+	MerchantID        string    `json:"merchantId"`
 	MerchantCode      string    `json:"merchantCode"`
 	ChannelID         string    `json:"channelId"`
 	ChannelCode       string    `json:"channelCode"`

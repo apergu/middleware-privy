@@ -17,6 +17,7 @@ type Config struct {
 	RefreshJWT      RefreshJWT
 	BasicAuth       BasicAuth
 	CredentialPrivy CredentialPrivy
+	Privy           Privy
 }
 
 func Init() *Config {
@@ -33,6 +34,7 @@ func Init() *Config {
 	appConfig.RefreshJWT = ReadRefreshJWTConfig(os.Getenv)
 	appConfig.BasicAuth = ReadBasicAuthConfig(os.Getenv)
 	appConfig.CredentialPrivy = ReadCredentialPrivyConfig(os.Getenv)
+	appConfig.Privy = ReadPrivyConfig(os.Getenv)
 
 	return appConfig
 }

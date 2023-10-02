@@ -6,12 +6,15 @@ import (
 	"gitlab.com/mohamadikbal/project-privy/internal/entity"
 	"gitlab.com/mohamadikbal/project-privy/internal/model"
 	"gitlab.com/mohamadikbal/project-privy/internal/repository"
-	"gitlab.com/mohamadikbal/project-privy/pkg/credential"
+	"gitlab.com/mohamadikbal/project-privy/pkg/privy"
 )
 
 type TopUpDataUsecaseProperty struct {
 	TopUpDataRepo  repository.TopUpDataRepository
-	TopUpDataPrivy credential.Credential
+	TopUpDataPrivy privy.Privy
+	CustomerRepo   repository.CustomerQueryRepository
+	MerchantRepo   repository.MerchantQueryRepository
+	ChannelRepo    repository.ChannelQueryRepository
 }
 
 type TopUpDataQueryUsecase interface {

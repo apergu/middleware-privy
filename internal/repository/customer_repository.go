@@ -10,6 +10,7 @@ import (
 type CustomerFilter struct {
 	Sort              string
 	EnterprisePrivyID *string
+	CustomerID        *string
 }
 
 type CustomerQueryRepository interface {
