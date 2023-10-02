@@ -27,11 +27,15 @@ USER root
 # Install Supervisor
 RUN apt-get install -y supervisor
 
+# Create a directory for Supervisor configuration files
+RUN mkdir -p /etc/supervisor/conf.d/
+
 # Copy Supervisor configuration files
 COPY privy.conf /etc/supervisor/conf.d/privy.conf
 
-# Start Supervisor to manage processes
+# Start Supervisor to manage processes with the specified configuration file
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
+
 
 # Install Supervisor
 # RUN systemctl start supervisor && \
