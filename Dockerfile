@@ -63,5 +63,8 @@ COPY privy.conf /etc/supervisor/conf.d/privy.conf
 WORKDIR /root/project-privy
 RUN go build
 
+# Expose the port that the application will listen on
+EXPOSE 8080
+
 # Start Supervisor to manage processes
 CMD ["/usr/bin/supervisord"]
