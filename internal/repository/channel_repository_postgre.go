@@ -143,6 +143,13 @@ func (c *ChannelRepositoryPostgre) buildFilter(filter ChannelFilter) (string, []
 	conds := make([]string, 0, 4) // set for 2 capacity is posible max filter
 	condArgs := make([]interface{}, 0, 4)
 
+	if filter.ChannelID != nil {
+		condArgs = append(condArgs, *filter.ChannelID)
+		idx := "$" + strconv.Itoa(len(condArgs))
+
+		conds = append(conds, "channel_id = "+idx)
+	}
+
 	if len(conds) > 0 {
 		condBuilder.WriteString("where ")
 		condBuilder.WriteString(strings.Join(conds, " and "))

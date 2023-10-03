@@ -64,6 +64,11 @@ func (c *TopUpDataRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.C
 			&data.MerchantCode,
 			&data.ChannelID,
 			&data.ChannelCode,
+			&data.CustomerInternalID,
+			&data.MerchantInternalID,
+			&data.ChannelInternalID,
+			&data.TransactionType,
+			&data.TopupID,
 			&data.CreatedBy,
 			&data.CreatedAt,
 			&data.UpdatedBy,
@@ -111,6 +116,11 @@ func (c *TopUpDataRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcomman
 			&data.MerchantCode,
 			&data.ChannelID,
 			&data.ChannelCode,
+			&data.CustomerInternalID,
+			&data.MerchantInternalID,
+			&data.ChannelInternalID,
+			&data.TransactionType,
+			&data.TopupID,
 			&data.CreatedBy,
 			&data.CreatedAt,
 			&data.UpdatedBy,
@@ -183,6 +193,11 @@ func (c *TopUpDataRepositoryPostgre) Find(ctx context.Context, filter TopUpDataF
 		top_up_datas.merchant_code,
 		top_up_datas.channel_id,
 		top_up_datas.channel_code,
+		top_up_datas.customer_internalid,
+		top_up_datas.merchant_internalid,
+		top_up_datas.channel_internalid,
+		top_up_datas.transaction_type,
+		top_up_datas.topup_id,
 		top_up_datas.created_by,
 		top_up_datas.created_at,
 		top_up_datas.updated_by,
@@ -258,6 +273,11 @@ func (c *TopUpDataRepositoryPostgre) FindOneById(ctx context.Context, id int64, 
 		top_up_datas.merchant_code,
 		top_up_datas.channel_id,
 		top_up_datas.channel_code,
+		top_up_datas.customer_internalid,
+		top_up_datas.merchant_internalid,
+		top_up_datas.channel_internalid,
+		top_up_datas.transaction_type,
+		top_up_datas.topup_id,
 		top_up_datas.created_by,
 		top_up_datas.created_at,
 		top_up_datas.updated_by,
@@ -308,6 +328,11 @@ func (c *TopUpDataRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, i
 		top_up_datas.merchant_code,
 		top_up_datas.channel_id,
 		top_up_datas.channel_code,
+		top_up_datas.customer_internalid,
+		top_up_datas.merchant_internalid,
+		top_up_datas.channel_internalid,
+		top_up_datas.transaction_type,
+		top_up_datas.topup_id,
 		top_up_datas.created_by,
 		top_up_datas.created_at,
 		top_up_datas.updated_by,
@@ -322,7 +347,7 @@ func (c *TopUpDataRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, i
 	return c.queryOne(ctx, cmd, query, id)
 }
 
-func (c *TopUpDataRepositoryPostgre) Create(ctx context.Context, channel entity.TopUpData, tx pgx.Tx) (int64, error) {
+func (c *TopUpDataRepositoryPostgre) Create(ctx context.Context, topup entity.TopUpData, tx pgx.Tx) (int64, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
@@ -342,32 +367,43 @@ func (c *TopUpDataRepositoryPostgre) Create(ctx context.Context, channel entity.
 		merchant_code,
 		channel_id,
 		channel_code,
+		customer_internalid,
+		merchant_internalid,
+		channel_internalid,
+		transaction_type,
+		topup_id,
 		created_by, created_at, updated_by, updated_at
 	) values (
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-		,$11, $12, $13, $14, $15, $16
+		,$11, $12, $13, $14, $15, $16, $17, $18, $19, $20
+		,$21
 	) RETURNING id`
 
 	err := cmd.
 		QueryRow(
 			ctx,
 			query,
-			channel.MerchantID,
-			channel.TransactionID,
-			channel.EnterpriseID,
-			channel.EnterpriseName,
-			channel.OriginalServiceID,
-			channel.ServiceID,
-			channel.ServiceName,
-			channel.Quantity,
-			channel.TransactionDate,
-			channel.MerchantCode,
-			channel.ChannelID,
-			channel.ChannelCode,
-			channel.CreatedBy,
-			channel.CreatedAt,
-			channel.UpdatedBy,
-			channel.UpdatedAt,
+			topup.MerchantID,
+			topup.TransactionID,
+			topup.EnterpriseID,
+			topup.EnterpriseName,
+			topup.OriginalServiceID,
+			topup.ServiceID,
+			topup.ServiceName,
+			topup.Quantity,
+			topup.TransactionDate,
+			topup.MerchantCode,
+			topup.ChannelID,
+			topup.ChannelCode,
+			topup.CustomerInternalID,
+			topup.MerchantInternalID,
+			topup.ChannelInternalID,
+			topup.TransactionType,
+			topup.TopupID,
+			topup.CreatedBy,
+			topup.CreatedAt,
+			topup.UpdatedBy,
+			topup.UpdatedAt,
 		).
 		Scan(&id)
 
@@ -385,7 +421,7 @@ func (c *TopUpDataRepositoryPostgre) Create(ctx context.Context, channel entity.
 	return id, nil
 }
 
-func (c *TopUpDataRepositoryPostgre) Update(ctx context.Context, id int64, channel entity.TopUpData, tx pgx.Tx) error {
+func (c *TopUpDataRepositoryPostgre) Update(ctx context.Context, id int64, topup entity.TopUpData, tx pgx.Tx) error {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
@@ -405,6 +441,11 @@ func (c *TopUpDataRepositoryPostgre) Update(ctx context.Context, id int64, chann
 		merchant_code = $13,
 		channel_id = $14,
 		channel_code = $15,
+		customer_internalid = $16,
+		merchant_internalid = $17,
+		channel_internalid = $18,
+		transaction_type = $19,
+		topup_id = $20,
 		updated_by = $10,
 		updated_at = $11
 	where
@@ -413,21 +454,26 @@ func (c *TopUpDataRepositoryPostgre) Update(ctx context.Context, id int64, chann
 	_, err := cmd.Exec(
 		ctx,
 		query,
-		channel.MerchantID,
-		channel.TransactionID,
-		channel.EnterpriseID,
-		channel.EnterpriseName,
-		channel.OriginalServiceID,
-		channel.ServiceID,
-		channel.ServiceName,
-		channel.Quantity,
-		channel.TransactionDate,
-		channel.UpdatedBy,
-		channel.UpdatedAt,
+		topup.MerchantID,
+		topup.TransactionID,
+		topup.EnterpriseID,
+		topup.EnterpriseName,
+		topup.OriginalServiceID,
+		topup.ServiceID,
+		topup.ServiceName,
+		topup.Quantity,
+		topup.TransactionDate,
+		topup.UpdatedBy,
+		topup.UpdatedAt,
 		id,
-		channel.MerchantCode,
-		channel.ChannelID,
-		channel.ChannelCode,
+		topup.MerchantCode,
+		topup.ChannelID,
+		topup.ChannelCode,
+		topup.CustomerInternalID,
+		topup.MerchantInternalID,
+		topup.ChannelInternalID,
+		topup.TransactionType,
+		topup.TopupID,
 	)
 
 	if err != nil {

@@ -8,7 +8,8 @@ import (
 )
 
 type ChannelFilter struct {
-	Sort string
+	Sort      string
+	ChannelID *string
 }
 
 type ChannelQueryRepository interface {

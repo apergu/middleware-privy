@@ -24,7 +24,10 @@ type TopUpDataHttpHandler struct {
 func NewTopUpDataHttpHandler(prop HTTPHandlerProperty) http.Handler {
 	ucProp := usecase.TopUpDataUsecaseProperty{
 		TopUpDataRepo:  repository.NewTopUpDataRepositoryPostgre(prop.DBPool),
-		TopUpDataPrivy: prop.DefaultCredential,
+		TopUpDataPrivy: prop.DefaultPrivy,
+		CustomerRepo:   repository.NewCustomerRepositoryPostgre(prop.DBPool),
+		MerchantRepo:   repository.NewMerchantRepositoryPostgre(prop.DBPool),
+		ChannelRepo:    repository.NewChannelRepositoryPostgre(prop.DBPool),
 	}
 
 	handler := TopUpDataHttpHandler{

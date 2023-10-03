@@ -146,6 +146,13 @@ func (c *CustomerRepositoryPostgre) buildFilter(filter CustomerFilter) (string, 
 		conds = append(conds, "enterprise_privy_id = "+idx)
 	}
 
+	if filter.CustomerID != nil {
+		condArgs = append(condArgs, *filter.CustomerID)
+		idx := "$" + strconv.Itoa(len(condArgs))
+
+		conds = append(conds, "customer_id = "+idx)
+	}
+
 	if len(conds) > 0 {
 		condBuilder.WriteString("where ")
 		condBuilder.WriteString(strings.Join(conds, " and "))
