@@ -64,10 +64,10 @@ COPY privy.conf /etc/supervisor/conf.d/privy.conf
 
 # Build the Go application
 WORKDIR /root/project-privy
-RUN go build
+RUN go build -o privy-core
 
 # Expose the port that the application will listen on
 EXPOSE 9001
 
 # Start Supervisor to manage processes
-CMD ["/usr/bin/supervisord"]
+CMD ["./privy-core"]
