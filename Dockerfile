@@ -42,7 +42,7 @@ CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
 # RUN systemctl start supervisor && \
 #     apt-get install -y supervisor
 
-RUN apt-get install apache2
+RUN apt-get install apache2 -y
 
 RUN 
 
