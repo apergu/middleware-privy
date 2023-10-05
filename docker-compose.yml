@@ -12,7 +12,7 @@ services:
       - "5433:5432"
 
   # Your Go application service
-  your-app:
+  privy-project:
     build:
       context: .
     ports:
