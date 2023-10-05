@@ -2,7 +2,7 @@
 FROM golang:1.18
 
 # Set the working directory inside the container
-WORKDIR /app
+WORKDIR /project-privy
 
 # Copy the Go project source code into the container
 COPY . .
