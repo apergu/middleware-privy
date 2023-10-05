@@ -20,7 +20,7 @@ services:
     depends_on:
       - postgres
     environment:
-      DB_DSN: postgres://postgres:p@$$w0rdprivy@locahost:5432/privy
+      DB_DSN: postgres://postgres:p@$w0rdprivy@db:5433/privy
 
   # Apache web server
   apache:
