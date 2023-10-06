@@ -9,7 +9,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "5432:5432"
 
   # Your Go application service
   privy-project:
@@ -20,7 +20,7 @@ services:
     depends_on:
       - postgres
     environment:
-      DB_DSN: postgres://postgres:p@$w0rdprivy@db:5433/privy
+      DB_DSN: postgres://postgres:p@$w0rdprivy@localhost:5432/privy
 
   # Apache web server
   apache:
