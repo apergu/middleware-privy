@@ -21,7 +21,7 @@ services:
       - middleware
     build:
       context: .
-      dockerfile: Dockerfile.node
+      dockerfile: ./node-app/Dockerfile
     ports:
       - "3001:3001"
     command: npm start
@@ -32,7 +32,7 @@ services:
   middleware:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./go-app/Dockerfile
     ports:
       - "9001:9001"
     depends_on:
@@ -71,6 +71,7 @@ services:
       - db
 volumes:
   db-data:
+
 
 networks:
   net:
