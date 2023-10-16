@@ -10,6 +10,6 @@ COPY x_node/ ./
 
 RUN npm install --silent
 
-EXPOSE 3001
+EXPOSE 3000
 
 CMD ["npm", "start"]
