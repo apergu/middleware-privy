@@ -112,6 +112,7 @@ func Execute() {
 		rserver.
 			NewOptions().
 			SetHandler(handler).
+			SetHost("0.0.0.0").
 			SetPort(cfg.Application.Port),
 	)
 	server.Start()

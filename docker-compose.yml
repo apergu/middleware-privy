@@ -3,8 +3,8 @@ services:
   db:
     image: postgres:14
     container_name: db
-    networks:
-      - net
+    # networks:
+    #   - net
     environment:
       POSTGRES_USER: privy
       POSTGRES_DB: privy
@@ -25,8 +25,8 @@ services:
     ports:
       - "3000:3000"
     command: npm start
-    networks:
-      - net
+    # networks:
+    #   - net
     restart: always
 
   middleware:
@@ -34,12 +34,12 @@ services:
       context: .
       dockerfile: ./go-app/Dockerfile
     ports:
-      - "9001:9001"
+      - "80:9001"
     depends_on:
       - db
     restart: always
-    networks:
-      - net
+    # networks:
+    #   - net
     environment:
       APP_PORT: 9001
       APP_NAME: Privy
@@ -69,10 +69,20 @@ services:
       PRIVY_PASSWORD: 7e068bf2d6a20f9fd949efee8eca6927b440181b2bfa8d2dbbbe4af05a285aae
     links:
       - db
+  # apache2:
+  #   image: httpd:latest
+  #   ports:
+  #     - "80:8080"
+  #   volumes:
+  #     - ./apache2/apergu.tech.conf:/etc/apache2/sites-available/apergu.tech.conf
+  #   depends_on:
+  #     - middleware
+  #   links:
+  #     - middleware
+
 volumes:
   db-data:
 
-
-networks:
-  net:
-    driver: bridge
+    # networks:
+    #   net:
+    #     driver: bridge

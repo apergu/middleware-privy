@@ -44,7 +44,7 @@ func NewCredentialPrivy(prop CredentialPrivyProperty) *CredentialPrivy {
 }
 
 func (c *CredentialPrivy) GenerateJwtTokenWithNode(ctx context.Context) (JWTToken, error) {
-	req, _ := http.NewRequest(http.MethodGet, "http://localhost:3000", nil)
+	req, _ := http.NewRequest(http.MethodGet, "http://project-privy_nodejs_1:3000", nil)
 	req.Header.Set("Content-Type", "application/json")
 
 	jwtToken := JWTToken{}
