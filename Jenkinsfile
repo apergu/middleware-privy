@@ -45,7 +45,6 @@ pipeline {
         sh label: 'Preparation Script', script:
         """
             cp .env.dev .env
-            composer i
         """
 
         // // PULL REPO
