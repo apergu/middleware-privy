@@ -21,7 +21,7 @@ COPY main .
 #set env file
 # COPY .env.dev .env
 
-RUN printf "#!/bin/sh\n\nwhile true; do\n\techo \"[INFO] Starting Service at \$(date)\"\n\t(./${PROJECT} >> ./history.log || echo \"[ERROR] Restarting Service at \$(date)\")\ndone" > run.sh
+RUN printf "#!/bin/sh\n\nwhile true; do\n\techo \"[INFO] Starting Service at \$(date)\"\n\t(./main >> ./history.log || echo \"[ERROR] Restarting Service at \$(date)\")\ndone" > run.sh
 RUN printf "#!/bin/sh\n./run.sh & tail -F ./history.log" > up.sh
 RUN chmod +x up.sh run.sh
 CMD ["./up.sh"]
