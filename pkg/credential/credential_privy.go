@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -44,7 +45,7 @@ func NewCredentialPrivy(prop CredentialPrivyProperty) *CredentialPrivy {
 }
 
 func (c *CredentialPrivy) GenerateJwtTokenWithNode(ctx context.Context) (JWTToken, error) {
-	req, _ := http.NewRequest(http.MethodGet, "http://middleware-privy-nodejs-1:3000", nil)
+	req, _ := http.NewRequest(http.MethodGet, "http://"+os.Getenv("JWT_MID")+":3000", nil)
 	req.Header.Set("Content-Type", "application/json")
 
 	jwtToken := JWTToken{}
