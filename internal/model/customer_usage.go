@@ -13,11 +13,11 @@ type CustomerUsage struct {
 	Usage               int64     `json:"usage"`
 	UsageAmount         float64   `json:"usageAmount"`
 	SalesOrderReference int64     `json:"salesOrderReference"`
-	MerchantName        string    `json:"merchantName"`
+	MerchantName        string    `json:"merchantID"`
 	EnterpriseID        string    `json:"enterpriseId"`
 	EnterpriseName      string    `json:"enterpriseName"`
-	ChannelName         string    `json:"channelName"`
-	TrxId               string    `json:"trxId"`
+	ChannelName         string    `json:"channelID"`
+	TrxId               string    `json:"transactionID"`
 	ServiceID           string    `json:"serviceId"`
 	UnitPrice           string    `json:"unitPrice"`
 	TypeTrans           int64     `json:"typeTrans"`

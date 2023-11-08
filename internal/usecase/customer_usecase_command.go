@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -54,6 +55,8 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 	}
 
 	custId, err := r.custRepo.Create(ctx, insertCustomer, tx)
+	log.Println("response", err)
+
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)
 

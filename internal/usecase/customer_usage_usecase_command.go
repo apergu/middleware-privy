@@ -84,7 +84,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 
 		CustrecordPrivyUsageDateIntegrasi:    cust.TransactionAt.Format("02/01/2006"),
 		CustrecordPrivyCustomerNameIntegrasi: cust.EnterpriseName,
-		CustrecordPrivyServiceIntegrasi:      cust.ProductName,
+		CustrecordPrivyServiceIntegrasi:      cust.ServiceID,
 		CustrecordPrivyMerchantNameIntgrasi:  cust.MerchantName,
 		CustrecordPrivyQuantityIntegrasi:     int64(cust.Usage),
 		CustrecordPrivyTypeTransIntegrasi:    false,
