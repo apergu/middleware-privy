@@ -34,60 +34,80 @@ pipeline {
   }
 
   stages {
-    stage("PREPARE") {
-      steps {
-        script {
-            // FAILED_STAGE=env.STAGE_NAME
-            echo "PREPARE"
-        }
+    // stage("PREPARE") {
+    //   steps {
+    //     script {
+    //         // FAILED_STAGE=env.STAGE_NAME
+    //         echo "PREPARE"
+    //     }
 
-        // Install Script
-        sh label: 'Preparation Script', script:
-        """
-            cp .env.dev .env
-            composer i
-        """
+    //     // Install Script
+    //     sh label: 'Preparation Script', script:
+    //     """
+    //         cp .env.dev .env
+    //     """
 
-        // // PULL REPO
-        // git branch: """${env.BRANCH_NAME}""",
-        // credentialsId: """${GIT_CREDENTIAL}""",
-        // url: """${GIT_URL}"""
+    //     // // PULL REPO
+    //     // git branch: """${env.BRANCH_NAME}""",
+    //     // credentialsId: """${GIT_CREDENTIAL}""",
+    //     // url: """${GIT_URL}"""
 
-        // // Install Script
-        // sh label: 'Script Installation', script:
-        // """
-        //   make install namespace=${env.BRANCH_NAME} -B
-        // """
+    //     // // Install Script
+    //     // sh label: 'Script Installation', script:
+    //     // """
+    //     //   make install namespace=${env.BRANCH_NAME} -B
+    //     // """
 
-        // // Notify to Slack
-        // sh label: 'Notification: Starting Jenkins Pipeline', script:
-        // """
-        //   if [ ${NOTIFICATION} = "true" ]; then
-        //     bash cicd/script/slack \
-        //     -h ${HOOKS} \
-        //     -c jenkins \
-        //     -u "${GIT_NAME} is STARTING" \
-        //     -i rocket \
-        //     -C ${ALWAYS} \
-        //     -T "CICD ${env.BRANCH_NAME}" \
-        //     -m "${env.JOB_NAME} , Job No #${env.BUILD_NUMBER} ==> ${env.BUILD_URL} \
-        //       \ncommit (${GIT_HASH}) by ${AUTHOR_NAME}, ${AUTHOR_DATE_RELATIVE} (${GIT_SUBJECT})"
-        //   fi
-        // """
-      }
-    }
+    //     // // Notify to Slack
+    //     // sh label: 'Notification: Starting Jenkins Pipeline', script:
+    //     // """
+    //     //   if [ ${NOTIFICATION} = "true" ]; then
+    //     //     bash cicd/script/slack \
+    //     //     -h ${HOOKS} \
+    //     //     -c jenkins \
+    //     //     -u "${GIT_NAME} is STARTING" \
+    //     //     -i rocket \
+    //     //     -C ${ALWAYS} \
+    //     //     -T "CICD ${env.BRANCH_NAME}" \
+    //     //     -m "${env.JOB_NAME} , Job No #${env.BUILD_NUMBER} ==> ${env.BUILD_URL} \
+    //     //       \ncommit (${GIT_HASH}) by ${AUTHOR_NAME}, ${AUTHOR_DATE_RELATIVE} (${GIT_SUBJECT})"
+    //     //   fi
+    //     // """
+    //   }
+    // }
 
-    stage("BUILD") {
+    stage("BUILD MIDDLEWARE") {
       steps {
         script {
         //   FAILED_STAGE=env.STAGE_NAME
-          echo "BUILD"
+          echo "BUILD MIDDLEWARE"
         }
         // docker build --build-arg PROJECT=zdac_module --build-arg PORT=3535 -t zdac_module:${GIT_TAG} -f Dockerfile .
-        sh label: 'Building Script', script:
+        sh label: 'Build Middleware Script', script:
+        // CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo main.go
         """
-        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo main.go
-        docker build -t middleware:${GIT_HASH} -f Dockerfile .
+        docker build -t dhutapratama/privy-middleware:latest -f ./go-app/Dockerfile .
+        """
+
+
+        // sh label: 'STEP BUILD', script:
+        // """
+        //   make build -B
+        // """
+      }
+    }    
+    
+    stage("BUILD NODEJS") {
+      steps {
+        script {
+        //   FAILED_STAGE=env.STAGE_NAME
+          echo "BUILD NODEJS"
+        }
+        // docker build --build-arg PROJECT=zdac_module --build-arg PORT=3535 -t zdac_module:${GIT_TAG} -f Dockerfile .
+        sh label: 'Build NodeJS-jwt Script', script:
+        // CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo main.go
+        """
+        docker build -t dhutapratama/privy-nodejs-jwt:latest -f ./node-app/Dockerfile .
         """
 
 
