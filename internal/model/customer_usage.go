@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"github.com/go-playground/validator/v10"
+	"time"
+)
 
 type CustomerUsage struct {
 	CustomerID          string    `json:"customerId"`
@@ -10,20 +13,33 @@ type CustomerUsage struct {
 	TransactionAt       time.Time `json:"transactionAt"`
 	Balance             int64     `json:"balance"`
 	BalanceAmount       float64   `json:"balanceAmount"`
-	Usage               int64     `json:"usage"`
+	Usage               int64     `json:"qty" validate:"required,max=1"`
 	UsageAmount         float64   `json:"usageAmount"`
 	SalesOrderReference int64     `json:"salesOrderReference"`
-	MerchantName        string    `json:"merchantID"`
-	EnterpriseID        string    `json:"enterpriseId"`
-	EnterpriseName      string    `json:"enterpriseName"`
-	ChannelName         string    `json:"channelID"`
-	TrxId               string    `json:"transactionID"`
-	ServiceID           string    `json:"serviceId"`
+	MerchantName        string    `json:"merchantID" validate:"required"`
+	EnterpriseID        string    `json:"enterpriseId" validate:"required,max=255"`
+	EnterpriseName      string    `json:"enterpriseName" validate:"required,max=255"`
+	ChannelName         string    `json:"channelID" validate:"required,max=255"`
+	TrxId               string    `json:"transactionID" validate:"required,max=255"`
+	ServiceID           string    `json:"serviceId" validate:"required,max=255"`
 	UnitPrice           string    `json:"unitPrice"`
 	TypeTrans           int64     `json:"typeTrans"`
 	CreatedBy           int64     `json:"-"`
 }
 
 func (c CustomerUsage) Validate() error {
+	v := validator.New()
+
+	// Create a user with invalid data
+	// Validate the user struct
+	err := v.Struct(c)
+	if err != nil {
+		// Validation failed, print the error messages
+		for _, err := range err.(validator.ValidationErrors) {
+			//fmt.Println(err)
+			return err
+		}
+	}
+
 	return nil
 }
