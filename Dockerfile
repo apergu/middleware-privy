@@ -20,16 +20,11 @@ CMD ["/bin/myapp"]
 FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
-COPY --from=builder /privy /bin
-#RUN apt-get update && apt-get install -y golang-go ca-certificates
-# Set the working directory inside the container
-# WORKDIR /project-privy
-
-# Copy the Go project source code into the container
-# COPY privy .
+COPY --from=builder /privy /var
+COPY /migration /var
 
 # Expose the port your Go application listens on
 EXPOSE 9001
 
 # Command to run the application
-CMD ["./bin/privy"]
+CMD ["./var/privy"]
