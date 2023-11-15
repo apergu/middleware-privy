@@ -73,7 +73,6 @@ func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.
 		})
 
 		r.Route("/v1", func(r chi.Router) {
-			// logged
 			r.Group(func(r chi.Router) {
 				// r.Use(jwtauth.Verifier(jwtAuth))
 				// r.Use(appmiddleware.JWTAuthenticatorMiddleware(prop.DefaultToken, prop.DefaultDecoder))
