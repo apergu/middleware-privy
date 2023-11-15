@@ -3,9 +3,6 @@ package repository
 import (
 	"context"
 	"fmt"
-	"strconv"
-	"strings"
-
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
@@ -13,24 +10,26 @@ import (
 	"gitlab.com/mohamadikbal/project-privy/pkg/pgxerror"
 	"gitlab.com/mohamadikbal/project-privy/pkg/sqlcommand"
 	"gitlab.com/rteja-library3/rapperror"
+	"strconv"
+	"strings"
 )
 
-type CustomerRepositoryPostgre struct {
+type LeadRepositoryPostgre struct {
 	pool *pgxpool.Pool
 }
 
-func NewCustomerRepositoryPostgre(pool *pgxpool.Pool) *CustomerRepositoryPostgre {
-	return &CustomerRepositoryPostgre{
+func NewLeadRepositoryPostgre(pool *pgxpool.Pool) *LeadRepositoryPostgre {
+	return &LeadRepositoryPostgre{
 		pool: pool,
 	}
 }
 
-func (c *CustomerRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.Command, query string, args ...interface{}) ([]entity.Customer, error) {
+func (c *LeadRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.Command, query string, args ...interface{}) ([]entity.Leads, error) {
 	rows, err := cmd.Query(ctx, query, args...)
 	if err != nil {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":    "CustomerRepositoryPostgre.query",
+				"at":    "LeadRepositoryPostgre.query",
 				"src":   "cmd.Query",
 				"query": query,
 				"args":  args,
@@ -40,38 +39,31 @@ func (c *CustomerRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.Co
 		return nil, rapperror.ErrInternalServerError(
 			"",
 			"Something went wrong when query",
-			"CustomerRepositoryPostgre.query.Query",
+			"LeadRepositoryPostgre.query.Query",
 			nil,
 		)
 	}
 	defer rows.Close()
 
-	result := make([]entity.Customer, 0)
+	result := make([]entity.Leads, 0)
 	for rows.Next() {
-		data := entity.Customer{}
+		data := entity.Leads{}
 
 		err := rows.Scan(
-			&data.ID,
 			&data.CustomerID,
-			&data.CustomerType,
-			&data.CustomerName,
-			&data.FirstName,
-			&data.LastName,
+			&data.CompanyName,
+			&data.Phone,
+			&data.EnterpriseId,
+			&data.NPWP,
 			&data.Email,
-			&data.PhoneNo,
-			&data.Address,
+			&data.Territory,
+			&data.SalesRep,
 			&data.CRMLeadID,
-			&data.EnterprisePrivyID,
-			&data.CustomerInternalID,
-			&data.CreatedBy,
-			&data.CreatedAt,
-			&data.UpdatedBy,
-			&data.UpdatedAt,
 		)
 		if err != nil {
 			logrus.
 				WithFields(logrus.Fields{
-					"at":    "CustomerRepositoryPostgre.query",
+					"at":    "LeadRepositoryPostgre.query",
 					"src":   "rows.Scan",
 					"query": query,
 					"args":  args,
@@ -81,7 +73,7 @@ func (c *CustomerRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.Co
 			return nil, pgxerror.FromPgxError(
 				err,
 				"Something went wrong when scan",
-				"CustomerRepositoryPostgre.query.Scan",
+				"LeadRepositoryPostgre.query.Scan",
 			)
 		}
 
@@ -91,50 +83,44 @@ func (c *CustomerRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.Co
 	return result, nil
 }
 
-func (c *CustomerRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand.Command, query string, args ...interface{}) (entity.Customer, error) {
-	data := entity.Customer{}
+func (c *LeadRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand.Command, query string, args ...interface{}) (entity.Leads, error) {
+	data := entity.Leads{}
 
 	err := cmd.
 		QueryRow(ctx, query, args...).
 		Scan(
-			&data.ID,
+
 			&data.CustomerID,
-			&data.CustomerType,
-			&data.CustomerName,
-			&data.FirstName,
-			&data.LastName,
+			&data.CompanyName,
+			&data.Phone,
+			&data.EnterpriseId,
+			&data.NPWP,
 			&data.Email,
-			&data.PhoneNo,
-			&data.Address,
+			&data.Territory,
+			&data.SalesRep,
 			&data.CRMLeadID,
-			&data.EnterprisePrivyID,
-			&data.CustomerInternalID,
-			&data.CreatedBy,
-			&data.CreatedAt,
-			&data.UpdatedBy,
-			&data.UpdatedAt,
 		)
 	if err != nil {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":    "CustomerRepositoryPostgre.queryOne",
+				"at":    "LeadRepositoryPostgre.queryOne",
 				"src":   "rows.Scan",
 				"query": query,
 				"args":  args,
 			}).
 			Error(err)
 
-		return entity.Customer{}, pgxerror.FromPgxError(
+		return entity.Leads{}, pgxerror.FromPgxError(
 			err,
 			"Something went wrong when scan",
-			"CustomerRepositoryPostgre.queryOne.Scan",
+			"LeadRepositoryPostgre.queryOne.Scan",
 		)
 	}
 
 	return data, nil
 }
 
-func (c *CustomerRepositoryPostgre) buildFilter(filter CustomerFilter) (string, []interface{}) {
+func (c *LeadRepositoryPostgre) buildFilter(filter LeadFilter) (string, []interface{}) {
 	condBuilder := &strings.Builder{}
 	conds := make([]string, 0, 4) // set for 2 capacity is posible max filter
 	condArgs := make([]interface{}, 0, 4)
@@ -161,7 +147,7 @@ func (c *CustomerRepositoryPostgre) buildFilter(filter CustomerFilter) (string, 
 	return condBuilder.String(), condArgs
 }
 
-func (c *CustomerRepositoryPostgre) buildSort(sort string) string {
+func (c *LeadRepositoryPostgre) buildSort(sort string) string {
 	switch sort {
 	case "newest":
 		return `order by customers.created_at desc`
@@ -170,7 +156,7 @@ func (c *CustomerRepositoryPostgre) buildSort(sort string) string {
 	return `order by customers.updated_at desc`
 }
 
-func (c *CustomerRepositoryPostgre) Find(ctx context.Context, filter CustomerFilter, limit, skip int64, tx pgx.Tx) ([]entity.Customer, error) {
+func (c *LeadRepositoryPostgre) Find(ctx context.Context, filter LeadFilter, limit, skip int64, tx pgx.Tx) ([]entity.Leads, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
@@ -218,7 +204,7 @@ func (c *CustomerRepositoryPostgre) Find(ctx context.Context, filter CustomerFil
 	return c.query(ctx, cmd, fmt.Sprintf(query, cond, order, limits, skips), args...)
 }
 
-func (c *CustomerRepositoryPostgre) Count(ctx context.Context, filter CustomerFilter, tx pgx.Tx) (int64, error) {
+func (c *LeadRepositoryPostgre) Count(ctx context.Context, filter LeadFilter, tx pgx.Tx) (int64, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
@@ -242,14 +228,14 @@ func (c *CustomerRepositoryPostgre) Count(ctx context.Context, filter CustomerFi
 		return 0, pgxerror.FromPgxError(
 			err,
 			"Something went wrong when scan",
-			"CustomerRepositoryPostgre.Count.Scan",
+			"LeadRepositoryPostgre.Count.Scan",
 		)
 	}
 
 	return data, nil
 }
 
-func (c *CustomerRepositoryPostgre) FindOneById(ctx context.Context, id int64, tx pgx.Tx) (entity.Customer, error) {
+func (c *LeadRepositoryPostgre) FindOneById(ctx context.Context, id int64, tx pgx.Tx) (entity.Leads, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
@@ -281,24 +267,24 @@ func (c *CustomerRepositoryPostgre) FindOneById(ctx context.Context, id int64, t
 	return c.queryOne(ctx, cmd, query, id)
 }
 
-func (c *CustomerRepositoryPostgre) BeginTx(ctx context.Context) (pgx.Tx, error) {
+func (c *LeadRepositoryPostgre) BeginTx(ctx context.Context) (pgx.Tx, error) {
 	return c.pool.BeginTx(ctx, pgx.TxOptions{})
 }
 
-func (c *CustomerRepositoryPostgre) CommitTx(ctx context.Context, tx pgx.Tx) error {
+func (c *LeadRepositoryPostgre) CommitTx(ctx context.Context, tx pgx.Tx) error {
 	return tx.Commit(ctx)
 }
 
-func (c *CustomerRepositoryPostgre) RollbackTx(ctx context.Context, tx pgx.Tx) error {
+func (c *LeadRepositoryPostgre) RollbackTx(ctx context.Context, tx pgx.Tx) error {
 	return tx.Rollback(ctx)
 }
 
-func (c *CustomerRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, id int64, tx pgx.Tx) (entity.Customer, error) {
+func (c *LeadRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, id int64, tx pgx.Tx) (entity.Leads, error) {
 	if tx == nil {
-		return entity.Customer{}, rapperror.ErrInternalServerError(
+		return entity.Leads{}, rapperror.ErrInternalServerError(
 			"",
 			"Tx is required",
-			"CustomerRepositoryPostgre.FindOneByIdForUpdate",
+			"LeadRepositoryPostgre.FindOneByIdForUpdate",
 			nil,
 		)
 	}
@@ -331,7 +317,7 @@ func (c *CustomerRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, id
 	return c.queryOne(ctx, cmd, query, id)
 }
 
-func (c *CustomerRepositoryPostgre) Create(ctx context.Context, cust entity.Customer, tx pgx.Tx) (int64, error) {
+func (c *LeadRepositoryPostgre) Create(ctx context.Context, cust entity.Leads, tx pgx.Tx) (int64, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
@@ -366,116 +352,35 @@ func (c *CustomerRepositoryPostgre) Create(ctx context.Context, cust entity.Cust
 		QueryRow(
 			ctx,
 			query,
+
 			cust.CustomerID,
-			cust.CustomerType,
-			cust.CustomerName,
-			cust.FirstName,
-			cust.LastName,
-			cust.Email,
-			cust.PhoneNo,
-			cust.Address,
 			cust.CRMLeadID,
-			cust.EnterprisePrivyID,
-			cust.Address1,
+			cust.Phone,
+			cust.Email,
+			cust.CompanyName,
+			cust.EstimatedBudget,
+			cust.CRMLeadID,
+			cust.EnterpriseId,
+			id,
 			cust.NPWP,
-			cust.State,
-			cust.City,
-			cust.ZipCode,
-			cust.CustomerInternalID,
-			cust.CreatedBy,
-			cust.CreatedAt,
-			cust.UpdatedBy,
-			cust.UpdatedAt,
 		).
 		Scan(&id)
 
 	if err != nil {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":    "CustomerRepositoryPostgre.create",
+				"at":    "LeadRepositoryPostgre.create",
 				"query": query,
 			}).
 			Error(err)
 
-		return 0, pgxerror.FromPgxError(err, "", "CustomerRepositoryPostgre.Create")
+		return 0, pgxerror.FromPgxError(err, "", "LeadRepositoryPostgre.Create")
 	}
 
 	return id, nil
 }
 
-func (c *CustomerRepositoryPostgre) CreateLead(ctx context.Context, cust entity.Customer, tx pgx.Tx) (int64, error) {
-	var cmd sqlcommand.Command = c.pool
-	if tx != nil {
-		cmd = tx
-	}
-
-	var id int64
-
-	query := `insert into customers (
-		customer_id,
-		customer_type,
-		customer_name,
-		first_name,
-		last_name,
-		email,
-		phone_no,
-		"address",
-		"crm_lead_id",
-		"enterprise_privy_id",
-		"address_1",
-		"npwp",
-		"state",
-		"city",
-		"zip_code",
-		"customer_internalid",
-		created_by, created_at, updated_by, updated_at
-	) values (
-		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-		,$11, $12 ,$13, $14, $15, $16, $17, $18, $19, $20
-	) RETURNING id`
-
-	err := cmd.
-		QueryRow(
-			ctx,
-			query,
-			cust.CustomerID,
-			cust.CustomerType,
-			cust.CustomerName,
-			cust.FirstName,
-			cust.LastName,
-			cust.Email,
-			cust.PhoneNo,
-			cust.Address,
-			cust.CRMLeadID,
-			cust.EnterprisePrivyID,
-			cust.Address1,
-			cust.NPWP,
-			cust.State,
-			cust.City,
-			cust.ZipCode,
-			cust.CustomerInternalID,
-			cust.CreatedBy,
-			cust.CreatedAt,
-			cust.UpdatedBy,
-			cust.UpdatedAt,
-		).
-		Scan(&id)
-
-	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "CustomerRepositoryPostgre.create",
-				"query": query,
-			}).
-			Error(err)
-
-		return 0, pgxerror.FromPgxError(err, "", "CustomerRepositoryPostgre.Create")
-	}
-
-	return id, nil
-}
-
-func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust entity.Customer, tx pgx.Tx) error {
+func (c *LeadRepositoryPostgre) Update(ctx context.Context, id int64, cust entity.Leads, tx pgx.Tx) error {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
@@ -506,25 +411,16 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 	_, err := cmd.Exec(
 		ctx,
 		query,
-		// cust.CustomerID,
-		cust.CustomerType,
-		cust.CustomerName,
-		cust.FirstName,
-		cust.LastName,
-		cust.Email,
-		cust.PhoneNo,
-		cust.Address,
+		cust.CustomerID,
 		cust.CRMLeadID,
-		cust.EnterprisePrivyID,
-		cust.UpdatedBy,
-		cust.UpdatedAt,
+		cust.Phone,
+		cust.Email,
+		cust.CompanyName,
+		cust.EstimatedBudget,
+		cust.CRMLeadID,
+		cust.EnterpriseId,
 		id,
-		cust.Address1,
 		cust.NPWP,
-		cust.State,
-		cust.City,
-		cust.ZipCode,
-		cust.CustomerInternalID,
 	)
 
 	if err != nil {
@@ -534,7 +430,7 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 	return nil
 }
 
-func (c *CustomerRepositoryPostgre) Delete(ctx context.Context, id int64, tx pgx.Tx) error {
+func (c *LeadRepositoryPostgre) Delete(ctx context.Context, id int64, tx pgx.Tx) error {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
@@ -548,7 +444,7 @@ func (c *CustomerRepositoryPostgre) Delete(ctx context.Context, id int64, tx pgx
 	)
 
 	if err != nil {
-		return pgxerror.FromPgxError(err, "", "CustomerRepositoryPostgre.Delete")
+		return pgxerror.FromPgxError(err, "", "LeadRepositoryPostgre.Delete")
 	}
 
 	return nil

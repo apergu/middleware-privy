@@ -6,6 +6,10 @@ type Customer interface {
 	CreateCustomer(ctx context.Context, param CustomerParam) (CustomerResponse, error)
 }
 
+type Lead interface {
+	CreateLead(ctx context.Context, param CustomerParam) (CustomerResponse, error)
+}
+
 type CustomerUsage interface {
 	CreateCustomerUsage(ctx context.Context, param CustomerUsageParam) (CustomerUsageResponse, error)
 }
@@ -19,6 +23,7 @@ type Channel interface {
 }
 
 type Credential interface {
+	Lead
 	Customer
 	CustomerUsage
 	Merchant
