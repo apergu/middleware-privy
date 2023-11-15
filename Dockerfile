@@ -21,7 +21,7 @@ FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
 COPY --from=builder /privy /var
-COPY /migration /var
+COPY /migration .
 
 # Expose the port your Go application listens on
 EXPOSE 9001
