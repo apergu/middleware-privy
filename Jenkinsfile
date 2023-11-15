@@ -24,9 +24,9 @@ pipeline {
         }
         sh label: 'Build Middleware Script', script:
         """
-        go build -v -o privy .
         docker build -t dhutapratama/privy-middleware:latest -f ./Dockerfile .
         """
+        // go build -v -o privy .
         // docker build -t dhutapratama/privy-middleware:latest -f ./go-app/Dockerfile .
       }
     }    
