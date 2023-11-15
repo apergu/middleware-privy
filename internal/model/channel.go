@@ -16,7 +16,8 @@ type Channel struct {
 	CreatedBy   int64  `json:"-"`
 }
 
-func (c Channel) Validate() error {
+func (c Channel) Validate() []map[string]interface{} {
+	var validationErrors []map[string]interface{}
 	v := validator.New()
 
 	// Create a user with invalid data
@@ -26,9 +27,14 @@ func (c Channel) Validate() error {
 		// Validation failed, print the error messages
 		for _, err := range err.(validator.ValidationErrors) {
 			//fmt.Println(err)
-			return err
+			//return err
+			validationErrors = append(validationErrors,
+				map[string]interface{}{
+					"field":       err.Field(),
+					"Description": err.Tag(),
+				})
 		}
 	}
 
-	return nil
+	return validationErrors
 }

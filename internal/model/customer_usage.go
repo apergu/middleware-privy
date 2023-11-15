@@ -11,6 +11,7 @@ type CustomerUsage struct {
 	ProductID           string    `json:"productId"`
 	ProductName         string    `json:"productName"`
 	TransactionAt       time.Time `json:"transactionAt"`
+	TransactionDate     string    `json:"transactionDate" validate:"required"`
 	Balance             int64     `json:"balance"`
 	BalanceAmount       float64   `json:"balanceAmount"`
 	Usage               int64     `json:"qty" validate:"required,max=1"`
@@ -27,7 +28,8 @@ type CustomerUsage struct {
 	CreatedBy           int64     `json:"-"`
 }
 
-func (c CustomerUsage) Validate() error {
+func (c CustomerUsage) Validate() []map[string]interface{} {
+	var validationErrors []map[string]interface{}
 	v := validator.New()
 
 	// Create a user with invalid data
@@ -37,9 +39,14 @@ func (c CustomerUsage) Validate() error {
 		// Validation failed, print the error messages
 		for _, err := range err.(validator.ValidationErrors) {
 			//fmt.Println(err)
-			return err
+			//return err
+			validationErrors = append(validationErrors,
+				map[string]interface{}{
+					"field":       err.Field(),
+					"Description": err.Tag(),
+				})
 		}
 	}
 
-	return nil
+	return validationErrors
 }

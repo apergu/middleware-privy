@@ -229,7 +229,7 @@ func (c *CredentialPrivy) CreateCustomerUsage(ctx context.Context, param Custome
 
 	body := new(bytes.Buffer)
 	_ = json.NewEncoder(body).Encode(param)
-
+	println("BODY", body)
 	logrus.
 		WithFields(logrus.Fields{
 			"at":   "CredentialPrivy.CreateCustomer",

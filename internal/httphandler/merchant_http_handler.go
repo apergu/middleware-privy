@@ -1,6 +1,8 @@
 package httphandler
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -81,18 +83,43 @@ func (h MerchantHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	// set created by value
 	payload.CreatedBy = user
 
-	err = payload.Validate()
-	if err != nil {
+	errors := payload.Validate()
+	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "MerchantHttpHandler.Create",
+				"at":     "CustomerUsageHttpHandler.Create",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
 			Error(err)
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		errorResponse := map[string]interface{}{
+			"code":    422,
+			"success": false,
+			"message": "Validation failed",
+			"errors":  errors,
+		}
+
+		// Convert error response to JSON
+		responseJSON, marshalErr := json.Marshal(errorResponse)
+		if marshalErr != nil {
+			// Handle JSON marshaling error
+			fmt.Println("Error encoding JSON:", marshalErr)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		// Set the response headers
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnprocessableEntity) // Set the appropriate HTTP status code
+
+		// Write the JSON response to the client
+		_, writeErr := w.Write(responseJSON)
+		if writeErr != nil {
+			// Handle write error
+			fmt.Println("Error writing response:", writeErr)
+		}
+
 		return
 	}
 
@@ -156,18 +183,43 @@ func (h MerchantHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 	// set created by value
 	payload.CreatedBy = user
 
-	err = payload.Validate()
-	if err != nil {
+	errors := payload.Validate()
+	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "MerchantHttpHandler.Update",
+				"at":     "CustomerUsageHttpHandler.Create",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
 			Error(err)
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		errorResponse := map[string]interface{}{
+			"code":    422,
+			"success": false,
+			"message": "Validation failed",
+			"errors":  errors,
+		}
+
+		// Convert error response to JSON
+		responseJSON, marshalErr := json.Marshal(errorResponse)
+		if marshalErr != nil {
+			// Handle JSON marshaling error
+			fmt.Println("Error encoding JSON:", marshalErr)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		// Set the response headers
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnprocessableEntity) // Set the appropriate HTTP status code
+
+		// Write the JSON response to the client
+		_, writeErr := w.Write(responseJSON)
+		if writeErr != nil {
+			// Handle write error
+			fmt.Println("Error writing response:", writeErr)
+		}
+
 		return
 	}
 
