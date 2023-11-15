@@ -2,7 +2,7 @@ FROM alpine:latest
 
 #RUN apt-get update && apt-get install -y golang-go ca-certificates
 # Set the working directory inside the container
-WORKDIR /project-privy
+# WORKDIR /project-privy
 
 # Copy the Go project source code into the container
 COPY privy .
