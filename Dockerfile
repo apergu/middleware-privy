@@ -20,11 +20,11 @@ CMD ["/bin/myapp"]
 FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
-COPY --from=builder /privy /var
-COPY /migration .
+COPY --from=builder privy .
+COPY migration .
 
 # Expose the port your Go application listens on
 EXPOSE 9001
 
 # Command to run the application
-CMD ["./var/privy"]
+CMD ["./privy"]
