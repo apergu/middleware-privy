@@ -203,14 +203,14 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 	}
 
 	crdCustParam := credential.CustomerParam{
-		Recordtype:                     "customer",
+		Recordtype:                     "lead",
 		Customform:                     "2",
 		EntityID:                       cust.EnterprisePrivyID,
 		IsPerson:                       "F",
 		CompanyName:                    cust.CustomerName,
 		Comments:                       "",
 		Email:                          cust.Email,
-		EntityStatus:                   "13",
+		EntityStatus:                   "6",
 		URL:                            cust.URL,
 		Phone:                          cust.PhoneNo,
 		AltPhone:                       cust.AltPhone,
