@@ -10,7 +10,7 @@ type Customer struct {
 	CustomerName      string  `json:"customerName" validate:"required,max=255"`
 	FirstName         string  `json:"firstName"`
 	LastName          string  `json:"lastName"`
-	Email             string  `json:"email" validate:"email,max=255"`
+	Email             string  `json:"email" validate:"max=255"`
 	PhoneNo           string  `json:"phoneNo" validate:"max=255"`
 	Address           string  `json:"address" validate:"max=1000"`
 	IsPerson          bool    `json:"isPerson"`

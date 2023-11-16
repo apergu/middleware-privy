@@ -173,7 +173,7 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "CustomerUsageHttpHandler.Create",
+				"at":     "CustomerHttpHandler.Create",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
