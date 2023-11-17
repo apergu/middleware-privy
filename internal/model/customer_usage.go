@@ -14,7 +14,7 @@ type CustomerUsage struct {
 	TransactionDate     string    `json:"transactionDate" validate:"required"`
 	Balance             int64     `json:"balance"`
 	BalanceAmount       float64   `json:"balanceAmount"`
-	Usage               int64     `json:"qty" validate:"required,max=1"`
+	Usage               int64     `json:"qty" validate:"required,max=100"`
 	UsageAmount         float64   `json:"usageAmount"`
 	SalesOrderReference int64     `json:"salesOrderReference"`
 	MerchantName        string    `json:"merchantID" validate:"required"`

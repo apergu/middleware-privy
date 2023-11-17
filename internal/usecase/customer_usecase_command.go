@@ -203,7 +203,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 	}
 
 	crdCustParam := credential.CustomerParam{
-		Recordtype:                     "customer",
+		Recordtype:                     "leads",
 		Customform:                     "2",
 		EntityID:                       cust.EnterprisePrivyID,
 		IsPerson:                       "F",
@@ -234,7 +234,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 		},
 	}
 
-	privyResp, err := r.customerPrivy.CreateCustomer(ctx, crdCustParam)
+	privyResp, err := r.customerPrivy.CreateLead(ctx, crdCustParam)
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)
 
