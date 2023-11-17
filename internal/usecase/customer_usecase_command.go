@@ -156,7 +156,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 	return custId, nil, nil
 }
 
-func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust model.Customer) (int64, interface{}, error) {
+func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust model.Lead) (int64, interface{}, error) {
 	tx, err := r.custRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err

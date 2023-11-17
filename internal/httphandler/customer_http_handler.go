@@ -139,7 +139,7 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 	var err error
 	ctx := r.Context()
 
-	var payload model.Customer
+	var payload model.Lead
 
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 	if err != nil {
@@ -169,7 +169,7 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 	// set created by value
 	payload.CreatedBy = user
 
-	errors := payload.Validate()
+	errors := payload.ValidateLead()
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
