@@ -31,7 +31,7 @@ type Customer struct {
 }
 
 type Lead struct {
-	CustomerID        string  `json:"customerId" validate:"required,max=255"`
+	CustomerID        string  `json:"customerId" validate:"max=255"`
 	CustomerType      string  `json:"customerType" `
 	CustomerName      string  `json:"customerName" validate:"required,max=255"`
 	FirstName         string  `json:"firstName"`
@@ -47,7 +47,7 @@ type Lead struct {
 	Balance           int     `json:"balanceAmount"`
 	Usage             int     `json:"usageAmount"`
 	CRMLeadID         string  `json:"crmLeadId" validate:"max=255"`
-	EnterprisePrivyID string  `json:"enterprisePrivyId" validate:"required,max=255"`
+	EnterprisePrivyID string  `json:"enterprisePrivyId" validate:"max=255"`
 	Address1          string  `json:"address1"`
 	NPWP              string  `json:"npwp" validate:"max=255"`
 	State             string  `json:"state" validate:"max=255"`
