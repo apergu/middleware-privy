@@ -165,7 +165,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 	tmNow := time.Now().UnixNano() / 1000000
 
 	insertCustomer := entity.Customer{
-		CustomerID:        cust.EnterprisePrivyID,
+		CustomerID:        cust.CRMLeadID,
 		CustomerType:      cust.CustomerType,
 		CustomerName:      cust.CustomerName,
 		FirstName:         cust.FirstName,
