@@ -534,6 +534,65 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 	return nil
 }
 
+func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id int64, cust entity.Customer, tx pgx.Tx) error {
+	var cmd sqlcommand.Command = c.pool
+	if tx != nil {
+		cmd = tx
+	}
+
+	query := `update customers
+	set
+		customer_type = $1,
+		customer_name = $2,
+		first_name = $3,
+		last_name = $4,
+		email = $5,
+		phone_no = $6,
+		"address" = $7,
+		"crm_lead_id" = $8,
+		"enterprise_privy_id" = $9,
+		"address_1" = $13,
+		"npwp" = $14,
+		"state" = $15,
+		"city" = $16,
+		"zip_code" = $17,
+		"customer_internalid" = $18,
+		updated_by = $10,
+		updated_at = $11
+	where
+		id = $12`
+
+	_, err := cmd.Exec(
+		ctx,
+		query,
+		// cust.CustomerID,
+		cust.CustomerType,
+		cust.CustomerName,
+		cust.FirstName,
+		cust.LastName,
+		cust.Email,
+		cust.PhoneNo,
+		cust.Address,
+		cust.CRMLeadID,
+		cust.EnterprisePrivyID,
+		cust.UpdatedBy,
+		cust.UpdatedAt,
+		id,
+		cust.Address1,
+		cust.NPWP,
+		cust.State,
+		cust.City,
+		cust.ZipCode,
+		cust.CustomerInternalID,
+	)
+
+	if err != nil {
+		return pgxerror.FromPgxError(err, "", "CustomerRepositoryPostgre.Update")
+	}
+
+	return nil
+}
+
 func (c *CustomerRepositoryPostgre) Delete(ctx context.Context, id int64, tx pgx.Tx) error {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {

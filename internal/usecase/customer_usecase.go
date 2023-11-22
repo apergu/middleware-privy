@@ -23,6 +23,7 @@ type CustomerQueryUsecase interface {
 type CustomerCommandUsecase interface {
 	Create(ctx context.Context, cust model.Customer) (int64, interface{}, error)
 	CreateLead(ctx context.Context, cust model.Lead) (int64, interface{}, error)
+	UpdateLead(ctx context.Context, id int64, cust model.Lead) (int64, interface{}, error)
 	Update(ctx context.Context, id int64, cust model.Customer) (int64, interface{}, error)
 	Delete(ctx context.Context, id int64) (int64, interface{}, error)
 }
