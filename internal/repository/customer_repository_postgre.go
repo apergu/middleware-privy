@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -561,6 +562,9 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id any, cust
 		updated_at = $11
 	where
 		"enterprise_privy_id" = $12`
+
+	log.Println("query : ", query)
+	log.Println("ID : ", id)
 
 	_, err := cmd.Exec(
 		ctx,
