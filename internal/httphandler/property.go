@@ -1,9 +1,10 @@
 package httphandler
 
 import (
+	"middleware/pkg/credential"
+	"middleware/pkg/privy"
+
 	"github.com/jackc/pgx/v5/pgxpool"
-	"gitlab.com/mohamadikbal/project-privy/pkg/credential"
-	"gitlab.com/mohamadikbal/project-privy/pkg/privy"
 	"gitlab.com/rteja-library3/rcache"
 	"gitlab.com/rteja-library3/rdecoder"
 	"gitlab.com/rteja-library3/remailer"

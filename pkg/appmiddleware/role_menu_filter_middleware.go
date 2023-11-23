@@ -4,8 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"gitlab.com/mohamadikbal/project-privy/internal/constants"
-	"gitlab.com/mohamadikbal/project-privy/internal/model"
+	"middleware/internal/constants"
+	"middleware/internal/model"
+
 	"gitlab.com/rteja-library3/rapperror"
 	"gitlab.com/rteja-library3/rdecoder"
 	"gitlab.com/rteja-library3/rresponser"

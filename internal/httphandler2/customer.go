@@ -1,11 +1,12 @@
 package httphandler2
 
 import (
-	"github.com/go-chi/chi"
-	"gitlab.com/mohamadikbal/project-privy/internal/controllers"
-	"gitlab.com/mohamadikbal/project-privy/internal/httphandler"
 	"log"
+	"middleware/internal/controllers"
+	"middleware/internal/httphandler"
 	"net/http"
+
+	"github.com/go-chi/chi"
 )
 
 func NewCustomerHttpHandler2(prop httphandler.HTTPHandlerProperty) http.Handler {

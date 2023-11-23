@@ -1,6 +1,6 @@
 package model
 
-import "gitlab.com/mohamadikbal/project-privy/internal/entity"
+import "middleware/internal/entity"
 
 type SalesOrderHeader struct {
 	OrderNumber  string           `json:"orderNumber"`

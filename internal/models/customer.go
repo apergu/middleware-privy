@@ -1,7 +1,7 @@
 package models
 
 import (
-	"gitlab.com/mohamadikbal/project-privy/internal/model"
+	"middleware/internal/model"
 )
 
 type ModelCustomer struct {
