@@ -18,7 +18,6 @@ import (
 	"gitlab.com/rteja-library3/rapperror"
 	"gitlab.com/rteja-library3/rdecoder"
 	"gitlab.com/rteja-library3/rresponser"
-	"go.elastic.co/apm/module/apmhttp"
 )
 
 func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.HTTPHandlerProperty, jwtAuth *jwtauth.JWTAuth, basicAuth config.BasicAuth) http.Handler {
@@ -105,5 +104,5 @@ func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.
 		return nil
 	})
 
-	return apmhttp.Wrap(r)
+	return r
 }
