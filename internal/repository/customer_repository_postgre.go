@@ -581,7 +581,7 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, c
 		cust.EnterprisePrivyID,
 		cust.UpdatedBy,
 		cust.UpdatedAt,
-		71,            // This corresponds to the $12 placeholder in your query
+		id,            // This corresponds to the $12 placeholder in your query
 		cust.Address1, // This corresponds to the $13 placeholder in your query
 		cust.NPWP,
 		cust.State,
