@@ -3,8 +3,9 @@ package repository
 import (
 	"context"
 
+	"middleware/internal/entity"
+
 	"github.com/jackc/pgx/v5"
-	"gitlab.com/mohamadikbal/project-privy/internal/entity"
 )
 
 type CustomerFilter struct {
@@ -25,7 +26,6 @@ type CustomerCommandRepository interface {
 	Create(ctx context.Context, Customer entity.Customer, tx pgx.Tx) (int64, error)
 	CreateLead(ctx context.Context, Customer entity.Customer, tx pgx.Tx) (int64, error)
 	Update(ctx context.Context, id int64, Customer entity.Customer, tx pgx.Tx) error
-	UpdateLead(ctx context.Context, id any, Customer entity.Customer, tx pgx.Tx) error
 	Delete(ctx context.Context, id int64, tx pgx.Tx) error
 }
 

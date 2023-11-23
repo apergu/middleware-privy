@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/sirupsen/logrus"
-	"go.elastic.co/apm/module/apmlogrus"
 )
 
 func ReadLoggerConfig() {
@@ -11,8 +10,8 @@ func ReadLoggerConfig() {
 		FullTimestamp:   true,
 	})
 	// logrus.SetLevel(cfg.Logger.Level)
-	logrus.AddHook(&apmlogrus.Hook{
-		LogLevels: logrus.AllLevels,
-	})
+	// logrus.AddHook(&apmlogrus.Hook{
+	// 	LogLevels: logrus.AllLevels,
+	// })
 	logrus.SetReportCaller(false)
 }

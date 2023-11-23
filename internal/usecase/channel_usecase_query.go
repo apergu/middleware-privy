@@ -3,10 +3,11 @@ package usecase
 import (
 	"context"
 
+	"middleware/internal/entity"
+	"middleware/internal/model"
+	"middleware/internal/repository"
+
 	"github.com/sirupsen/logrus"
-	"gitlab.com/mohamadikbal/project-privy/internal/entity"
-	"gitlab.com/mohamadikbal/project-privy/internal/model"
-	"gitlab.com/mohamadikbal/project-privy/internal/repository"
 )
 
 type ChannelQueryUsecaseGeneral struct {

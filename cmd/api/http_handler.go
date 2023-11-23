@@ -5,19 +5,19 @@ import (
 	"net/http"
 	"strings"
 
+	"middleware/internal/config"
+	"middleware/internal/httphandler"
+	"middleware/pkg/appmiddleware"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/jwtauth"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/mohamadikbal/project-privy/internal/config"
-	"gitlab.com/mohamadikbal/project-privy/internal/httphandler"
-	"gitlab.com/mohamadikbal/project-privy/pkg/appmiddleware"
 	"gitlab.com/rteja-library3/rapperror"
 	"gitlab.com/rteja-library3/rdecoder"
 	"gitlab.com/rteja-library3/rresponser"
-	"go.elastic.co/apm/module/apmhttp"
 )
 
 func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.HTTPHandlerProperty, jwtAuth *jwtauth.JWTAuth, basicAuth config.BasicAuth) http.Handler {
@@ -104,5 +104,5 @@ func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.
 		return nil
 	})
 
-	return apmhttp.Wrap(r)
+	return r
 }

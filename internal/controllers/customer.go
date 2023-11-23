@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
-	"gitlab.com/mohamadikbal/project-privy/internal/model"
-	"gitlab.com/mohamadikbal/project-privy/internal/services"
-	"gitlab.com/mohamadikbal/project-privy/system"
 	"log"
+	"middleware/internal/model"
+	"middleware/internal/services"
+	"middleware/system"
 	"net/http"
 )
 

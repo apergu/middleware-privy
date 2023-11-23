@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"os"
 
+	"middleware/internal/config"
+
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/mohamadikbal/project-privy/internal/config"
 )
 
 type tracer struct{}

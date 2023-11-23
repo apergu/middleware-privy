@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"net/http"
 
+	"middleware/internal/constants"
+	"middleware/internal/model"
+	"middleware/internal/repository"
+	"middleware/internal/usecase"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/mohamadikbal/project-privy/internal/constants"
-	"gitlab.com/mohamadikbal/project-privy/internal/model"
-	"gitlab.com/mohamadikbal/project-privy/internal/repository"
-	"gitlab.com/mohamadikbal/project-privy/internal/usecase"
 	"gitlab.com/rteja-library3/rapperror"
 	"gitlab.com/rteja-library3/rdecoder"
 	"gitlab.com/rteja-library3/rhelper"

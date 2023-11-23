@@ -6,12 +6,13 @@ import (
 	"strconv"
 	"strings"
 
+	"middleware/internal/entity"
+	"middleware/pkg/pgxerror"
+	"middleware/pkg/sqlcommand"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/mohamadikbal/project-privy/internal/entity"
-	"gitlab.com/mohamadikbal/project-privy/pkg/pgxerror"
-	"gitlab.com/mohamadikbal/project-privy/pkg/sqlcommand"
 	"gitlab.com/rteja-library3/rapperror"
 )
 

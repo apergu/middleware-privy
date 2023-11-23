@@ -4,11 +4,12 @@ import (
 	"context"
 	"time"
 
+	"middleware/internal/entity"
+	"middleware/internal/model"
+	"middleware/internal/repository"
+	"middleware/pkg/credential"
+
 	"github.com/sirupsen/logrus"
-	"gitlab.com/mohamadikbal/project-privy/internal/entity"
-	"gitlab.com/mohamadikbal/project-privy/internal/model"
-	"gitlab.com/mohamadikbal/project-privy/internal/repository"
-	"gitlab.com/mohamadikbal/project-privy/pkg/credential"
 	"gitlab.com/rteja-library3/rapperror"
 )
 

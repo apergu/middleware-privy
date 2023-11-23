@@ -5,11 +5,12 @@ import (
 	"os"
 	"strconv"
 
+	"middleware/internal/config"
+
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/pgx"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/mohamadikbal/project-privy/internal/config"
 )
 
 func Execute() {

@@ -3,8 +3,9 @@ package repository
 import (
 	"context"
 
+	"middleware/internal/entity"
+
 	"github.com/jackc/pgx/v5"
-	"gitlab.com/mohamadikbal/project-privy/internal/entity"
 )
 
 type MerchantFilter struct {

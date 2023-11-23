@@ -3,10 +3,10 @@ package usecase
 import (
 	"context"
 
-	"gitlab.com/mohamadikbal/project-privy/internal/entity"
-	"gitlab.com/mohamadikbal/project-privy/internal/model"
-	"gitlab.com/mohamadikbal/project-privy/internal/repository"
-	"gitlab.com/mohamadikbal/project-privy/pkg/privy"
+	"middleware/internal/entity"
+	"middleware/internal/model"
+	"middleware/internal/repository"
+	"middleware/pkg/privy"
 )
 
 type TopUpDataUsecaseProperty struct {

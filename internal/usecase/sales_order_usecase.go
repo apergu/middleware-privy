@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 
-	"gitlab.com/mohamadikbal/project-privy/internal/model"
-	"gitlab.com/mohamadikbal/project-privy/internal/repository"
+	"middleware/internal/model"
+	"middleware/internal/repository"
 )
 
 type SalesOrderUsecaseProperty struct {

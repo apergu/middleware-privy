@@ -4,8 +4,9 @@ import (
 	"context"
 	"net/http"
 
+	"middleware/internal/constants"
+
 	"github.com/sirupsen/logrus"
-	"gitlab.com/mohamadikbal/project-privy/internal/constants"
 	"gitlab.com/rteja-library3/rapperror"
 	"gitlab.com/rteja-library3/rdecoder"
 	"gitlab.com/rteja-library3/rresponser"
