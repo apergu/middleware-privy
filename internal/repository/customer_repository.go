@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"middleware/internal/entity"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type CustomerFilter struct {
