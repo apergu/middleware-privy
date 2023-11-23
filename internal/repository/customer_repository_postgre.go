@@ -6,14 +6,13 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	
-	"middleware/internal/entity"
-	"middleware/pkg/pgxerror"
-	"middleware/pkg/sqlcommand"
-	"github.com/jackc/pgx/v5"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/rteja-library3/rapperror"
+	"middleware/internal/entity"
+	"middleware/pkg/pgxerror"
+	"middleware/pkg/sqlcommand"
 )
 
 type CustomerRepositoryPostgre struct {
@@ -535,7 +534,7 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 	return nil
 }
 
-func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id any, cust entity.Customer, tx pgx.Tx) error {
+func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, cust entity.Customer, tx pgx.Tx) error {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
