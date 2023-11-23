@@ -140,7 +140,7 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 	var err error
 	ctx := r.Context()
 
-	var payload model.Customer
+	var payload model.Lead
 
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 	if err != nil {
