@@ -503,7 +503,7 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 		updated_by = $10,
 		updated_at = $11
 	where
-		id =  'ENTPRV-123123'`
+		id = $12`
 
 	_, err := cmd.Exec(
 		ctx,
@@ -562,7 +562,7 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, c
 		updated_by = $10,
 		updated_at = $11
 	where
-		"enterprise_privy_id" = $12`
+		"enterprise_privy_id" = 'ENTPRV-123123'`
 
 	log.Println("query : ", query)
 	log.Println("ID : ", id)
