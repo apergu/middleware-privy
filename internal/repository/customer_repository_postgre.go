@@ -560,7 +560,7 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id int64, cu
 		updated_by = $10,
 		updated_at = $11
 	where
-		id = $12`
+		enterprise_privy_id = $12`
 
 	_, err := cmd.Exec(
 		ctx,
