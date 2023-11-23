@@ -288,132 +288,132 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 	return custId, nil, nil
 }
 
-//func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id string, cust model.Lead) (any, interface{}, error) {
-//	tx, err := r.custRepo.BeginTx(ctx)
-//	if err != nil {
-//		return 0, nil, err
-//	}
-//
-//	tmNow := time.Now().UnixNano() / 1000000
-//
-//	updatedCustomer := entity.Customer{
-//		CustomerID:        cust.EnterprisePrivyID,
-//		CustomerType:      cust.CustomerType,
-//		CustomerName:      cust.CustomerName,
-//		FirstName:         cust.FirstName,
-//		LastName:          cust.LastName,
-//		Email:             cust.Email,
-//		PhoneNo:           cust.PhoneNo,
-//		Address:           cust.Address,
-//		CRMLeadID:         cust.CRMLeadID,
-//		EnterprisePrivyID: cust.EnterprisePrivyID,
-//		NPWP:              cust.NPWP,
-//		Address1:          cust.Address1,
-//		State:             cust.State,
-//		City:              cust.City,
-//		UpdatedBy:         cust.CreatedBy,
-//		UpdatedAt:         tmNow,
-//	}
-//
-//	err = r.custRepo.UpdateLead(ctx, id, updatedCustomer, tx)
-//	if err != nil {
-//		r.custRepo.RollbackTx(ctx, tx)
-//
-//		logrus.
-//			WithFields(logrus.Fields{
-//				"at":    "CustomerCommandUsecaseGeneral.Update",
-//				"src":   "custRepo.Update",
-//				"param": id,
-//			}).
-//			Error(err)
-//
-//		return 0, nil, err
-//	}
-//
-//	crdCustParam := credential.CustomerParam{
-//		Recordtype:                     "lead",
-//		Customform:                     "2",
-//		EntityID:                       cust.CRMLeadID,
-//		IsPerson:                       "F",
-//		CompanyName:                    cust.CustomerName,
-//		Comments:                       "",
-//		Email:                          cust.Email,
-//		EntityStatus:                   cust.EntityStatus,
-//		URL:                            cust.URL,
-//		Phone:                          cust.PhoneNo,
-//		AltPhone:                       cust.AltPhone,
-//		Fax:                            cust.Fax,
-//		CustEntityPrivyCustomerBalance: cust.Balance,
-//		CustEntityPrivyCustomerUsage:   cust.Usage,
-//		EnterprisePrivyID:              cust.EnterprisePrivyID,
-//		NPWP:                           cust.NPWP,
-//		Address1:                       cust.Address1,
-//		State:                          cust.State,
-//		City:                           cust.City,
-//		ZipCode:                        cust.ZipCode,
-//		CompanyNameLong:                cust.CustomerName,
-//		CRMLeadID:                      cust.CRMLeadID,
-//		BankAccount:                    "103",
-//		AddressBook: credential.AddressBook{
-//			Addr1: cust.Address1,
-//			State: cust.State,
-//			City:  cust.City,
-//			Zip:   cust.ZipCode,
-//		},
-//	}
-//
-//	privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
-//	if err != nil {
-//		r.custRepo.RollbackTx(ctx, tx)
-//
-//		logrus.
-//			WithFields(logrus.Fields{
-//				"at":    "CustomerCommandUsecaseGeneral.Create",
-//				"src":   "customerPrivy.CreateCustomer",
-//				"param": crdCustParam,
-//			}).
-//			Error(err)
-//
-//		return 0, nil, err
-//	}
-//
-//	if err != nil {
-//		r.custRepo.RollbackTx(ctx, tx)
-//
-//		logrus.
-//			WithFields(logrus.Fields{
-//				"at":    "CustomerCommandUsecaseGeneral.Create",
-//				"src":   "custRepo.Update",
-//				"param": privyResp,
-//			}).
-//			Error(err)
-//
-//		return 0, nil, err
-//	}
-//
-//	err = r.custRepo.CommitTx(ctx, tx)
-//	if err != nil {
-//		r.custRepo.RollbackTx(ctx, tx)
-//
-//		logrus.
-//			WithFields(logrus.Fields{
-//				"at":  "CustomerCommandUsecaseGeneral.Update",
-//				"src": "custRepo.CommitTx",
-//			}).
-//			Error(err)
-//
-//		return 0, nil, rapperror.ErrInternalServerError(
-//			"",
-//			"Something went wrong when commit",
-//			"CustomerCommandUsecaseGeneral.Update",
-//			nil,
-//		)
-//	}
-//
-//	return id, nil, nil
-//}
+func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id string, cust model.Lead) (any, interface{}, error) {
+	tx, err := r.custRepo.BeginTx(ctx)
+	if err != nil {
+		return 0, nil, err
+	}
 
-func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id int64, cust model.Lead) (int64, interface{}, error) {
+	tmNow := time.Now().UnixNano() / 1000000
+
+	updatedCustomer := entity.Customer{
+		CustomerID:        cust.EnterprisePrivyID,
+		CustomerType:      cust.CustomerType,
+		CustomerName:      cust.CustomerName,
+		FirstName:         cust.FirstName,
+		LastName:          cust.LastName,
+		Email:             cust.Email,
+		PhoneNo:           cust.PhoneNo,
+		Address:           cust.Address,
+		CRMLeadID:         cust.CRMLeadID,
+		EnterprisePrivyID: cust.EnterprisePrivyID,
+		NPWP:              cust.NPWP,
+		Address1:          cust.Address1,
+		State:             cust.State,
+		City:              cust.City,
+		UpdatedBy:         cust.CreatedBy,
+		UpdatedAt:         tmNow,
+	}
+
+	err = r.custRepo.UpdateLead(ctx, id, updatedCustomer, tx)
+	if err != nil {
+		r.custRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerCommandUsecaseGeneral.Update",
+				"src":   "custRepo.Update",
+				"param": id,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	crdCustParam := credential.CustomerParam{
+		Recordtype:                     "lead",
+		Customform:                     "2",
+		EntityID:                       cust.CRMLeadID,
+		IsPerson:                       "F",
+		CompanyName:                    cust.CustomerName,
+		Comments:                       "",
+		Email:                          cust.Email,
+		EntityStatus:                   cust.EntityStatus,
+		URL:                            cust.URL,
+		Phone:                          cust.PhoneNo,
+		AltPhone:                       cust.AltPhone,
+		Fax:                            cust.Fax,
+		CustEntityPrivyCustomerBalance: cust.Balance,
+		CustEntityPrivyCustomerUsage:   cust.Usage,
+		EnterprisePrivyID:              cust.EnterprisePrivyID,
+		NPWP:                           cust.NPWP,
+		Address1:                       cust.Address1,
+		State:                          cust.State,
+		City:                           cust.City,
+		ZipCode:                        cust.ZipCode,
+		CompanyNameLong:                cust.CustomerName,
+		CRMLeadID:                      cust.CRMLeadID,
+		BankAccount:                    "103",
+		AddressBook: credential.AddressBook{
+			Addr1: cust.Address1,
+			State: cust.State,
+			City:  cust.City,
+			Zip:   cust.ZipCode,
+		},
+	}
+
+	privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
+	if err != nil {
+		r.custRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerCommandUsecaseGeneral.Create",
+				"src":   "customerPrivy.CreateCustomer",
+				"param": crdCustParam,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	if err != nil {
+		r.custRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Update",
+				"param": privyResp,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	err = r.custRepo.CommitTx(ctx, tx)
+	if err != nil {
+		r.custRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "CustomerCommandUsecaseGeneral.Update",
+				"src": "custRepo.CommitTx",
+			}).
+			Error(err)
+
+		return 0, nil, rapperror.ErrInternalServerError(
+			"",
+			"Something went wrong when commit",
+			"CustomerCommandUsecaseGeneral.Update",
+			nil,
+		)
+	}
+
+	return id, nil, nil
+}
+
+func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id int64, cust model.Lead) (int64, interface{}, error) {
 	tx, err := r.custRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err

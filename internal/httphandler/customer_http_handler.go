@@ -229,8 +229,8 @@ func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) 
 
 	var payload model.Lead
 
-	//id := chi.URLParam(r, "id")
-	id := rhelper.ToInt64(chi.URLParam(r, "id"), 0)
+	id := chi.URLParam(r, "id")
+	//id := rhelper.ToInt64(chi.URLParam(r, "id"), 0)
 	//if id < 1 {
 	//	err = rapperror.ErrBadRequest(
 	//		rapperror.AppErrorCodeBadRequest,
