@@ -487,7 +487,36 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id int64
 		},
 	}
 
+	//privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
+
 	privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
+	if err != nil {
+		r.custRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerCommandUsecaseGeneral.Create",
+				"src":   "customerPrivy.CreateCustomer",
+				"param": crdCustParam,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	if err != nil {
+		r.custRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Update",
+				"param": privyResp,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
 
 	err = r.custRepo.CommitTx(ctx, tx)
 	if err != nil {
