@@ -10,6 +10,7 @@ import (
 	"middleware/internal/repository"
 	"middleware/internal/usecase"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/rteja-library3/rapperror"
 	"gitlab.com/rteja-library3/rdecoder"
@@ -39,7 +40,7 @@ func NewCustomerHttpHandler(prop HTTPHandlerProperty) http.Handler {
 
 	r.Post("/", handler.Create)
 	r.Post("/lead", handler.CreateLead)
-	r.Post("/lead/{id}", handler.UpdateLead)
+	r.Put("/lead/{id}", handler.UpdateLead)
 	r.Put("/id/{id}", handler.Update)
 	r.Delete("/id/{id}", handler.Delete)
 
@@ -170,11 +171,11 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 	// set created by value
 	payload.CreatedBy = user
 
-	errors := payload.Validate()
+	errors := payload.ValidateLead()
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "CustomerUsageHttpHandler.Create",
+				"at":     "CustomerHttpHandler.Create",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
@@ -218,6 +219,106 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 	}
 
 	response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
+	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+}
+
+func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) {
+	var response rresponser.Responser
+	var err error
+	ctx := r.Context()
+
+	var payload model.Lead
+
+	id := chi.URLParam(r, "id")
+	//if id < 1 {
+	//	err = rapperror.ErrBadRequest(
+	//		rapperror.AppErrorCodeBadRequest,
+	//		"Invalid id",
+	//		"CustomerHttpHandler.Update",
+	//		nil,
+	//	)
+	//
+	//	response = rresponser.NewResponserError(err)
+	//	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	//	return
+	//}
+
+	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"action": "try to decode data",
+				"at":     "CustomerHttpHandler.Update",
+				"src":    "rdecoder.DecodeRest",
+			}).
+			Error(err)
+
+		err = rapperror.ErrBadRequest(
+			rapperror.AppErrorCodeBadRequest,
+			"Invalid body",
+			"CustomerHttpHandler.Update",
+			nil,
+		)
+
+		response = rresponser.NewResponserError(err)
+		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		return
+	}
+
+	// get user from context
+	user := ctx.Value(constants.SessionUserId).(int64)
+
+	// set created by value
+	payload.CreatedBy = user
+
+	errors := payload.ValidateLead()
+	if len(errors) > 0 {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":     "CustomerUsageHttpHandler.Create",
+				"src":    "payload.Validate",
+				"params": payload,
+			}).
+			Error(err)
+
+		errorResponse := map[string]interface{}{
+			"code":    422,
+			"success": false,
+			"message": "Validation failed",
+			"errors":  errors,
+		}
+
+		// Convert error response to JSON
+		responseJSON, marshalErr := json.Marshal(errorResponse)
+		if marshalErr != nil {
+			// Handle JSON marshaling error
+			fmt.Println("Error encoding JSON:", marshalErr)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		// Set the response headers
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnprocessableEntity) // Set the appropriate HTTP status code
+
+		// Write the JSON response to the client
+		_, writeErr := w.Write(responseJSON)
+		if writeErr != nil {
+			// Handle write error
+			fmt.Println("Error writing response:", writeErr)
+		}
+
+		return
+	}
+
+	roleId, meta, err := h.Command.UpdateLead(ctx, id, payload)
+	if err != nil {
+		response = rresponser.NewResponserError(err)
+		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		return
+	}
+
+	response = rresponser.NewResponserSuccessOK("", "Customer successfully updated", roleId, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 }
 
@@ -311,106 +412,6 @@ func (h CustomerHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	roleId, meta, err := h.Command.Update(ctx, id, payload)
-	if err != nil {
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
-	}
-
-	response = rresponser.NewResponserSuccessOK("", "Customer successfully updated", roleId, meta)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-}
-
-func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
-	var err error
-	ctx := r.Context()
-
-	var payload model.Lead
-
-	id := chi.URLParam(r, "id")
-	if id < 1 {
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid id",
-			"CustomerHttpHandler.Update",
-			nil,
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
-	}
-
-	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
-	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to decode data",
-				"at":     "CustomerHttpHandler.Update",
-				"src":    "rdecoder.DecodeRest",
-			}).
-			Error(err)
-
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"CustomerHttpHandler.Update",
-			nil,
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
-	}
-
-	// get user from context
-	user := ctx.Value(constants.SessionUserId).(int64)
-
-	// set created by value
-	payload.CreatedBy = user
-
-	errors := payload.Validate()
-	if len(errors) > 0 {
-		logrus.
-			WithFields(logrus.Fields{
-				"at":     "CustomerUsageHttpHandler.Create",
-				"src":    "payload.Validate",
-				"params": payload,
-			}).
-			Error(err)
-
-		errorResponse := map[string]interface{}{
-			"code":    422,
-			"success": false,
-			"message": "Validation failed",
-			"errors":  errors,
-		}
-
-		// Convert error response to JSON
-		responseJSON, marshalErr := json.Marshal(errorResponse)
-		if marshalErr != nil {
-			// Handle JSON marshaling error
-			fmt.Println("Error encoding JSON:", marshalErr)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		// Set the response headers
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusUnprocessableEntity) // Set the appropriate HTTP status code
-
-		// Write the JSON response to the client
-		_, writeErr := w.Write(responseJSON)
-		if writeErr != nil {
-			// Handle write error
-			fmt.Println("Error writing response:", writeErr)
-		}
-
-		return
-	}
-
-	roleId, meta, err := h.Command.UpdateLead(ctx, id, payload)
 	if err != nil {
 		response = rresponser.NewResponserError(err)
 		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
