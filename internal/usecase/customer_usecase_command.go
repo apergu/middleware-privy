@@ -455,6 +455,40 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id int64
 		return 0, nil, err
 	}
 
+	crdCustParam := credential.CustomerParam{
+		Recordtype:                     "lead",
+		Customform:                     "2",
+		EntityID:                       cust.CRMLeadID,
+		IsPerson:                       "F",
+		CompanyName:                    cust.CustomerName,
+		Comments:                       "",
+		Email:                          cust.Email,
+		EntityStatus:                   cust.EntityStatus,
+		URL:                            cust.URL,
+		Phone:                          cust.PhoneNo,
+		AltPhone:                       cust.AltPhone,
+		Fax:                            cust.Fax,
+		CustEntityPrivyCustomerBalance: cust.Balance,
+		CustEntityPrivyCustomerUsage:   cust.Usage,
+		EnterprisePrivyID:              cust.EnterprisePrivyID,
+		NPWP:                           cust.NPWP,
+		Address1:                       cust.Address1,
+		State:                          cust.State,
+		City:                           cust.City,
+		ZipCode:                        cust.ZipCode,
+		CompanyNameLong:                cust.CustomerName,
+		CRMLeadID:                      cust.CRMLeadID,
+		BankAccount:                    "103",
+		AddressBook: credential.AddressBook{
+			Addr1: cust.Address1,
+			State: cust.State,
+			City:  cust.City,
+			Zip:   cust.ZipCode,
+		},
+	}
+
+	privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
+
 	err = r.custRepo.CommitTx(ctx, tx)
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)
