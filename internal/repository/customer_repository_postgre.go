@@ -562,7 +562,7 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, c
 		updated_by = $10,
 		updated_at = $11
 	where
-		"id" = $12`
+		id = $12`
 
 	log.Println("query : ", query)
 	log.Println("ID : ", id)
