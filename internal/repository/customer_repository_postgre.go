@@ -578,15 +578,15 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id any, cust
 		cust.Address,
 		cust.CRMLeadID,
 		cust.EnterprisePrivyID,
-		cust.Address1,
+		cust.UpdatedBy,
+		cust.UpdatedAt,
+		id,            // This corresponds to the $12 placeholder in your query
+		cust.Address1, // This corresponds to the $13 placeholder in your query
 		cust.NPWP,
 		cust.State,
 		cust.City,
 		cust.ZipCode,
 		cust.CustomerInternalID,
-		cust.UpdatedBy,
-		cust.UpdatedAt,
-		id,
 	)
 
 	if err != nil {
