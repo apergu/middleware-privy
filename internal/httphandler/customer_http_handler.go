@@ -228,19 +228,19 @@ func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) 
 
 	var payload model.Lead
 
-	id := rhelper.ToInt64(chi.URLParam(r, "id"), 0)
-	if id < 1 {
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid id",
-			"CustomerHttpHandler.Update",
-			nil,
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
-	}
+	id := chi.URLParam(r, "id")
+	//if id < 1 {
+	//	err = rapperror.ErrBadRequest(
+	//		rapperror.AppErrorCodeBadRequest,
+	//		"Invalid id",
+	//		"CustomerHttpHandler.Update",
+	//		nil,
+	//	)
+	//
+	//	response = rresponser.NewResponserError(err)
+	//	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	//	return
+	//}
 
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 	if err != nil {

@@ -287,7 +287,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 	return custId, nil, nil
 }
 
-func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id int64, cust model.Lead) (int64, interface{}, error) {
+func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id any, cust model.Lead) (int64, interface{}, error) {
 	tx, err := r.custRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
