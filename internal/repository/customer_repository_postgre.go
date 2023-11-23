@@ -560,12 +560,11 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id any, cust
 		updated_by = $10,
 		updated_at = $11
 	where
-		enterprise_privy_id = $12`
+		"enterprise_privy_id" = $12`
 
 	_, err := cmd.Exec(
 		ctx,
 		query,
-		// cust.CustomerID,
 		cust.CustomerType,
 		cust.CustomerName,
 		cust.FirstName,
@@ -575,15 +574,15 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id any, cust
 		cust.Address,
 		cust.CRMLeadID,
 		cust.EnterprisePrivyID,
-		cust.UpdatedBy,
-		cust.UpdatedAt,
-		id,
 		cust.Address1,
 		cust.NPWP,
 		cust.State,
 		cust.City,
 		cust.ZipCode,
 		cust.CustomerInternalID,
+		cust.UpdatedBy,
+		cust.UpdatedAt,
+		id,
 	)
 
 	if err != nil {
