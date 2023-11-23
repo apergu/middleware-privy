@@ -590,7 +590,7 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id any, cust
 	)
 
 	if err != nil {
-		return pgxerror.FromPgxError(err, "", "CustomerRepositoryPostgre.Update")
+		return pgxerror.FromPgxError(err, err.Error(), "CustomerRepositoryPostgre.Update")
 	}
 
 	return nil
