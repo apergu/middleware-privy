@@ -503,7 +503,7 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 		updated_by = $10,
 		updated_at = $11
 	where
-		id = $12`
+		id =  'ENTPRV-123123'`
 
 	_, err := cmd.Exec(
 		ctx,
