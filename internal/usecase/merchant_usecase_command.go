@@ -86,7 +86,7 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 		RecordType:                  "customrecord_customer_hierarchy",
 		CustRecordCustomerName:      strconv.Itoa(int(customer.CustomerInternalID)),
 		CustRecordMerchantID:        merchant.MerchantID,
-		CustRecordPrivyCodeMerchant: merchant.MerchantCode,
+		CustRecordPrivyCodeMerchant: merchant.EnterpriseID,
 		CustRecordMerchantName:      merchant.MerchantName,
 		CustRecordAddress:           merchant.Address,
 		CustRecordEmail:             merchant.Email,
