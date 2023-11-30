@@ -62,8 +62,8 @@ services:
       REDIS_ADDR: ""
       REDIS_PWD: ""
       REDIS_DB: ""
-      BASIC_AUTH_USERNAME: tes
-      BASIC_AUTH_PASSWORD: tes-password
+      BASIC_AUTH_USERNAME: pR1vY
+      BASIC_AUTH_PASSWORD: pa55w0rd@pR1vY
       PRIVY_HOST: https://8113915-sb1.restlets.api.netsuite.com
       PRIVY_USERNAME: f8b4fb43614c756a168b1d1367607569ae547e8ffb6001b0ec7526641627c112
       PRIVY_PASSWORD: 7e068bf2d6a20f9fd949efee8eca6927b440181b2bfa8d2dbbbe4af05a285aae
