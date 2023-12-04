@@ -54,6 +54,8 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		}
 		defer resp.Body.Close()
 
+		return 1, nil, nil
+
 	} else {
 
 		tx, err := r.custRepo.BeginTx(ctx)
@@ -182,6 +184,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 				nil,
 			)
 		}
+		return custId, nil, nil
 	}
 	return 1, nil, nil
 
