@@ -1,6 +1,7 @@
 package httphandler
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -125,14 +126,43 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	roleId, meta, err := h.Command.Create(ctx, payload)
-	if err != nil {
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
+	if payload.CRMLeadID == "" {
+
+		url := "https://apergu.tech:9002/api/v1/zendesk/lead/on-create"
+
+		// Replace the following map with your actual data
+		data := map[string]interface{}{
+			"company_name":  payload.CustomerName,
+			"entity_status": payload.EntityStatus,
+		}
+
+		// Convert data to JSON
+		jsonData, err := json.Marshal(data)
+		if err != nil {
+			panic(err)
+		}
+
+		// Make the HTTP POST request
+		resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
+
+		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", 2, map[string]interface{}{
+			"test": 200,
+		})
+	} else {
+
+		roleId, meta, err := h.Command.Create(ctx, payload)
+		if err != nil {
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		}
+		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 	}
 
-	response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 }
 
