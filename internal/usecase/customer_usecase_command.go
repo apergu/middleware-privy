@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -53,6 +55,19 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 			panic(err)
 		}
 		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			return 0, nil, fmt.Errorf("non-OK status code: %d", resp.StatusCode)
+		}
+
+		// Read and handle the response body
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return 0, nil, err
+		}
+
+		// You can handle the response body as needed
+		fmt.Println(string(body))
 
 		return 1, nil, nil
 
