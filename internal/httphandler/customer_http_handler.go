@@ -134,6 +134,14 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		data := map[string]interface{}{
 			"company_name":  payload.CustomerName,
 			"entity_status": payload.EntityStatus,
+			"email":         payload.Email,
+			"first_name":    payload.FirstName,
+			"last_name":     payload.LastName,
+			"status":        "New Client - Referral",
+			"mobile":        payload.PhoneNo,
+			"phone":         payload.PhoneNo,
+			"sub_industry":  "Education",
+			"enterprise_id": payload.EnterprisePrivyID,
 		}
 
 		// Convert data to JSON
@@ -145,7 +153,9 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		// Make the HTTP POST request
 		resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 		if err != nil {
-			panic(err)
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
 		}
 		defer resp.Body.Close()
 
