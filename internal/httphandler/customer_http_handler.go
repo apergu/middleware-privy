@@ -128,7 +128,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	if payload.CRMLeadID == "" {
 
-		url := "https://apergu.tech:9002/api/v1/zendesk/lead/on-create"
+		url := "http://aczd:9002/api/v1/zendesk/lead/on-create"
 
 		// Replace the following map with your actual data
 		data := map[string]interface{}{
