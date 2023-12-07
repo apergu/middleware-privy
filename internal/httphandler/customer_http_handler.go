@@ -57,7 +57,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var payload model.Customer
-	var payloadLead model.Lead
+	//var payloadLead model.Lead
 
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 	if err != nil {
@@ -174,7 +174,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 			response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 		} else {
-			roleId, meta, err := h.Command.CreateLead(ctx, payloadLead)
+			roleId, meta, err := h.Command.CreateLead2(ctx, payload)
 			if err != nil {
 				response = rresponser.NewResponserError(err)
 				rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
