@@ -37,6 +37,12 @@ type EnvelopeMerchant struct {
 	FailedTransaction  []MerchantFailedResponse `json:"failed_transaction"`
 }
 
+type EnvelopeSalesOrder struct {
+	MainEnvelope
+	SuccessTransaction []SalesOrderResponse     `json:"success_transaction"`
+	FailedTransaction  []MerchantFailedResponse `json:"failed_transaction"`
+}
+
 type EnvelopeChannel struct {
 	MainEnvelope
 	SuccessTransaction []ChannelResponse       `json:"success_transaction"`
