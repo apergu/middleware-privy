@@ -12,6 +12,10 @@ type Lead interface {
 	CreateLead(ctx context.Context, param CustomerParam) (CustomerResponse, error)
 }
 
+type TopUp interface {
+	CreateTopUp(ctx context.Context, param TopUpParam) (TopUpResponse, error)
+}
+
 type CustomerUsage interface {
 	CreateCustomerUsage(ctx context.Context, param CustomerUsageParam) (CustomerUsageResponse, error)
 }

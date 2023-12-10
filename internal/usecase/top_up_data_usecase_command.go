@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"middleware/pkg/credential"
 	"strings"
 	"time"
 
@@ -21,6 +22,7 @@ type TopUpDataCommandUsecaseGeneral struct {
 	merchantRepo repository.MerchantQueryRepository
 	channelRepo  repository.ChannelQueryRepository
 	topupPrivy   privy.TopupData
+	topUpCred    credential.TopUp
 }
 
 func NewTopUpDataCommandUsecaseGeneral(prop TopUpDataUsecaseProperty) *TopUpDataCommandUsecaseGeneral {
@@ -33,7 +35,7 @@ func NewTopUpDataCommandUsecaseGeneral(prop TopUpDataUsecaseProperty) *TopUpData
 	}
 }
 
-func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData model.TopUpData) (int64, interface{}, error) {
+func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData model.TopUp) (int64, interface{}, error) {
 	tx, err := r.topupRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
@@ -41,7 +43,7 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 
 	tmNow := time.Now().UnixNano() / 1000000
 
-	splittedTxIDs := strings.Split(topUpData.TransactionID, "/")
+	splittedTxIDs := strings.Split(topUpData.SoNo, "/")
 	if len(splittedTxIDs) != 4 {
 		return 0, nil, rapperror.ErrBadRequest(
 			rapperror.AppErrorCodeBadRequest,
@@ -72,31 +74,54 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 
 	topupIdUUID := uuid.New().String()
 
-	insertTopUpData := entity.TopUpData{
-		MerchantID:         topUpData.MerchantID,
-		TransactionID:      topUpData.TransactionID,
-		EnterpriseID:       topUpData.EnterpriseID,
-		EnterpriseName:     topUpData.EnterpriseName,
-		OriginalServiceID:  topUpData.OriginalServiceID,
-		ServiceID:          topUpData.ServiceID,
-		ServiceName:        topUpData.ServiceName,
-		Quantity:           topUpData.Quantity,
-		TransactionDate:    topUpData.TransactionDate.UnixNano() / 1000000,
-		MerchantCode:       topUpData.MerchantCode,
-		ChannelID:          topUpData.ChannelID,
-		ChannelCode:        topUpData.ChannelCode,
-		CustomerInternalID: customer.CustomerInternalID,
-		MerchantInternalID: merchant.MerchantInternalID,
-		ChannelInternalID:  channel.ChannelInternalID,
-		TransactionType:    topUpData.TransactionType,
-		TopupID:            topupIdUUID,
-		CreatedBy:          topUpData.CreatedBy,
-		CreatedAt:          tmNow,
-		UpdatedBy:          topUpData.CreatedBy,
-		UpdatedAt:          tmNow,
+	//insertTopUpData := entity.TopUpData{
+	//	MerchantID:         topUpData.MerchantID,
+	//	TransactionID:      topUpData.TransactionID,
+	//	EnterpriseID:       topUpData.EnterpriseID,
+	//	EnterpriseName:     topUpData.EnterpriseName,
+	//	OriginalServiceID:  topUpData.OriginalServiceID,
+	//	ServiceID:          topUpData.ServiceID,
+	//	ServiceName:        topUpData.ServiceName,
+	//	Quantity:           topUpData.Quantity,
+	//	TransactionDate:    topUpData.TransactionDate.UnixNano() / 1000000,
+	//	MerchantCode:       topUpData.MerchantCode,
+	//	ChannelID:          topUpData.ChannelID,
+	//	ChannelCode:        topUpData.ChannelCode,
+	//	CustomerInternalID: customer.CustomerInternalID,
+	//	MerchantInternalID: merchant.MerchantInternalID,
+	//	ChannelInternalID:  channel.ChannelInternalID,
+	//	TransactionType:    topUpData.TransactionType,
+	//	TopupID:            topupIdUUID,
+	//	CreatedBy:          topUpData.CreatedBy,
+	//	CreatedAt:          tmNow,
+	//	UpdatedBy:          topUpData.CreatedBy,
+	//	UpdatedAt:          tmNow,
+	//}
+
+	insertTopUp := entity.TopUp{
+		TopUpUUID:   topupIdUUID,
+		SoNo:        topUpData.SoNo,
+		Amount:      topUpData.Amount,
+		ChannelId:   channel.ChannelID,
+		ItemId:      topUpData.ItemId,
+		Duration:    topUpData.Duration,
+		Prepaid:     topUpData.Prepaid,
+		Billing:     topUpData.Billing,
+		MerchantId:  merchant.MerchantID,
+		QuotationId: topUpData.QuotationId,
+		VoidDate:    topUpData.VoidDate,
+		QtyBalance:  topUpData.QtyBalance,
+		Rate:        topUpData.Rate,
+		CustomerId:  customer.CustomerID,
+		StartDate:   topUpData.StartDate,
+		EndDate:     topUpData.EndDate,
+		CreatedBy:   topUpData.CreatedBy,
+		CreatedAt:   tmNow,
+		UpdatedBy:   topUpData.CreatedBy,
+		UpdatedAt:   tmNow,
 	}
 
-	topupDataId, err := r.topupRepo.Create(ctx, insertTopUpData, tx)
+	topupDataId, err := r.topupRepo.Create(ctx, insertTopUp, tx)
 	if err != nil {
 		r.topupRepo.RollbackTx(ctx, tx)
 
@@ -104,25 +129,27 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 			WithFields(logrus.Fields{
 				"at":    "TopUpDataCommandUsecaseGeneral.Create",
 				"src":   "custRepo.Create",
-				"param": insertTopUpData,
+				"param": insertTopUp,
 			}).
 			Error(err)
 
 		return 0, nil, err
 	}
 
+	trDate, err := time.Parse("2006-01-02 15:04:05", topUpData.StartDate)
+
 	param := privy.TopupCreateParam{
-		TransactionID:   topUpData.TransactionID,
+		TransactionID:   "213/12321/123231",
 		SONumber:        "",
-		EnterpriseID:    topUpData.EnterpriseID,
-		MerchantID:      topUpData.MerchantID,
-		ChannelID:       topUpData.ChannelID,
-		ServiceID:       topUpData.ServiceID,
+		EnterpriseID:    topUpData.MerchantId,
+		MerchantID:      merchant.MerchantID,
+		ChannelID:       channel.ChannelID,
+		ServiceID:       topUpData.ItemId,
 		PostID:          "",
-		Quantity:        topUpData.Quantity,
+		Quantity:        topUpData.QtyBalance,
 		StartPeriodDate: tmNow,
 		EndPeriodDate:   tmNow,
-		TransactionDate: topUpData.TransactionDate,
+		TransactionDate: trDate,
 		Reversal:        false,
 		ID:              topupIdUUID,
 	}
@@ -142,6 +169,77 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 			"",
 			"Something went wrong when CreateTopup",
 			"TopUpDataCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
+
+	privyParam := credential.TopUpParam{
+		RecordType:                   "topup",
+		CustRecordPrivyMbSoNo:        topUpData.SoNo,
+		CustRecordPrivyMbCustomerId:  topUpData.CustomerId,
+		CustRecordPrivyMbMerchantId:  topUpData.MerchantId,
+		CustRecordPrivyMbChannelId:   topUpData.ChannelId,
+		CustRecordPrivyMbStartDate:   "",
+		CustRecordPrivyMbEndDate:     topUpData.EndDate,
+		CustRecordPrivyMbDuration:    topUpData.Duration,
+		CustRecordPrivyMbBilling:     topUpData.Billing,
+		CustRecordPrivyMbItemId:      topUpData.ItemId,
+		CustRecordPrivyMbQtyBalance:  topUpData.QtyBalance,
+		CustRecordPrivyMbRate:        topUpData.Rate,
+		CustRecordPrivyMbPrepaid:     topUpData.Prepaid,
+		CustRecordPrivyMbQuotationId: topUpData.QuotationId,
+		CustRecordPrivyMbVoidDate:    topUpData.VoidDate,
+		CustRecordPrivyMbAmount:      topUpData.Amount,
+	}
+
+	resp, err := r.topUpCred.CreateTopUp(ctx, privyParam)
+	if err != nil {
+		r.topupRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "MerchantCommandUsecaseGeneral.Create",
+				"src":   "merchantPrivy.CreateMerchant",
+				"param": privyParam,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	insertTopUp.TopupID = resp.Data.RecordID
+	//insertTopUp.TopUpInternalID = insertTopUp
+
+	err = r.topupRepo.Update(ctx, topupDataId, insertTopUp, tx)
+	if err != nil {
+		r.topupRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "MerchantCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Update",
+				"param": insertTopUp,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	err = r.topupRepo.CommitTx(ctx, tx)
+	if err != nil {
+		r.topupRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "MerchantCommandUsecaseGeneral.Create",
+				"src": "custRepo.CommitTx",
+			}).
+			Error(err)
+
+		return 0, nil, rapperror.ErrInternalServerError(
+			"",
+			"Something went wrong when commit",
+			"MerchantCommandUsecaseGeneral.Create",
 			nil,
 		)
 	}
@@ -193,7 +291,7 @@ func (r *TopUpDataCommandUsecaseGeneral) Update(ctx context.Context, id int64, t
 		UpdatedAt:         tmNow,
 	}
 
-	err = r.topupRepo.Update(ctx, id, updatedTopUpData, tx)
+	err = r.topupRepo.Update2(ctx, id, updatedTopUpData, tx)
 	if err != nil {
 		r.topupRepo.RollbackTx(ctx, tx)
 

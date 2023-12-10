@@ -24,7 +24,7 @@ type TopUpDataQueryUsecase interface {
 }
 
 type TopUpDataCommandUsecase interface {
-	Create(ctx context.Context, cust model.TopUpData) (int64, interface{}, error)
+	Create(ctx context.Context, cust model.TopUp) (int64, interface{}, error)
 	Update(ctx context.Context, id int64, cust model.TopUpData) (int64, interface{}, error)
 	Delete(ctx context.Context, id int64) (int64, interface{}, error)
 }
