@@ -43,7 +43,8 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 
 	tmNow := time.Now().UnixNano() / 1000000
 
-	splittedTxIDs := strings.Split(topUpData.SoNo, "/")
+	txId := topUpData.CustomerId + "/" + topUpData.MerchantId + "/" + topUpData.ChannelId + "/" + topUpData.Amount
+	splittedTxIDs := strings.Split(txId, "/")
 	if len(splittedTxIDs) != 4 {
 		return 0, nil, rapperror.ErrBadRequest(
 			rapperror.AppErrorCodeBadRequest,
