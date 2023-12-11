@@ -36,6 +36,7 @@ type Credential interface {
 	Lead
 	Customer
 	CustomerUsage
+	SalesOrder
 	Merchant
 	Channel
 }

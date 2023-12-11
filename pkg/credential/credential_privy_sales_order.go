@@ -6,12 +6,15 @@ import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/rteja-library3/rapperror"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
 )
 
 func (c *CredentialPrivy) CreateSalesOrder(ctx context.Context, param SalesOrderParams) (SalesOrderResponse, error) {
+
+	log.Println("TEST", param)
 	// get jwt
 	isNode := true
 	jwtToken := JWTToken{}
