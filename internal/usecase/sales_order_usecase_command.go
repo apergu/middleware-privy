@@ -162,6 +162,7 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 		CustBody2:   order.CustBody2,
 	}
 
+	log.Println("custPrivyUsgParam ", custPrivyUsgParam)
 	_, err = r.orderPrivy.CreateSalesOrder(ctx, custPrivyUsgParam)
 	if err != nil {
 		r.orderRepo.RollbackTx(ctx, tx)
