@@ -109,30 +109,30 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 	//	UpdatedAt:    tmNow,
 	//}
 
-	insertSalesOrder := entity.SalesOrder{
-		Entity:      order.Entity,
-		TranDate:    order.TranDate,
-		OrderStatus: order.OrderStatus,
-		StartDate:   order.StartDate,
-		EndDate:     order.EndDate,
-		Memo:        order.Memo,
-		CustBody2:   order.CustBody2,
-	}
-
-	orderId, err := r.orderRepo.Create(ctx, insertSalesOrder, tx)
-	if err != nil {
-		r.orderRepo.RollbackTx(ctx, tx)
-
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "SalesOrderCommandUsecaseGeneral.Create",
-				"src":   "orderRepo.Create",
-				"param": insertSalesOrder,
-			}).
-			Error(err)
-
-		return 0, nil, err
-	}
+	//insertSalesOrder := entity.SalesOrder{
+	//	Entity:      order.Entity,
+	//	TranDate:    order.TranDate,
+	//	OrderStatus: order.OrderStatus,
+	//	StartDate:   order.StartDate,
+	//	EndDate:     order.EndDate,
+	//	Memo:        order.Memo,
+	//	CustBody2:   order.CustBody2,
+	//}
+	//
+	//orderId, err := r.orderRepo.Create(ctx, insertSalesOrder, tx)
+	//if err != nil {
+	//	r.orderRepo.RollbackTx(ctx, tx)
+	//
+	//	logrus.
+	//		WithFields(logrus.Fields{
+	//			"at":    "SalesOrderCommandUsecaseGeneral.Create",
+	//			"src":   "orderRepo.Create",
+	//			"param": insertSalesOrder,
+	//		}).
+	//		Error(err)
+	//
+	//	return 0, nil, err
+	//}
 
 	//err = r.insertDetail(ctx, order.Lines, orderId, order.CreatedBy, tmNow, tx)
 	//if err != nil {
@@ -193,7 +193,7 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 		)
 	}
 
-	return orderId, nil, nil
+	return 12, nil, nil
 }
 
 func (r *SalesOrderCommandUsecaseGeneral) Update(ctx context.Context, id int64, order model.SalesOrder) (int64, interface{}, error) {
