@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"middleware/pkg/credential"
 	"time"
 
 	"middleware/internal/entity"
@@ -14,8 +15,9 @@ import (
 )
 
 type SalesOrderCommandUsecaseGeneral struct {
-	orderRepo repository.SalesOrderHeaderCommandRepository
-	lineRepo  repository.SalesOrderLineCommandRepository
+	orderRepo  repository.SalesOrderHeaderCommandRepository
+	lineRepo   repository.SalesOrderLineCommandRepository
+	orderPrivy credential.SalesOrder
 }
 
 func NewSalesOrderCommandUsecaseGeneral(prop SalesOrderUsecaseProperty) *SalesOrderCommandUsecaseGeneral {
@@ -76,34 +78,44 @@ func (r *SalesOrderCommandUsecaseGeneral) insertDetail(ctx context.Context, line
 	return nil
 }
 
-func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order model.SalesOrderHeader) (int64, interface{}, error) {
+func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order model.SalesOrder) (int64, interface{}, error) {
 	tx, err := r.orderRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
 	}
 
-	tmNow := time.Now().UnixNano() / 1000000
+	//tmNow := time.Now().UnixNano() / 1000000
 
-	var subtotal float64
-	var taxes float64
+	//var subtotal float64
+	//var taxes float64
 
-	for _, line := range order.Lines {
-		subtotal += line.RateItem * float64(line.Quantity)
-		taxes += line.TaxRate * float64(line.Quantity)
-	}
-	grandtotal := subtotal + taxes
+	//for _, line := range order.Lines {
+	//	subtotal += line.RateItem * float64(line.Quantity)
+	//	taxes += line.TaxRate * float64(line.Quantity)
+	//}
+	//grandtotal := subtotal + taxes
+	//
+	//insertSalesOrder := entity.SalesOrderHeader{
+	//	OrderNumber:  order.OrderNumber,
+	//	CustomerID:   order.CustomerID,
+	//	CustomerName: order.CustomerName,
+	//	Subtotal:     subtotal,
+	//	Tax:          taxes,
+	//	Grandtotal:   grandtotal,
+	//	CreatedBy:    order.CreatedBy,
+	//	CreatedAt:    tmNow,
+	//	UpdatedBy:    order.CreatedBy,
+	//	UpdatedAt:    tmNow,
+	//}
 
-	insertSalesOrder := entity.SalesOrderHeader{
-		OrderNumber:  order.OrderNumber,
-		CustomerID:   order.CustomerID,
-		CustomerName: order.CustomerName,
-		Subtotal:     subtotal,
-		Tax:          taxes,
-		Grandtotal:   grandtotal,
-		CreatedBy:    order.CreatedBy,
-		CreatedAt:    tmNow,
-		UpdatedBy:    order.CreatedBy,
-		UpdatedAt:    tmNow,
+	insertSalesOrder := entity.SalesOrder{
+		Entity:      order.Entity,
+		TranDate:    order.TranDate,
+		OrderStatus: order.OrderStatus,
+		StartDate:   order.StartDate,
+		EndDate:     order.EndDate,
+		Memo:        order.Memo,
+		CustBody2:   order.CustBody2,
 	}
 
 	orderId, err := r.orderRepo.Create(ctx, insertSalesOrder, tx)
@@ -121,14 +133,40 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 		return 0, nil, err
 	}
 
-	err = r.insertDetail(ctx, order.Lines, orderId, order.CreatedBy, tmNow, tx)
+	//err = r.insertDetail(ctx, order.Lines, orderId, order.CreatedBy, tmNow, tx)
+	//if err != nil {
+	//	r.orderRepo.RollbackTx(ctx, tx)
+	//
+	//	logrus.
+	//		WithFields(logrus.Fields{
+	//			"at":  "SalesOrderCommandUsecaseGeneral.Create",
+	//			"src": "SalesOrderCommandUsecaseGeneral.insertDetail",
+	//		}).
+	//		Error(err)
+	//
+	//	return 0, nil, err
+	//}
+
+	custPrivyUsgParam := credential.SalesOrderParams{
+		RecordType:  "salesord",
+		Entity:      order.Entity,
+		TranDate:    order.TranDate,
+		OrderStatus: order.OrderStatus,
+		StartDate:   order.StartDate,
+		EndDate:     order.EndDate,
+		Memo:        order.Memo,
+		CustBody2:   order.CustBody2,
+	}
+
+	_, err = r.orderPrivy.CreateSalesOrder(ctx, custPrivyUsgParam)
 	if err != nil {
 		r.orderRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
-				"at":  "SalesOrderCommandUsecaseGeneral.Create",
-				"src": "SalesOrderCommandUsecaseGeneral.insertDetail",
+				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
+				"src":   "customerPrivy.CreateCustomerUsage",
+				"param": custPrivyUsgParam,
 			}).
 			Error(err)
 

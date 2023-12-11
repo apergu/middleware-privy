@@ -20,6 +20,10 @@ type CustomerUsage interface {
 	CreateCustomerUsage(ctx context.Context, param CustomerUsageParam) (CustomerUsageResponse, error)
 }
 
+type SalesOrder interface {
+	CreateSalesOrder(ctx context.Context, param SalesOrderParams) (SalesOrderResponse, error)
+}
+
 type Merchant interface {
 	CreateMerchant(ctx context.Context, param MerchantParam) (MerchantResponse, error)
 }

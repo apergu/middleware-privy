@@ -21,7 +21,7 @@ type SalesOrderHeaderQueryRepository interface {
 type SalesOrderHeaderCommandRepository interface {
 	Command
 	FindOneByIdForUpdate(ctx context.Context, id int64, tx pgx.Tx) (entity.SalesOrderHeader, error)
-	Create(ctx context.Context, SalesOrderHeader entity.SalesOrderHeader, tx pgx.Tx) (int64, error)
+	Create(ctx context.Context, SalesOrderHeader entity.SalesOrder, tx pgx.Tx) (int64, error)
 	Update(ctx context.Context, id int64, SalesOrderHeader entity.SalesOrderHeader, tx pgx.Tx) error
 	Delete(ctx context.Context, id int64, tx pgx.Tx) error
 }
