@@ -32,7 +32,7 @@ func (r *SalesOrderQueryUsecaseGeneral) findDetail(ctx context.Context, headerId
 	return lines, nil
 }
 
-func (r *SalesOrderQueryUsecaseGeneral) Find(ctx context.Context, filter repository.SalesOrderHeaderFilter, limit, skip int64) ([]model.SalesOrderHeaderResponse, interface{}, error) {
+func (r *SalesOrderQueryUsecaseGeneral) Find(ctx context.Context, filter repository.SalesOrderHeaderFilter, limit, skip int64) ([]model.SalesOrderResponse, interface{}, error) {
 	orders, err := r.salesOrderRepo.Find(ctx, filter, limit, skip, nil)
 	if err != nil {
 		logrus.
@@ -46,30 +46,30 @@ func (r *SalesOrderQueryUsecaseGeneral) Find(ctx context.Context, filter reposit
 		return nil, nil, err
 	}
 
-	resp := make([]model.SalesOrderHeaderResponse, len(orders))
+	resp := make([]model.SalesOrderResponse, len(orders))
 	var lastId int64
 
-	for i, order := range orders {
-		lines, err := r.findDetail(ctx, order.ID)
-		if err != nil {
-			logrus.
-				WithFields(logrus.Fields{
-					"at":    "SalesOrderQueryUsecaseGeneral.Find",
-					"src":   "r.findDetail",
-					"param": order.ID,
-				}).
-				Error(err)
-
-			return nil, nil, err
-		}
-
-		resp[i] = model.SalesOrderHeaderResponse{
-			SalesOrderHeader: order,
-			Lines:            lines,
-		}
-
-		lastId = order.ID
-	}
+	//for i, order := range orders {
+	//	lines, err := r.findDetail(ctx, order.ID)
+	//	if err != nil {
+	//		logrus.
+	//			WithFields(logrus.Fields{
+	//				"at":    "SalesOrderQueryUsecaseGeneral.Find",
+	//				"src":   "r.findDetail",
+	//				"param": order.ID,
+	//			}).
+	//			Error(err)
+	//
+	//		return nil, nil, err
+	//	}
+	//
+	//	resp[i] = model.s{
+	//		SalesOrderHeader: order,
+	//		Lines:            lines,
+	//	}
+	//
+	//	lastId = order.ID
+	//}
 
 	count, err := r.salesOrderRepo.Count(ctx, filter, nil)
 	if err != nil {
@@ -104,7 +104,7 @@ func (r *SalesOrderQueryUsecaseGeneral) Count(ctx context.Context, filter reposi
 	return count, nil, nil
 }
 
-func (r *SalesOrderQueryUsecaseGeneral) FindById(ctx context.Context, id int64) (model.SalesOrderHeaderResponse, interface{}, error) {
+func (r *SalesOrderQueryUsecaseGeneral) FindById(ctx context.Context, id int64) (model.SalesOrderResponse, interface{}, error) {
 	order, err := r.salesOrderRepo.FindOneById(ctx, id, nil)
 	if err != nil {
 		logrus.
@@ -115,10 +115,10 @@ func (r *SalesOrderQueryUsecaseGeneral) FindById(ctx context.Context, id int64) 
 			}).
 			Error(err)
 
-		return model.SalesOrderHeaderResponse{}, nil, err
+		return model.SalesOrderResponse{}, nil, err
 	}
 
-	lines, err := r.findDetail(ctx, order.ID)
+	//lines, err := r.findDetail(ctx, order.ID)
 	if err != nil {
 		logrus.
 			WithFields(logrus.Fields{
@@ -128,12 +128,12 @@ func (r *SalesOrderQueryUsecaseGeneral) FindById(ctx context.Context, id int64) 
 			}).
 			Error(err)
 
-		return model.SalesOrderHeaderResponse{}, nil, err
+		return model.SalesOrderResponse{}, nil, err
 	}
 
-	resp := model.SalesOrderHeaderResponse{
-		SalesOrderHeader: order,
-		Lines:            lines,
+	resp := model.SalesOrderResponse{
+		SalesOrder: entity.SalesOrder{},
+		Lines:      nil,
 	}
 
 	return resp, nil, nil

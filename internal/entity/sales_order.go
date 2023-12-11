@@ -1,6 +1,7 @@
 package entity
 
 type SalesOrder struct {
+	ID          int64
 	Entity      string `json:"entity"`
 	TranDate    string `json:"trandate"`
 	OrderStatus string `json:"orderstatus"`

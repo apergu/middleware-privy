@@ -3,7 +3,6 @@ package httphandler
 import (
 	"net/http"
 
-	"middleware/internal/constants"
 	"middleware/internal/model"
 	"middleware/internal/repository"
 	"middleware/internal/usecase"
@@ -51,7 +50,7 @@ func (h SalesOrderHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var err error
 	ctx := r.Context()
 
-	var payload model.SalesOrderHeader
+	var payload model.SalesOrder
 
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 	if err != nil {
@@ -76,10 +75,10 @@ func (h SalesOrderHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get user from context
-	user := ctx.Value(constants.SessionUserId).(int64)
+	//user := ctx.Value(constants.SessionUserId).(int64)
 
 	// set created by value
-	payload.CreatedBy = user
+	//payload.CreatedBy = user
 
 	err = payload.Validate()
 	if err != nil {
@@ -112,7 +111,7 @@ func (h SalesOrderHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 	var err error
 	ctx := r.Context()
 
-	var payload model.SalesOrderHeader
+	var payload model.SalesOrder
 
 	id := rhelper.ToInt64(chi.URLParam(r, "id"), 0)
 	if id < 1 {
@@ -150,11 +149,11 @@ func (h SalesOrderHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// get user from context
-	user := ctx.Value(constants.SessionUserId).(int64)
-
-	// set created by value
-	payload.CreatedBy = user
+	//// get user from context
+	//user := ctx.Value(constants.SessionUserId).(int64)
+	//
+	//// set created by value
+	//payload.CreatedBy = user
 
 	err = payload.Validate()
 	if err != nil {

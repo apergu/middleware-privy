@@ -3,8 +3,10 @@ package repository
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"strconv"
 	"strings"
+	"time"
 
 	"middleware/internal/entity"
 	"middleware/pkg/pgxerror"
@@ -26,7 +28,7 @@ func NewSalesOrderHeaderRepositoryPostgre(pool *pgxpool.Pool) *SalesOrderHeaderR
 	}
 }
 
-func (c *SalesOrderHeaderRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.Command, query string, args ...interface{}) ([]entity.SalesOrderHeader, error) {
+func (c *SalesOrderHeaderRepositoryPostgre) query(ctx context.Context, cmd sqlcommand.Command, query string, args ...interface{}) ([]entity.SalesOrder, error) {
 	rows, err := cmd.Query(ctx, query, args...)
 	if err != nil {
 		logrus.
@@ -47,22 +49,18 @@ func (c *SalesOrderHeaderRepositoryPostgre) query(ctx context.Context, cmd sqlco
 	}
 	defer rows.Close()
 
-	result := make([]entity.SalesOrderHeader, 0)
+	result := make([]entity.SalesOrder, 0)
 	for rows.Next() {
-		data := entity.SalesOrderHeader{}
+		data := entity.SalesOrder{}
 
 		err := rows.Scan(
-			&data.ID,
-			&data.OrderNumber,
-			&data.CustomerID,
-			&data.CustomerName,
-			&data.Subtotal,
-			&data.Tax,
-			&data.Grandtotal,
-			&data.CreatedBy,
-			&data.CreatedAt,
-			&data.UpdatedBy,
-			&data.UpdatedAt,
+			&data.Entity,
+			&data.Memo,
+			&data.CustBody2,
+			&data.EndDate,
+			&data.StartDate,
+			&data.OrderStatus,
+			&data.TranDate,
 		)
 		if err != nil {
 			logrus.
@@ -87,23 +85,19 @@ func (c *SalesOrderHeaderRepositoryPostgre) query(ctx context.Context, cmd sqlco
 	return result, nil
 }
 
-func (c *SalesOrderHeaderRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand.Command, query string, args ...interface{}) (entity.SalesOrderHeader, error) {
-	data := entity.SalesOrderHeader{}
+func (c *SalesOrderHeaderRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand.Command, query string, args ...interface{}) (entity.SalesOrder, error) {
+	data := entity.SalesOrder{}
 
 	err := cmd.
 		QueryRow(ctx, query, args...).
 		Scan(
-			&data.ID,
-			&data.OrderNumber,
-			&data.CustomerID,
-			&data.CustomerName,
-			&data.Subtotal,
-			&data.Tax,
-			&data.Grandtotal,
-			&data.CreatedBy,
-			&data.CreatedAt,
-			&data.UpdatedBy,
-			&data.UpdatedAt,
+			&data.Entity,
+			&data.Memo,
+			&data.CustBody2,
+			&data.EndDate,
+			&data.StartDate,
+			&data.OrderStatus,
+			&data.TranDate,
 		)
 	if err != nil {
 		logrus.
@@ -115,7 +109,7 @@ func (c *SalesOrderHeaderRepositoryPostgre) queryOne(ctx context.Context, cmd sq
 			}).
 			Error(err)
 
-		return entity.SalesOrderHeader{}, pgxerror.FromPgxError(
+		return entity.SalesOrder{}, pgxerror.FromPgxError(
 			err,
 			"Something went wrong when scan",
 			"SalesOrderHeaderRepositoryPostgre.queryOne.Scan",
@@ -147,7 +141,7 @@ func (c *SalesOrderHeaderRepositoryPostgre) buildSort(sort string) string {
 	return `order by sales_order_headers.updated_at desc`
 }
 
-func (c *SalesOrderHeaderRepositoryPostgre) Find(ctx context.Context, filter SalesOrderHeaderFilter, limit, skip int64, tx pgx.Tx) ([]entity.SalesOrderHeader, error) {
+func (c *SalesOrderHeaderRepositoryPostgre) Find(ctx context.Context, filter SalesOrderHeaderFilter, limit, skip int64, tx pgx.Tx) ([]entity.SalesOrder, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
@@ -221,7 +215,7 @@ func (c *SalesOrderHeaderRepositoryPostgre) Count(ctx context.Context, filter Sa
 	return data, nil
 }
 
-func (c *SalesOrderHeaderRepositoryPostgre) FindOneById(ctx context.Context, id int64, tx pgx.Tx) (entity.SalesOrderHeader, error) {
+func (c *SalesOrderHeaderRepositoryPostgre) FindOneById(ctx context.Context, id int64, tx pgx.Tx) (entity.SalesOrder, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
@@ -260,9 +254,9 @@ func (c *SalesOrderHeaderRepositoryPostgre) RollbackTx(ctx context.Context, tx p
 	return tx.Rollback(ctx)
 }
 
-func (c *SalesOrderHeaderRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, id int64, tx pgx.Tx) (entity.SalesOrderHeader, error) {
+func (c *SalesOrderHeaderRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, id int64, tx pgx.Tx) (entity.SalesOrder, error) {
 	if tx == nil {
-		return entity.SalesOrderHeader{}, rapperror.ErrInternalServerError(
+		return entity.SalesOrder{}, rapperror.ErrInternalServerError(
 			"",
 			"Tx is required",
 			"SalesOrderHeaderRepositoryPostgre.FindOneByIdForUpdate",
@@ -293,7 +287,7 @@ func (c *SalesOrderHeaderRepositoryPostgre) FindOneByIdForUpdate(ctx context.Con
 	return c.queryOne(ctx, cmd, query, id)
 }
 
-func (c *SalesOrderHeaderRepositoryPostgre) Create(ctx context.Context, order entity.SalesOrderHeader, tx pgx.Tx) (int64, error) {
+func (c *SalesOrderHeaderRepositoryPostgre) Create(ctx context.Context, order entity.SalesOrder, tx pgx.Tx) (int64, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
@@ -317,16 +311,16 @@ func (c *SalesOrderHeaderRepositoryPostgre) Create(ctx context.Context, order en
 		QueryRow(
 			ctx,
 			query,
-			order.OrderNumber,
-			order.CustomerID,
-			order.CustomerName,
-			order.Subtotal,
-			order.Tax,
-			order.Grandtotal,
-			order.CreatedBy,
-			order.CreatedAt,
-			order.UpdatedBy,
-			order.UpdatedAt,
+			rand.Int(),
+			rand.Int(),
+			order.Entity,
+			rand.Int(),
+			rand.Float64(),
+			rand.Int(),
+			"test",
+			time.Now(),
+			"test",
+			time.Now(),
 		).
 		Scan(&id)
 
@@ -344,7 +338,7 @@ func (c *SalesOrderHeaderRepositoryPostgre) Create(ctx context.Context, order en
 	return id, nil
 }
 
-func (c *SalesOrderHeaderRepositoryPostgre) Update(ctx context.Context, id int64, order entity.SalesOrderHeader, tx pgx.Tx) error {
+func (c *SalesOrderHeaderRepositoryPostgre) Update(ctx context.Context, id int64, order entity.SalesOrder, tx pgx.Tx) error {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
@@ -366,14 +360,14 @@ func (c *SalesOrderHeaderRepositoryPostgre) Update(ctx context.Context, id int64
 	_, err := cmd.Exec(
 		ctx,
 		query,
-		order.OrderNumber,
-		order.CustomerID,
-		order.CustomerName,
-		order.Subtotal,
-		order.Tax,
-		order.Grandtotal,
-		order.UpdatedBy,
-		order.UpdatedAt,
+		rand.Int(),
+		rand.Int(),
+		order.Entity,
+		rand.Int(),
+		rand.Float64(),
+		rand.Int(),
+		time.Now(),
+		time.Now(),
 		id,
 	)
 

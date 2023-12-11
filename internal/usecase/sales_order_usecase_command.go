@@ -44,21 +44,22 @@ func (r *SalesOrderCommandUsecaseGeneral) deleteDetail(ctx context.Context, orde
 	return nil
 }
 
-func (r *SalesOrderCommandUsecaseGeneral) insertDetail(ctx context.Context, lines []model.SalesOrderLine, orderId, createdBy, tm int64, tx pgx.Tx) error {
+func (r *SalesOrderCommandUsecaseGeneral) insertDetail(ctx context.Context, lines []model.SalesOrderLines, orderId, createdBy, tm int64, tx pgx.Tx) error {
 	for _, line := range lines {
 		lineIns := entity.SalesOrderLine{
-			SalesOrderHeaderId: orderId,
-			ProductID:          line.ProductID,
-			ProductName:        line.ProductName,
-			Quantity:           line.Quantity,
-			RateItem:           line.RateItem,
-			TaxRate:            line.TaxRate,
-			Subtotal:           line.RateItem * float64(line.Quantity),
-			Grandtotal:         line.RateItem*float64(line.Quantity) + line.TaxRate,
-			CreatedBy:          createdBy,
-			CreatedAt:          tm,
-			UpdatedBy:          createdBy,
-			UpdatedAt:          tm,
+			ID:                 0,
+			SalesOrderHeaderId: 0,
+			ProductID:          "",
+			ProductName:        line.Item,
+			Quantity:           0,
+			RateItem:           0,
+			TaxRate:            0,
+			Subtotal:           0,
+			Grandtotal:         0,
+			CreatedBy:          0,
+			CreatedAt:          0,
+			UpdatedBy:          0,
+			UpdatedAt:          0,
 		}
 
 		_, err := r.lineRepo.Create(ctx, lineIns, tx)
@@ -195,7 +196,7 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 	return orderId, nil, nil
 }
 
-func (r *SalesOrderCommandUsecaseGeneral) Update(ctx context.Context, id int64, order model.SalesOrderHeader) (int64, interface{}, error) {
+func (r *SalesOrderCommandUsecaseGeneral) Update(ctx context.Context, id int64, order model.SalesOrder) (int64, interface{}, error) {
 	tx, err := r.orderRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
@@ -203,26 +204,24 @@ func (r *SalesOrderCommandUsecaseGeneral) Update(ctx context.Context, id int64, 
 
 	tmNow := time.Now().UnixNano() / 1000000
 
-	var subtotal float64
-	var taxes float64
+	//var subtotal float64
+	//var taxes float64
 
-	for _, line := range order.Lines {
-		subtotal += line.RateItem * float64(line.Quantity)
-		taxes += line.TaxRate * float64(line.Quantity)
-	}
-	grandtotal := subtotal + taxes
+	//for _, line := range order.Lines {
+	//	subtotal += line.RateItem * float64(line.Quantity)
+	//	taxes += line.TaxRate * float64(line.Quantity)
+	//}
+	//grandtotal := subtotal + taxes
 
-	updatedSalesOrder := entity.SalesOrderHeader{
-		OrderNumber:  order.OrderNumber,
-		CustomerID:   order.CustomerID,
-		CustomerName: order.CustomerName,
-		Subtotal:     subtotal,
-		Tax:          taxes,
-		Grandtotal:   grandtotal,
-		CreatedBy:    order.CreatedBy,
-		CreatedAt:    tmNow,
-		UpdatedBy:    order.CreatedBy,
-		UpdatedAt:    tmNow,
+	updatedSalesOrder := entity.SalesOrder{
+		ID:          0,
+		Entity:      "",
+		TranDate:    "",
+		OrderStatus: "",
+		StartDate:   "",
+		EndDate:     "",
+		Memo:        "",
+		CustBody2:   "",
 	}
 
 	err = r.orderRepo.Update(ctx, id, updatedSalesOrder, tx)
@@ -255,7 +254,7 @@ func (r *SalesOrderCommandUsecaseGeneral) Update(ctx context.Context, id int64, 
 		return 0, nil, err
 	}
 
-	err = r.insertDetail(ctx, order.Lines, id, order.CreatedBy, tmNow, tx)
+	err = r.insertDetail(ctx, order.Lines, id, 12, tmNow, tx)
 	if err != nil {
 		r.orderRepo.RollbackTx(ctx, tx)
 
