@@ -163,7 +163,8 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 	}
 
 	log.Println("custPrivyUsgParam ", custPrivyUsgParam)
-	_, err = r.orderPrivy.CreateSalesOrder(ctx, custPrivyUsgParam)
+	test, err := r.orderPrivy.CreateSalesOrder(ctx, custPrivyUsgParam)
+	log.Print("TESTING", test, err)
 	if err != nil {
 		r.orderRepo.RollbackTx(ctx, tx)
 
