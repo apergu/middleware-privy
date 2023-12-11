@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"log"
 	"middleware/pkg/credential"
 	"time"
 
@@ -147,6 +148,8 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 	//
 	//	return 0, nil, err
 	//}
+
+	log.Println("SALES ORDER ", order)
 
 	custPrivyUsgParam := credential.SalesOrderParams{
 		RecordType:  "salesord",
