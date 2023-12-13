@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"log"
 	"middleware/pkg/credential"
 	"time"
@@ -161,6 +162,10 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 		EndDate:     order.EndDate,
 		Memo:        order.Memo,
 		CustBody2:   order.CustBody2,
+	}
+
+	if r.orderPrivy == nil {
+		return 0, nil, errors.New("orderPrivy is nil")
 	}
 
 	log.Println("custPrivyUsgParam ", custPrivyUsgParam)
