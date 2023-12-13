@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"log"
 	"middleware/pkg/credential"
 	"time"
@@ -96,7 +97,29 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 
 	//tmNow := time.Now().UnixNano() / 1000000
 
-	//insertOrder := entity.SalesOrder{
+	//var subtotal float64
+	//var taxes float64
+
+	//for _, line := range order.Lines {
+	//	subtotal += line.RateItem * float64(line.Quantity)
+	//	taxes += line.TaxRate * float64(line.Quantity)
+	//}
+	//grandtotal := subtotal + taxes
+	//
+	//insertSalesOrder := entity.SalesOrderHeader{
+	//	OrderNumber:  order.OrderNumber,
+	//	CustomerID:   order.CustomerID,
+	//	CustomerName: order.CustomerName,
+	//	Subtotal:     subtotal,
+	//	Tax:          taxes,
+	//	Grandtotal:   grandtotal,
+	//	CreatedBy:    order.CreatedBy,
+	//	CreatedAt:    tmNow,
+	//	UpdatedBy:    order.CreatedBy,
+	//	UpdatedAt:    tmNow,
+	//}
+
+	//insertSalesOrder := entity.SalesOrder{
 	//	Entity:      order.Entity,
 	//	TranDate:    order.TranDate,
 	//	OrderStatus: order.OrderStatus,
@@ -106,7 +129,7 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 	//	CustBody2:   order.CustBody2,
 	//}
 	//
-	//orderId, err := r.orderRepo.Create(ctx, insertOrder, tx)
+	//orderId, err := r.orderRepo.Create(ctx, insertSalesOrder, tx)
 	//if err != nil {
 	//	r.orderRepo.RollbackTx(ctx, tx)
 	//
@@ -114,25 +137,30 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 	//		WithFields(logrus.Fields{
 	//			"at":    "SalesOrderCommandUsecaseGeneral.Create",
 	//			"src":   "orderRepo.Create",
-	//			"param": insertOrder,
+	//			"param": insertSalesOrder,
 	//		}).
 	//		Error(err)
 	//
 	//	return 0, nil, err
 	//}
 
-	// Find customer by order.Entity
-	//customerFilter := repository.CustomerFilter{
-	//	EnterprisePrivyID: &order.Entity,
-	//}
-	//customers, _ := r.custRepo.Find(ctx, customerFilter, 1, 0, nil)
+	//err = r.insertDetail(ctx, order.Lines, orderId, order.CreatedBy, tmNow, tx)
+	//if err != nil {
+	//	r.orderRepo.RollbackTx(ctx, tx)
 	//
-	//var customer entity.Customer
-	//if len(customers) > 0 {
-	//	customer = customers[0]
+	//	logrus.
+	//		WithFields(logrus.Fields{
+	//			"at":  "SalesOrderCommandUsecaseGeneral.Create",
+	//			"src": "SalesOrderCommandUsecaseGeneral.insertDetail",
+	//		}).
+	//		Error(err)
+	//
+	//	return 0, nil, err
 	//}
 
-	privyParam := credential.SalesOrderParams{
+	log.Println("SALES ORDER ", order)
+
+	custPrivyUsgParam := credential.SalesOrderParams{
 		RecordType:  "salesord",
 		Entity:      order.Entity,
 		TranDate:    order.TranDate,
@@ -141,43 +169,30 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 		EndDate:     order.EndDate,
 		Memo:        order.Memo,
 		CustBody2:   order.CustBody2,
-		//CustRecordCustomerName: strconv.Itoa(int(customer.CustomerInternalID)),
-		// Add other parameters as needed
 	}
 
-	resp, err := r.orderPrivy.CreateSalesOrder(ctx, privyParam)
-	log.Println("RESP ", resp)
+	log.Println("ORDER PRIVY ", r.orderPrivy)
+
+	if r.orderPrivy == nil {
+		return 0, nil, errors.New("orderPrivy is nil")
+	}
+
+	log.Println("custPrivyUsgParam ", custPrivyUsgParam)
+	test, err := r.orderPrivy.CreateSalesOrder(ctx, custPrivyUsgParam)
+	log.Print("TESTING", test, err)
 	if err != nil {
 		r.orderRepo.RollbackTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
-				"at":    "SalesOrderCommandUsecaseGeneral.Create",
-				"src":   "orderPrivy.CreateSalesOrder",
-				"param": privyParam,
+				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
+				"src":   "customerPrivy.CreateCustomerUsage",
+				"param": custPrivyUsgParam,
 			}).
 			Error(err)
 
 		return 0, nil, err
 	}
-
-	//insertOrder.ID = resp.Data.RecordID
-	//insertOrder. = customer.CustomerInternalID
-
-	//err = r.orderRepo.Update(ctx, orderId, insertOrder, tx)
-	//if err != nil {
-	//	r.orderRepo.RollbackTx(ctx, tx)
-	//
-	//	logrus.
-	//		WithFields(logrus.Fields{
-	//			"at":    "SalesOrderCommandUsecaseGeneral.Create",
-	//			"src":   "orderRepo.Update",
-	//			"param": insertOrder,
-	//		}).
-	//		Error(err)
-	//
-	//	return 0, nil, err
-	//}
 
 	err = r.orderRepo.CommitTx(ctx, tx)
 	if err != nil {
@@ -186,7 +201,7 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 		logrus.
 			WithFields(logrus.Fields{
 				"at":  "SalesOrderCommandUsecaseGeneral.Create",
-				"src": "orderRepo.CommitTx",
+				"src": "custRepo.CommitTx",
 			}).
 			Error(err)
 
