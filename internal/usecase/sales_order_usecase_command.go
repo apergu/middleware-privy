@@ -171,6 +171,8 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 		CustBody2:   order.CustBody2,
 	}
 
+	log.Println("ORDER PRIVY ", r.orderPrivy)
+
 	if r.orderPrivy == nil {
 		return 0, nil, errors.New("orderPrivy is nil")
 	}
