@@ -23,11 +23,17 @@ type SalesOrderCommandUsecaseGeneral struct {
 }
 
 func NewSalesOrderCommandUsecaseGeneral(prop SalesOrderUsecaseProperty) *SalesOrderCommandUsecaseGeneral {
-	return &SalesOrderCommandUsecaseGeneral{
+	orderUsecase := &SalesOrderCommandUsecaseGeneral{
 		orderRepo:  prop.SalesOrderHeaderRepo,
 		lineRepo:   prop.SalesOrderLineRepo,
 		orderPrivy: prop.SalesOrderPrivy,
 	}
+
+	if orderUsecase.orderPrivy == nil {
+		log.Println("Warning: orderPrivy is nil in NewSalesOrderCommandUsecaseGeneral")
+	}
+
+	return orderUsecase
 }
 
 func (r *SalesOrderCommandUsecaseGeneral) deleteDetail(ctx context.Context, orderId int64, tx pgx.Tx) error {
