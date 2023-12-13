@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"middleware/pkg/credential"
 
 	"middleware/internal/model"
 	"middleware/internal/repository"
@@ -10,6 +11,7 @@ import (
 type SalesOrderUsecaseProperty struct {
 	SalesOrderHeaderRepo repository.SalesOrderHeaderRepository
 	SalesOrderLineRepo   repository.SalesOrderLineRepository
+	SalesOrderPrivy      credential.Credential
 }
 
 type SalesOrderQueryUsecase interface {

@@ -23,8 +23,9 @@ type SalesOrderCommandUsecaseGeneral struct {
 
 func NewSalesOrderCommandUsecaseGeneral(prop SalesOrderUsecaseProperty) *SalesOrderCommandUsecaseGeneral {
 	return &SalesOrderCommandUsecaseGeneral{
-		orderRepo: prop.SalesOrderHeaderRepo,
-		lineRepo:  prop.SalesOrderLineRepo,
+		orderRepo:  prop.SalesOrderHeaderRepo,
+		lineRepo:   prop.SalesOrderLineRepo,
+		orderPrivy: prop.SalesOrderPrivy,
 	}
 }
 
