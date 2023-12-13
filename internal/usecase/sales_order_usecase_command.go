@@ -33,6 +33,7 @@ func NewSalesOrderCommandUsecaseGeneral(prop SalesOrderUsecaseProperty) *SalesOr
 		log.Println("Warning: orderPrivy is nil in NewSalesOrderCommandUsecaseGeneral")
 	}
 
+	log.Println("orderUsecase ", orderUsecase.orderPrivy)
 	return orderUsecase
 }
 
