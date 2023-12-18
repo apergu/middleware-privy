@@ -1,6 +1,8 @@
 package entity
 
 type TopUp struct {
+	TopupID     int64  `json:"topupId"`
+	TopUpUUID   string `-`
 	SoNo        string `json:"sono"`
 	CustomerId  string `json:"customerid"`
 	MerchantId  string `json:"merchantid"`
