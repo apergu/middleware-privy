@@ -13,7 +13,7 @@ type TopUpParam struct {
 	CustRecordPrivyMbItemId      string `json:"cust_record_privy_mb_itemid"`
 	CustRecordPrivyMbQtyBalance  int64  `json:"cust_record_privy_mb_qty_balance"`
 	CustRecordPrivyMbRate        string `json:"cust_record_privy_mb_rate"`
-	CustRecordPrivyMbPrepaid     string `json:"cust_record_privy_mb_prepaid"`
+	CustRecordPrivyMbPrepaid     bool   `json:"cust_record_privy_mb_prepaid"`
 	CustRecordPrivyMbQuotationId string `json:"cust_record_privy_mb_quotationid"`
 	CustRecordPrivyMbVoidDate    string `json:"cust_record_privy_mb_void_date"`
 	CustRecordPrivyMbAmount      string `json:"cust_record_privy_mb_amount"`
