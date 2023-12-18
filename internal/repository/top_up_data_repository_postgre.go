@@ -477,7 +477,6 @@ func (c *TopUpDataRepositoryPostgre) Update(ctx context.Context, id int64, topup
 		topup.MerchantId,
 		topup.ChannelId,
 		topup.Prepaid,
-		topup.TopupID,
 		topup.CreatedBy,
 		topup.CreatedAt,
 		topup.UpdatedBy,

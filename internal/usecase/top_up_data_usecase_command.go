@@ -180,7 +180,7 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 		CustRecordPrivyMbCustomerId:  topUpData.CustomerId,
 		CustRecordPrivyMbMerchantId:  topUpData.MerchantId,
 		CustRecordPrivyMbChannelId:   topUpData.ChannelId,
-		CustRecordPrivyMbStartDate:   "",
+		CustRecordPrivyMbStartDate:   topUpData.StartDate,
 		CustRecordPrivyMbEndDate:     topUpData.EndDate,
 		CustRecordPrivyMbDuration:    topUpData.Duration,
 		CustRecordPrivyMbBilling:     topUpData.Billing,
