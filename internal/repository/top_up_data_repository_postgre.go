@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"log"
 	"strconv"
 	"strings"
@@ -355,6 +356,8 @@ func (c *TopUpDataRepositoryPostgre) Create(ctx context.Context, topup entity.To
 		cmd = tx
 	}
 
+	topUpUUid := uuid.New().String()
+
 	var id int64
 	query := `insert into top_up_data (
 		top_up_id,
@@ -386,7 +389,7 @@ func (c *TopUpDataRepositoryPostgre) Create(ctx context.Context, topup entity.To
 		QueryRow(
 			ctx,
 			query,
-			topup.TopupID,
+			topUpUUid,
 			topup.SoNo,
 			topup.CustomerId,
 			topup.MerchantId,
