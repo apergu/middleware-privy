@@ -15,7 +15,7 @@ type TopUp struct {
 	ItemId          string `json:"itemid"`
 	QtyBalance      int64  `json:"balance"`
 	Rate            string `json:"rate"`
-	Prepaid         string `json:"prepaid"`
+	Prepaid         bool   `json:"prepaid"`
 	QuotationId     string `json:"quotationid"`
 	VoidDate        string `json:"void_date"`
 	Amount          string `json:"amount"`
