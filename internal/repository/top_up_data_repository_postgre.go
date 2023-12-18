@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -407,6 +408,8 @@ func (c *TopUpDataRepositoryPostgre) Create(ctx context.Context, topup entity.To
 			topup.UpdatedAt,
 		).
 		Scan(&id)
+
+	log.Println("ALL TOP UP", topup)
 
 	if err != nil {
 		logrus.
