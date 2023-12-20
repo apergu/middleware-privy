@@ -34,6 +34,7 @@ type Channel interface {
 
 type Credential interface {
 	Lead
+	TopUp
 	Customer
 	CustomerUsage
 	SalesOrder
