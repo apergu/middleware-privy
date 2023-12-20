@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"middleware/pkg/credential"
 
 	"middleware/internal/entity"
 	"middleware/internal/model"
@@ -15,6 +16,7 @@ type TopUpDataUsecaseProperty struct {
 	CustomerRepo   repository.CustomerQueryRepository
 	MerchantRepo   repository.MerchantQueryRepository
 	ChannelRepo    repository.ChannelQueryRepository
+	TopUpPrivy     credential.Credential
 }
 
 type TopUpDataQueryUsecase interface {

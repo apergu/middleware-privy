@@ -33,6 +33,7 @@ func NewTopUpDataCommandUsecaseGeneral(prop TopUpDataUsecaseProperty) *TopUpData
 		merchantRepo: prop.MerchantRepo,
 		channelRepo:  prop.ChannelRepo,
 		topupPrivy:   prop.TopUpDataPrivy,
+		topUpCred:    prop.TopUpPrivy,
 	}
 }
 
