@@ -160,6 +160,7 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 	log.Println("tup2", r.topupRepo)
 	log.Println("tup3", r.channelRepo)
 	log.Println("tup4", r.customerRepo)
+	log.Println("tup4", r.topUpCred)
 	_, err = r.topupPrivy.CreateTopup(ctx, param)
 	if err != nil {
 		r.topupRepo.RollbackTx(ctx, tx)
