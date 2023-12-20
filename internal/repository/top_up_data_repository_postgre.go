@@ -382,8 +382,8 @@ func (c *TopUpDataRepositoryPostgre) Create(ctx context.Context, topup entity.To
                          updated_by,
                          updated_at
 	) values (
-		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-		,$11, $12, $13, $14, $15, $16, $17, $18, $19, $20
+		$1, $2, $3, $4, $5, TO_DATE($6, 'DD/MM/YYYY'), TO_DATE($7, 'DD/MM/YYYY'), $8, $9, $10
+		,$11, $12, $13, $14, TO_DATE($15, 'DD/MM/YYYY'), $16, $17, $18, $19, $20
 	) RETURNING id`
 
 	err := cmd.
@@ -441,8 +441,8 @@ func (c *TopUpDataRepositoryPostgre) Update(ctx context.Context, id int64, topup
 		customer_id = $2,
         merchant_id = $3,
         channel_id = $4,
-                         "start_date" = $5,
-                         "end_date" = $6,
+                         "start_date" = TO_DATE($5, 'DD/MM/YYYY'),
+                         "end_date" = TO_DATE($6, 'DD/MM/YYYY'),
                          duration = $7,
                          billing = $8,
                          item_id = $9,
@@ -450,7 +450,7 @@ func (c *TopUpDataRepositoryPostgre) Update(ctx context.Context, id int64, topup
                          rate = $11,
                          prepaid = $13,
                          quotation_id = $14,
-                         void_date = $15,
+                         void_date = TO_DATE($15, 'DD/MM/YYYY'),
                          amount = $16,
                          updated_by = $17,
                          updated_at = $18
