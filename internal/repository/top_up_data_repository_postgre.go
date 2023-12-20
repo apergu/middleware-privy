@@ -7,6 +7,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 
 	"middleware/internal/entity"
 	"middleware/pkg/pgxerror"
@@ -406,9 +407,9 @@ func (c *TopUpDataRepositoryPostgre) Create(ctx context.Context, topup entity.To
 			topup.VoidDate,
 			topup.Amount,
 			topup.CreatedBy,
-			topup.CreatedAt,
+			time.Unix(0, topup.CreatedAt*int64(time.Millisecond)),
 			topup.UpdatedBy,
-			topup.UpdatedAt,
+			time.Unix(0, topup.UpdatedAt*int64(time.Millisecond)),
 		).
 		Scan(&id)
 
