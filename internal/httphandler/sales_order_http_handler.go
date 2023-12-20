@@ -25,6 +25,7 @@ func NewSalesOrderHttpHandler(prop HTTPHandlerProperty) http.Handler {
 	ucProp := usecase.SalesOrderUsecaseProperty{
 		SalesOrderHeaderRepo: repository.NewSalesOrderHeaderRepositoryPostgre(prop.DBPool),
 		SalesOrderLineRepo:   repository.NewSalesOrderLineRepositoryPostgre(prop.DBPool),
+		SalesOrderPrivy:      prop.DefaultCredential,
 	}
 
 	handler := SalesOrderHttpHandler{
