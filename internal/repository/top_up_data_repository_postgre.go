@@ -434,51 +434,47 @@ func (c *TopUpDataRepositoryPostgre) Update(ctx context.Context, id int64, topup
 		cmd = tx
 	}
 
-	query := `update top_up_datas
+	query := `update top_up_data
 	set
-		merchant_id = $1,
-		transaction_id = $2,
-		enterprise_id = $3,
-		enterprise_name = $4,
-		original_service_id = $5,
-		service_id = $6,
-		"service_name" = $7,
-		"quantity" = $8,
-		transaction_date = $9,
-		merchant_code = $13,
-		channel_id = $14,
-		channel_code = $15,
-		customer_internalid = $16,
-		merchant_internalid = $17,
-		channel_internalid = $18,
-		transaction_type = $19,
-		topup_id = $20,
-		updated_by = $10,
-		updated_at = $11
+		so_number = $1,
+		customer_id = $2,
+        merchant_id = $3,
+        channel_id = $4,
+                         "start_date" = $5,
+                         "end_date" = $6,
+                         duration = $7,
+                         billing = $8,
+                         item_id = $9,
+                         balance = $10,
+                         rate = $11,
+                         prepaid = $13,
+                         quotation_id = $14,
+                         void_date = $15,
+                         amount = $16,
+                         updated_by = $17,
+                         updated_at = $18
 	where
 		id = $12`
 
 	_, err := cmd.Exec(
 		ctx,
 		query,
-		topup.MerchantId,
 		topup.SoNo,
 		topup.CustomerId,
-		topup.CustomerId,
-		topup.ItemId,
-		topup.ItemId,
+		topup.MerchantId,
+		topup.ChannelId,
+		topup.StartDate,
+		topup.EndDate,
+		topup.Duration,
+		topup.Billing,
 		topup.ItemId,
 		topup.QtyBalance,
-		topup.StartDate,
-		topup.MerchantId,
-		topup.ChannelId,
-		topup.ChannelId,
-		topup.CustomerId,
-		topup.MerchantId,
-		topup.ChannelId,
+		topup.Rate,
+		id,
 		topup.Prepaid,
-		topup.CreatedBy,
-		topup.CreatedAt,
+		topup.QuotationId,
+		topup.VoidDate,
+		topup.Amount,
 		topup.UpdatedBy,
 		topup.UpdatedAt,
 	)
@@ -496,27 +492,25 @@ func (c *TopUpDataRepositoryPostgre) Update2(ctx context.Context, id int64, topu
 		cmd = tx
 	}
 
-	query := `update top_up_datas
+	query := `update top_up_data
 	set
-		merchant_id = $1,
-		transaction_id = $2,
-		enterprise_id = $3,
-		enterprise_name = $4,
-		original_service_id = $5,
-		service_id = $6,
-		"service_name" = $7,
-		"quantity" = $8,
-		transaction_date = $9,
-		merchant_code = $13,
-		channel_id = $14,
-		channel_code = $15,
-		customer_internalid = $16,
-		merchant_internalid = $17,
-		channel_internalid = $18,
-		transaction_type = $19,
-		topup_id = $20,
-		updated_by = $10,
-		updated_at = $11
+		so_number = $1,
+		customer_id = $2,
+        merchant_id = $3,
+        channel_id = $4,
+                         "start_date" = $5,
+                         "end_date" = $6,
+                         duration = $7,
+                         billing = $8,
+                         item_id = $9,
+                         balance = $10,
+                         rate = $11,
+                         prepaid = $13,
+                         quotation_id = $14,
+                         void_date = $15,
+                         amount = $16,
+                         updated_by = $17,
+                         updated_at = $18
 	where
 		id = $12`
 

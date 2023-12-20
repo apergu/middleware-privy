@@ -116,9 +116,9 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 		CustomerId:  customer.CustomerID,
 		StartDate:   topUpData.StartDate,
 		EndDate:     topUpData.EndDate,
-		CreatedBy:   topUpData.CreatedBy,
+		CreatedBy:   1,
 		CreatedAt:   tmNow,
-		UpdatedBy:   topUpData.CreatedBy,
+		UpdatedBy:   1,
 		UpdatedAt:   tmNow,
 	}
 
