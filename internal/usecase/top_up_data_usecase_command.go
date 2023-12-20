@@ -156,6 +156,7 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 		Reversal:        false,
 		ID:              topupIdUUID,
 	}
+	log.Println("REQ", r)
 	_, err = r.topupPrivy.CreateTopup(ctx, param)
 	if err != nil {
 		r.topupRepo.RollbackTx(ctx, tx)
