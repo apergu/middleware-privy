@@ -31,6 +31,7 @@ func NewTopUpDataHttpHandler(prop HTTPHandlerProperty) http.Handler {
 		CustomerRepo:   repository.NewCustomerRepositoryPostgre(prop.DBPool),
 		MerchantRepo:   repository.NewMerchantRepositoryPostgre(prop.DBPool),
 		ChannelRepo:    repository.NewChannelRepositoryPostgre(prop.DBPool),
+		TopUpPrivy:     prop.DefaultCredential,
 	}
 
 	handler := TopUpDataHttpHandler{

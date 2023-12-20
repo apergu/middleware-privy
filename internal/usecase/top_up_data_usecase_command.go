@@ -23,7 +23,7 @@ type TopUpDataCommandUsecaseGeneral struct {
 	merchantRepo repository.MerchantQueryRepository
 	channelRepo  repository.ChannelQueryRepository
 	topupPrivy   privy.TopupData
-	topUpCred    credential.Merchant
+	topUpCred    credential.TopUp
 }
 
 func NewTopUpDataCommandUsecaseGeneral(prop TopUpDataUsecaseProperty) *TopUpDataCommandUsecaseGeneral {
@@ -160,7 +160,6 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 	log.Println("tup2", r.topupRepo)
 	log.Println("tup3", r.channelRepo)
 	log.Println("tup4", r.customerRepo)
-	log.Println("tup4", r.topUpCred)
 	_, err = r.topupPrivy.CreateTopup(ctx, param)
 	if err != nil {
 		r.topupRepo.RollbackTx(ctx, tx)
@@ -202,7 +201,7 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 
 	log.Println("TEST", privyParam)
 	log.Println("TEST2", r.topUpCred)
-	//resp, err := r.topUpCred.CreateTopUp(ctx, privyParam)
+	resp, err := r.topUpCred.CreateTopUp(ctx, privyParam)
 	if err != nil {
 		r.topupRepo.RollbackTx(ctx, tx)
 
@@ -217,7 +216,7 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 		return 0, nil, err
 	}
 
-	//insertTopUp.TopupID = resp.Data.RecordID
+	insertTopUp.TopupID = resp.Data.RecordID
 	//insertTopUp.TopUpInternalID = insertTopUp
 
 	err = r.topupRepo.Update(ctx, topupDataId, insertTopUp, tx)
