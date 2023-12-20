@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"log"
 	"strconv"
 	"time"
 
@@ -96,6 +97,8 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 		CustRecordZip:               merchant.ZipCode,
 	}
 
+	log.Println("PRIVY PARAM ", privyParam)
+	log.Println("PRIVY PARAM 2", r.merchantPrivy)
 	resp, err := r.merchantPrivy.CreateMerchant(ctx, privyParam)
 	if err != nil {
 		r.merchantRepo.RollbackTx(ctx, tx)
