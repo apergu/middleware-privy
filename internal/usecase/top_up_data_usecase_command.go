@@ -196,6 +196,7 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 	}
 
 	log.Println("TEST", privyParam)
+	log.Println("TEST2", r.topUpCred)
 	resp, err := r.topUpCred.CreateTopUp(ctx, privyParam)
 	if err != nil {
 		r.topupRepo.RollbackTx(ctx, tx)
