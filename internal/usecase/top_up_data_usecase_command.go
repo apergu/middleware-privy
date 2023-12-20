@@ -181,7 +181,7 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 	}
 
 	privyParam := credential.TopUpParam{
-		RecordType:                   "topup",
+		RecordType:                   "customrecord_privy_master_balance",
 		CustRecordPrivyMbSoNo:        topUpData.SoNo,
 		CustRecordPrivyMbCustomerId:  topUpData.CustomerId,
 		CustRecordPrivyMbMerchantId:  topUpData.MerchantId,
