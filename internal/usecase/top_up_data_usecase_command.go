@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"log"
 	"middleware/pkg/credential"
 	"strings"
 	"time"
@@ -193,6 +194,7 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 		CustRecordPrivyMbAmount:      topUpData.Amount,
 	}
 
+	log.Println("TEST", privyParam)
 	resp, err := r.topUpCred.CreateTopUp(ctx, privyParam)
 	if err != nil {
 		r.topupRepo.RollbackTx(ctx, tx)
