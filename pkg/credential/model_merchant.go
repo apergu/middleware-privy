@@ -16,6 +16,7 @@ type MerchantParam struct {
 	CustRecordState             string `json:"custrecordstate"`
 	CustRecordCity              string `json:"custrecordcity"`
 	CustRecordZip               string `json:"custrecordzip"`
+	Method                      string `json:"method"`
 }
 
 type MerchantResponseData struct {

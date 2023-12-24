@@ -95,6 +95,7 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 		CustRecordState:             merchant.State,
 		CustRecordCity:              merchant.City,
 		CustRecordZip:               merchant.ZipCode,
+		Method:                      "POST",
 	}
 
 	log.Println("PRIVY PARAM ", privyParam)

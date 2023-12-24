@@ -5,6 +5,7 @@ type ChannelParam struct {
 	CustRecordCustomerName     string `json:"custrecordcustomer_name"`
 	CustRecordEnterpriseID     string `json:"custrecordenterprise_id"`
 	CustRecordChannelID        string `json:"custrecordchannel_id"`
+	CustRecordMerchantID       string `json:"custrecordmerchant_id"`
 	CustRecordPrivyCodeChannel string `json:"custrecordprivy_code_channel"`
 	CustRecordChannelName      string `json:"custrecordchanel_name"`
 	CustRecordAddress          string `json:"custrecordaddress"`
