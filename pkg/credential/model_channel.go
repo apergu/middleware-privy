@@ -6,13 +6,14 @@ type ChannelParam struct {
 	CustRecordEnterpriseID     string `json:"custrecordenterprise_id"`
 	CustRecordChannelID        string `json:"custrecordchannel_id"`
 	CustRecordPrivyCodeChannel string `json:"custrecordprivy_code_channel"`
-	CustRecordChannelName      string `json:"custrecordchannel_name"`
+	CustRecordChannelName      string `json:"custrecordchanel_name"`
 	CustRecordAddress          string `json:"custrecordaddress"`
 	CustRecordEmail            string `json:"custrecordemail"`
 	CustRecordPhone            string `json:"custrecordphone"`
 	CustRecordState            string `json:"custrecordstate"`
 	CustRecordCity             string `json:"custrecordcity"`
 	CustRecordZip              string `json:"custrecordzip"`
+	Method                     string `json:"method"`
 }
 
 type ChannelResponseData struct {

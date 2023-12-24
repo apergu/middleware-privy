@@ -93,6 +93,7 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 		CustRecordState:            channelParam.State,
 		CustRecordCity:             channelParam.City,
 		CustRecordZip:              channelParam.ZipCode,
+		Method:                     channelParam.Method,
 	}
 
 	resp, err := r.channelPrivy.CreateChannel(ctx, privyParam)

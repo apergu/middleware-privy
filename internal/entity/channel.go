@@ -20,4 +20,5 @@ type Channel struct {
 	CreatedAt          int64  `json:"createdAt"`
 	UpdatedBy          int64  `json:"-"`
 	UpdatedAt          int64  `json:"updatedAt"`
+	Method             string `json:"method"`
 }

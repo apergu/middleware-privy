@@ -15,6 +15,7 @@ type Channel struct {
 	City         string `json:"city" validate:"max=255"`
 	ZipCode      string `json:"zip" validate:"max=255"`
 	CreatedBy    int64  `json:"-"`
+	Method       string `json:"method"`
 }
 
 func (c Channel) Validate() []map[string]interface{} {
