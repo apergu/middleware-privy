@@ -37,20 +37,21 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 	tmNow := time.Now().UnixNano() / 1000000
 
 	insertChannel := entity.Channel{
-		MerchantID:  channelParam.MerchantID,
-		ChannelCode: channelParam.ChannelCode,
-		ChannelID:   channelParam.ChannelID,
-		ChannelName: channelParam.ChannelName,
-		Address:     channelParam.Address,
-		Email:       channelParam.Email,
-		PhoneNo:     channelParam.PhoneNo,
-		State:       channelParam.State,
-		City:        channelParam.City,
-		ZipCode:     channelParam.ZipCode,
-		CreatedBy:   channelParam.CreatedBy,
-		CreatedAt:   tmNow,
-		UpdatedBy:   channelParam.CreatedBy,
-		UpdatedAt:   tmNow,
+		EnterpriseID: channelParam.EnterpriseID,
+		MerchantID:   channelParam.MerchantID,
+		ChannelCode:  channelParam.ChannelCode,
+		ChannelID:    channelParam.ChannelID,
+		ChannelName:  channelParam.ChannelName,
+		Address:      channelParam.Address,
+		Email:        channelParam.Email,
+		PhoneNo:      channelParam.PhoneNo,
+		State:        channelParam.State,
+		City:         channelParam.City,
+		ZipCode:      channelParam.ZipCode,
+		CreatedBy:    channelParam.CreatedBy,
+		CreatedAt:    tmNow,
+		UpdatedBy:    channelParam.CreatedBy,
+		UpdatedAt:    tmNow,
 	}
 
 	channelId, err := r.channelRepo.Create(ctx, insertChannel, tx)
@@ -82,6 +83,7 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 	privyParam := credential.ChannelParam{
 		RecordType:                 "customrecord_customer_hierarchy",
 		CustRecordCustomerName:     strconv.Itoa(int(merchant.CustomerInternalID)),
+		CustRecordEnterpriseID:     channelParam.EnterpriseID,
 		CustRecordChannelID:        channelParam.ChannelID,
 		CustRecordPrivyCodeChannel: channelParam.MerchantID,
 		CustRecordChannelName:      channelParam.ChannelName,

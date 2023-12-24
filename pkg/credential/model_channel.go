@@ -3,6 +3,7 @@ package credential
 type ChannelParam struct {
 	RecordType                 string `json:"recordtype"`
 	CustRecordCustomerName     string `json:"custrecordcustomer_name"`
+	CustRecordEnterpriseID     string `json:"custrecordenterprise_id"`
 	CustRecordChannelID        string `json:"custrecordchannel_id"`
 	CustRecordPrivyCodeChannel string `json:"custrecordprivy_code_channel"`
 	CustRecordChannelName      string `json:"custrecordchannel_name"`

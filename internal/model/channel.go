@@ -3,17 +3,18 @@ package model
 import "github.com/go-playground/validator/v10"
 
 type Channel struct {
-	MerchantID  string `json:"merchantId" validate:"required,max=255"`
-	ChannelCode string `json:"channelCode" `
-	ChannelID   string `json:"channelId" validate:"required,max=255"`
-	ChannelName string `json:"channelName" validate:"required,max=255"`
-	Address     string `json:"address" validate:"max=1000"`
-	Email       string `json:"email" validate:"email,max=255"`
-	PhoneNo     string `json:"phoneNo"`
-	State       string `json:"state" validate:"max=255"`
-	City        string `json:"city" validate:"max=255"`
-	ZipCode     string `json:"zip" validate:"max=255"`
-	CreatedBy   int64  `json:"-"`
+	MerchantID   string `json:"merchantId" validate:"required,max=255"`
+	EnterpriseID string `json:"enterpriseId" validate:"required,max=255"`
+	ChannelCode  string `json:"channelCode" `
+	ChannelID    string `json:"channelId" validate:"required,max=255"`
+	ChannelName  string `json:"channelName" validate:"required,max=255"`
+	Address      string `json:"address" validate:"max=1000"`
+	Email        string `json:"email" validate:"email,max=255"`
+	PhoneNo      string `json:"phoneNo"`
+	State        string `json:"state" validate:"max=255"`
+	City         string `json:"city" validate:"max=255"`
+	ZipCode      string `json:"zip" validate:"max=255"`
+	CreatedBy    int64  `json:"-"`
 }
 
 func (c Channel) Validate() []map[string]interface{} {
