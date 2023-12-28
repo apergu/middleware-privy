@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -94,6 +95,8 @@ func (c *CredentialPrivy) CreateChannel(ctx context.Context, param ChannelParam)
 
 	custResp := EnvelopeChannel{}
 	err = c.requester.Do(ctx, req, &custResp)
+
+	log.Println("custResp", err, custResp)
 	if err != nil {
 		logrus.
 			WithFields(logrus.Fields{
