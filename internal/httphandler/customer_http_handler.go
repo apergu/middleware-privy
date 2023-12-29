@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"middleware/internal/constants"
 	"middleware/internal/model"
@@ -129,7 +130,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	if payload.CRMLeadID == "" {
 
-		url := "http://aczd:9002/api/v1/zendesk/lead/on-create"
+		url := os.Getenv("ACZD_BASE") + "api/v1/zendesk/lead/on-create"
 
 		// Replace the following map with your actual data
 		data := map[string]interface{}{
@@ -152,7 +153,18 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Make the HTTP POST request
-		resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+		if err != nil {
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		}
+
+		req.Header.Add("Content-Type", "application/json")
+		req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
 		if err != nil {
 			response = rresponser.NewResponserError(err)
 			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
