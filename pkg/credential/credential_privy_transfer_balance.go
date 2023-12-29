@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -13,9 +12,7 @@ import (
 	"gitlab.com/rteja-library3/rapperror"
 )
 
-func (c *CredentialPrivy) CreateSalesOrder(ctx context.Context, param SalesOrderParams) (SalesOrderResponse, error) {
-
-	log.Println("TEST", param)
+func (c *CredentialPrivy) CreateMerchant(ctx context.Context, param MerchantParam) (MerchantResponse, error) {
 	// get jwt
 	isNode := true
 	jwtToken := JWTToken{}
@@ -35,7 +32,7 @@ func (c *CredentialPrivy) CreateSalesOrder(ctx context.Context, param SalesOrder
 			}).
 			Error(err)
 
-		return SalesOrderResponse{}, err
+		return MerchantResponse{}, err
 	}
 
 	// get access token
@@ -68,11 +65,11 @@ func (c *CredentialPrivy) CreateSalesOrder(ctx context.Context, param SalesOrder
 			}).
 			Error(err)
 
-		return SalesOrderResponse{}, err
+		return MerchantResponse{}, err
 	}
 
 	// post customer
-	postSalesOrderURL := c.host + EndpointMerchant
+	postMerchantURL := c.host + EndpointMerchant
 
 	body := new(bytes.Buffer)
 	_ = json.NewEncoder(body).Encode(param)
@@ -81,21 +78,21 @@ func (c *CredentialPrivy) CreateSalesOrder(ctx context.Context, param SalesOrder
 		WithFields(logrus.Fields{
 			"at":   "CredentialPrivy.CreateMerchant",
 			"src":  "EnvelopeMerchant{}.beforeDo",
-			"host": postSalesOrderURL,
+			"host": postMerchantURL,
 		}).
 		Info(body.String())
 
-	req, _ = http.NewRequest(http.MethodPost, postSalesOrderURL, body)
+	req, _ = http.NewRequest(http.MethodPost, postMerchantURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", credential.TokenType+" "+credential.AccessToken)
 
 	q := req.URL.Query()
-	q.Add("script", "175")
+	q.Add("script", "126")
 	q.Add("deploy", "1")
 
 	req.URL.RawQuery = q.Encode()
 
-	custResp := EnvelopeSalesOrder{}
+	custResp := EnvelopeMerchant{}
 	err = c.requester.Do(ctx, req, &custResp)
 	if err != nil {
 		logrus.
@@ -105,11 +102,11 @@ func (c *CredentialPrivy) CreateSalesOrder(ctx context.Context, param SalesOrder
 			}).
 			Error(err)
 
-		return SalesOrderResponse{}, err
+		return MerchantResponse{}, err
 	}
 
 	if len(custResp.SuccessTransaction) == 0 {
-		return SalesOrderResponse{}, rapperror.ErrNotFound(
+		return MerchantResponse{}, rapperror.ErrNotFound(
 			"",
 			"Merchant is not found",
 			"",

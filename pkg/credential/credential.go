@@ -27,6 +27,9 @@ type SalesOrder interface {
 type Merchant interface {
 	CreateMerchant(ctx context.Context, param MerchantParam) (MerchantResponse, error)
 }
+type TransferBalance interface {
+	CreateTransferBalance(ctx context.Context, param TransferBalanceParam) (TransferBalanceResponse, error)
+}
 
 type Channel interface {
 	CreateChannel(ctx context.Context, param ChannelParam) (ChannelResponse, error)
@@ -40,4 +43,5 @@ type Credential interface {
 	SalesOrder
 	Merchant
 	Channel
+	TransferBalance
 }
