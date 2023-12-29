@@ -129,7 +129,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// if payload.CRMLeadID == "" {
-	url := os.Getenv("ACZD_BASE") + "api/v1/zendesk/lead/on-create"
+	url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
 
 	// Replace the following map with your actual data
 	data := map[string]interface{}{
