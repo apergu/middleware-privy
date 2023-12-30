@@ -23,8 +23,9 @@ type TransferBalanceCommandUsecaseGeneral struct {
 
 func NewTransferBalanceCommandUsecaseGeneral(prop TransferBalanceUsecaseProperty) *TransferBalanceCommandUsecaseGeneral {
 	return &TransferBalanceCommandUsecaseGeneral{
-		merchantRepo: prop.TransferBalanceRepo,
-		custRepo:     prop.CustomerRepo,
+		merchantRepo:  prop.TransferBalanceRepo,
+		custRepo:      prop.CustomerRepo,
+		merchantPrivy: prop.TransferBalancePrivy,
 	}
 }
 
