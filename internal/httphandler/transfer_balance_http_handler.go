@@ -124,9 +124,18 @@ func (h TransferBalanceHttpHandler) Create(w http.ResponseWriter, r *http.Reques
 
 		return
 	}
+
+	roleId, meta, err := h.Command.Create(ctx, payload)
+	if err != nil {
+		response = rresponser.NewResponserError(err)
+		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		return
+	}
+
 	log.Println("payload", payload)
 	log.Println("===================")
 	log.Println("Response", response)
+	response = rresponser.NewResponserSuccessCreated("", "Channel successfully created", roleId, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 }
 
