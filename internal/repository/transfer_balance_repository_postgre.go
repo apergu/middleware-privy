@@ -8,8 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
-
 	"middleware/internal/entity"
 	"middleware/pkg/pgxerror"
 	"middleware/pkg/sqlcommand"
@@ -153,10 +151,10 @@ func (c *TransferBalanceRepositoryPostgre) buildFilter(filter TransferBalanceFil
 func (c *TransferBalanceRepositoryPostgre) buildSort(sort string) string {
 	switch sort {
 	case "newest":
-		return `order by top_up_datas.created_at desc`
+		return `order by transfer_balances.created_at desc`
 	}
 
-	return `order by top_up_datas.updated_at desc`
+	return `order by transfer_balances.updated_at desc`
 }
 
 func (c *TransferBalanceRepositoryPostgre) Find(ctx context.Context, filter TransferBalanceFilter, limit, skip int64, tx pgx.Tx) ([]entity.TransferBalance, error) {
@@ -171,30 +169,30 @@ func (c *TransferBalanceRepositoryPostgre) Find(ctx context.Context, filter Tran
 	order := c.buildSort(filter.Sort)
 
 	query := `select
-		top_up_datas."id",
-		top_up_datas.merchant_id,
-		top_up_datas.transaction_id,
-		top_up_datas.enterprise_id,
-		top_up_datas."enterprise_name",
-		top_up_datas.original_service_id,
-		top_up_datas."service_id",
-		top_up_datas.service_name,
-		top_up_datas.quantity,
-		top_up_datas.transaction_date,
-		top_up_datas.merchant_code,
-		top_up_datas.channel_id,
-		top_up_datas.channel_code,
-		top_up_datas.customer_internalid,
-		top_up_datas.merchant_internalid,
-		top_up_datas.channel_internalid,
-		top_up_datas.transaction_type,
-		top_up_datas.topup_id,
-		top_up_datas.created_by,
-		top_up_datas.created_at,
-		top_up_datas.updated_by,
-		top_up_datas.updated_at
+		transfer_balances."id",
+		transfer_balances.merchant_id,
+		transfer_balances.transaction_id,
+		transfer_balances.enterprise_id,
+		transfer_balances."enterprise_name",
+		transfer_balances.original_service_id,
+		transfer_balances."service_id",
+		transfer_balances.service_name,
+		transfer_balances.quantity,
+		transfer_balances.transaction_date,
+		transfer_balances.merchant_code,
+		transfer_balances.channel_id,
+		transfer_balances.channel_code,
+		transfer_balances.customer_internalid,
+		transfer_balances.merchant_internalid,
+		transfer_balances.channel_internalid,
+		transfer_balances.transaction_type,
+		transfer_balances.topup_id,
+		transfer_balances.created_by,
+		transfer_balances.created_at,
+		transfer_balances.updated_by,
+		transfer_balances.updated_at
 	from
-		top_up_datas
+		transfer_balances
 	%s
 	%s
 	%s
@@ -222,9 +220,9 @@ func (c *TransferBalanceRepositoryPostgre) Count(ctx context.Context, filter Tra
 	cond, args := c.buildFilter(filter)
 
 	query := `select
-		count(top_up_datas.id)
+		count(transfer_balances.id)
 	from
-		top_up_datas
+		transfer_balances
 	%s`
 
 	var data int64
@@ -251,32 +249,32 @@ func (c *TransferBalanceRepositoryPostgre) FindOneById(ctx context.Context, id i
 	}
 
 	query := `select
-		top_up_datas."id",
-		top_up_datas.merchant_id,
-		top_up_datas.transaction_id,
-		top_up_datas.enterprise_id,
-		top_up_datas."enterprise_name",
-		top_up_datas.original_service_id,
-		top_up_datas."service_id",
-		top_up_datas.service_name,
-		top_up_datas.quantity,
-		top_up_datas.transaction_date,
-		top_up_datas.merchant_code,
-		top_up_datas.channel_id,
-		top_up_datas.channel_code,
-		top_up_datas.customer_internalid,
-		top_up_datas.merchant_internalid,
-		top_up_datas.channel_internalid,
-		top_up_datas.transaction_type,
-		top_up_datas.topup_id,
-		top_up_datas.created_by,
-		top_up_datas.created_at,
-		top_up_datas.updated_by,
-		top_up_datas.updated_at
+		transfer_balances."id",
+		transfer_balances.merchant_id,
+		transfer_balances.transaction_id,
+		transfer_balances.enterprise_id,
+		transfer_balances."enterprise_name",
+		transfer_balances.original_service_id,
+		transfer_balances."service_id",
+		transfer_balances.service_name,
+		transfer_balances.quantity,
+		transfer_balances.transaction_date,
+		transfer_balances.merchant_code,
+		transfer_balances.channel_id,
+		transfer_balances.channel_code,
+		transfer_balances.customer_internalid,
+		transfer_balances.merchant_internalid,
+		transfer_balances.channel_internalid,
+		transfer_balances.transaction_type,
+		transfer_balances.topup_id,
+		transfer_balances.created_by,
+		transfer_balances.created_at,
+		transfer_balances.updated_by,
+		transfer_balances.updated_at
 	from
-		top_up_datas
+		transfer_balances
 	where
-		top_up_datas.id = $1
+		transfer_balances.id = $1
 	limit 1`
 
 	return c.queryOne(ctx, cmd, query, id)
@@ -306,32 +304,32 @@ func (c *TransferBalanceRepositoryPostgre) FindOneByIdForUpdate(ctx context.Cont
 	var cmd sqlcommand.Command = tx
 
 	query := `select
-		top_up_datas."id",
-		top_up_datas.merchant_id,
-		top_up_datas.transaction_id,
-		top_up_datas.enterprise_id,
-		top_up_datas."enterprise_name",
-		top_up_datas.original_service_id,
-		top_up_datas."service_id",
-		top_up_datas.service_name,
-		top_up_datas.quantity,
-		top_up_datas.transaction_date,
-		top_up_datas.merchant_code,
-		top_up_datas.channel_id,
-		top_up_datas.channel_code,
-		top_up_datas.customer_internalid,
-		top_up_datas.merchant_internalid,
-		top_up_datas.channel_internalid,
-		top_up_datas.transaction_type,
-		top_up_datas.topup_id,
-		top_up_datas.created_by,
-		top_up_datas.created_at,
-		top_up_datas.updated_by,
-		top_up_datas.updated_at
+		transfer_balances."id",
+		transfer_balances.merchant_id,
+		transfer_balances.transaction_id,
+		transfer_balances.enterprise_id,
+		transfer_balances."enterprise_name",
+		transfer_balances.original_service_id,
+		transfer_balances."service_id",
+		transfer_balances.service_name,
+		transfer_balances.quantity,
+		transfer_balances.transaction_date,
+		transfer_balances.merchant_code,
+		transfer_balances.channel_id,
+		transfer_balances.channel_code,
+		transfer_balances.customer_internalid,
+		transfer_balances.merchant_internalid,
+		transfer_balances.channel_internalid,
+		transfer_balances.transaction_type,
+		transfer_balances.topup_id,
+		transfer_balances.created_by,
+		transfer_balances.created_at,
+		transfer_balances.updated_by,
+		transfer_balances.updated_at
 	from
-		top_up_datas
+		transfer_balances
 	where
-		top_up_datas.id = $1
+		transfer_balances.id = $1
 	limit 1
 	FOR UPDATE`
 
@@ -344,50 +342,43 @@ func (c *TransferBalanceRepositoryPostgre) Create(ctx context.Context, topup ent
 		cmd = tx
 	}
 
-	topUpUUid := uuid.New().String()
+	// topUpUUid := uuid.New().String()
 
 	var id int64
-	query := `insert into top_up_data (
-		top_up_id,
-		so_number,
+	query := `insert into transfer_balance (
 		customer_id,
-        merchant_id,
-        channel_id,
-                         start_date,
-                         end_date,
-                         duration,
-                         billing,
-                         item_id,
-                         balance,
-                         rate,
-                         prepaid,
-                         quotation_id,
-                         void_date,
-                         amount,
-                         created_by,
-                         created_at,
-                         updated_by,
-                         updated_at
+		transfer_date,
+		trx_id_from,
+        trx_id_to,
+        merchant_to,
+		channel_to,
+		start_date,
+		end_date,
+		is_trx_created,
+		quantity,
+        created_by,
+        created_at,
+        updated_by,
+        updated_at
 	) values (
-		$1, $2, $3, $4, $5, TO_DATE($6, 'DD/MM/YYYY'), TO_DATE($7, 'DD/MM/YYYY'), $8, $9, $10
-		,$11, $12, $13, $14, TO_DATE($15, 'DD/MM/YYYY'), $16, $17, $18, $19, $20
+		$1, TO_DATE($2, 'DD/MM/YYYY'), $3, $4, $5, $6, TO_DATE($7, 'DD/MM/YYYY'), TO_DATE($8, 'DD/MM/YYYY'), $9, $10
+		,$11, $12, $13, $14
 	) RETURNING id`
 
 	err := cmd.
 		QueryRow(
 			ctx,
 			query,
-			topUpUUid,
-			topup.ChannelTo,
 			topup.CustomerId,
-			topup.MerchantTo,
-			topup.IsTrxCreated,
-			topup.StartDate,
-			topup.EndDate,
-			topup.Quantity,
 			topup.TransferDate,
 			topup.TrxIdFrom,
 			topup.TrxIdTo,
+			topup.MerchantTo,
+			topup.ChannelTo,
+			topup.StartDate,
+			topup.EndDate,
+			topup.IsTrxCreated,
+			topup.Quantity,
 			topup.CreatedBy,
 			time.Unix(0, topup.CreatedAt*int64(time.Millisecond)),
 			topup.UpdatedBy,
@@ -417,46 +408,39 @@ func (c *TransferBalanceRepositoryPostgre) Update(ctx context.Context, id int64,
 		cmd = tx
 	}
 
-	query := `update top_up_data
+	query := `update transfer_balance
 	set
-		so_number = $1,
-		customer_id = $2,
-        merchant_id = $3,
-        channel_id = $4,
-                         "start_date" = TO_DATE($5, 'DD/MM/YYYY'),
-                         "end_date" = TO_DATE($6, 'DD/MM/YYYY'),
-                         duration = $7,
-                         billing = $8,
-                         item_id = $9,
-                         balance = $10,
-                         rate = $11,
-                         prepaid = $13,
-                         quotation_id = $14,
-                         void_date = TO_DATE($15, 'DD/MM/YYYY'),
-                         amount = $16,
-                         updated_by = $17,
-                         updated_at = $18
+		customer_id = $1,
+		transfer_date = $2,
+        trx_id_from = $3,
+        trx_id_to = $4,
+                         "merchant_to" = $5,
+                         "channel_to" = $6,
+                         start_date = TO_DATE($7, 'DD/MM/YYYY'),
+                         end_date = TO_DATE($8, 'DD/MM/YYYY'),
+                         is_trx_created = $9,
+                         quantity = $10,
+                         updated_by = $11,
+                         updated_at = $12
 	where
-		id = $12`
+		id = $13`
 
 	_, err := cmd.Exec(
 		ctx,
 		query,
-		topup.ChannelTo,
 		topup.CustomerId,
-		topup.MerchantTo,
-		topup.StartDate,
-		topup.EndDate,
-		topup.Quantity,
 		topup.TransferDate,
-		topup.IsTrxCreated,
 		topup.TrxIdFrom,
 		topup.TrxIdTo,
-		topup.CreatedBy,
-		topup.CreatedAt,
-		id,
+		topup.MerchantTo,
+		topup.ChannelTo,
+		topup.StartDate,
+		topup.EndDate,
+		topup.IsTrxCreated,
+		topup.Quantity,
 		topup.UpdatedBy,
 		topup.UpdatedAt,
+		id,
 	)
 
 	if err != nil {
@@ -472,7 +456,7 @@ func (c *TransferBalanceRepositoryPostgre) Update2(ctx context.Context, id int64
 		cmd = tx
 	}
 
-	query := `update top_up_data
+	query := `update transfer_balance
 	set
 		so_number = $1,
 		customer_id = $2,
@@ -527,7 +511,7 @@ func (c *TransferBalanceRepositoryPostgre) Delete(ctx context.Context, id int64,
 		cmd = tx
 	}
 
-	query := "delete from top_up_datas where id = $1"
+	query := "delete from transfer_balances where id = $1"
 	_, err := cmd.Exec(
 		ctx,
 		query,
