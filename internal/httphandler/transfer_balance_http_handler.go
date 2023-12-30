@@ -125,6 +125,8 @@ func (h TransferBalanceHttpHandler) Create(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	log.Println("payload", payload)
+	log.Println("===================")
+	log.Println("Response", response)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 }
 
