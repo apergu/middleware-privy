@@ -3,6 +3,7 @@ package httphandler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"middleware/internal/constants"
@@ -123,7 +124,7 @@ func (h TransferBalanceHttpHandler) Create(w http.ResponseWriter, r *http.Reques
 
 		return
 	}
-
+	log.Println("payload", payload)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 }
 
