@@ -12,7 +12,7 @@ import (
 	"gitlab.com/rteja-library3/rapperror"
 )
 
-func (c *CredentialPrivy) CreateMerchant(ctx context.Context, param MerchantParam) (MerchantResponse, error) {
+func (c *CredentialPrivy) CreateTransferBalance(ctx context.Context, param TransferBalanceParam) (TransferBalanceResponse, error) {
 	// get jwt
 	isNode := true
 	jwtToken := JWTToken{}
@@ -27,12 +27,12 @@ func (c *CredentialPrivy) CreateMerchant(ctx context.Context, param MerchantPara
 	if err != nil {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":  "CredentialPrivy.CreateMerchant",
+				"at":  "CredentialPrivy.CreateTransferBalance",
 				"src": "JWTToken{}",
 			}).
 			Error(err)
 
-		return MerchantResponse{}, err
+		return TransferBalanceResponse{}, err
 	}
 
 	// get access token
@@ -44,8 +44,8 @@ func (c *CredentialPrivy) CreateMerchant(ctx context.Context, param MerchantPara
 
 	logrus.
 		WithFields(logrus.Fields{
-			"at":                    "CredentialPrivy.CreateMerchant",
-			"src":                   "EnvelopeMerchant{}.beforeDo",
+			"at":                    "CredentialPrivy.CreateTransferBalance",
+			"src":                   "EnvelopeTransferBalance{}.beforeDo",
 			"grant_type":            "client_credentials",
 			"client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
 			"client_assertion":      jwtToken.SignedJWT,
@@ -60,29 +60,29 @@ func (c *CredentialPrivy) CreateMerchant(ctx context.Context, param MerchantPara
 	if err != nil {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":  "CredentialPrivy.CreateMerchant",
+				"at":  "CredentialPrivy.CreateTransferBalance",
 				"src": "CredentialResponse{}",
 			}).
 			Error(err)
 
-		return MerchantResponse{}, err
+		return TransferBalanceResponse{}, err
 	}
 
 	// post customer
-	postMerchantURL := c.host + EndpointMerchant
+	postTransferBalanceURL := c.host + EndpointChannel
 
 	body := new(bytes.Buffer)
 	_ = json.NewEncoder(body).Encode(param)
 
 	logrus.
 		WithFields(logrus.Fields{
-			"at":   "CredentialPrivy.CreateMerchant",
-			"src":  "EnvelopeMerchant{}.beforeDo",
-			"host": postMerchantURL,
+			"at":   "CredentialPrivy.CreateTransferBalance",
+			"src":  "EnvelopeTransferBalance{}.beforeDo",
+			"host": postTransferBalanceURL,
 		}).
 		Info(body.String())
 
-	req, _ = http.NewRequest(http.MethodPost, postMerchantURL, body)
+	req, _ = http.NewRequest(http.MethodPost, postTransferBalanceURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", credential.TokenType+" "+credential.AccessToken)
 
@@ -92,23 +92,23 @@ func (c *CredentialPrivy) CreateMerchant(ctx context.Context, param MerchantPara
 
 	req.URL.RawQuery = q.Encode()
 
-	custResp := EnvelopeMerchant{}
+	custResp := EnvelopeTransferBalance{}
 	err = c.requester.Do(ctx, req, &custResp)
 	if err != nil {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":  "CredentialPrivy.CreateMerchant",
-				"src": "EnvelopeMerchant{}",
+				"at":  "CredentialPrivy.CreateTransferBalance",
+				"src": "EnvelopeTransferBalance{}",
 			}).
 			Error(err)
 
-		return MerchantResponse{}, err
+		return TransferBalanceResponse{}, err
 	}
 
 	if len(custResp.SuccessTransaction) == 0 {
-		return MerchantResponse{}, rapperror.ErrNotFound(
+		return TransferBalanceResponse{}, rapperror.ErrNotFound(
 			"",
-			"Merchant is not found",
+			"TransferBalance is not found",
 			"",
 			nil,
 		)
