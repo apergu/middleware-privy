@@ -1,15 +1,16 @@
 package credential
 
 type SalesOrderParams struct {
-	RecordType  string `json:"recordtype"`
-	CustomForm  string `json:"customform"`
-	Entity      string `json:"custbody_privy_tb_cust"`
-	TranDate    string `json:"trandate"`
-	OrderStatus string `json:"orderstatus"`
-	StartDate   string `json:"startdate"`
-	EndDate     string `json:"enddate"`
-	Memo        string `json:"memo"`
-	CustBody2   string `json:"custbody2"`
+	RecordType   string `json:"recordtype"`
+	CustomForm   string `json:"customform"`
+	EnterpriseID string `json:"custbody_privy_so_custid"`
+	Entity       string `json:"custbody_privy_tb_cust"`
+	TranDate     string `json:"trandate"`
+	OrderStatus  string `json:"orderstatus"`
+	StartDate    string `json:"startdate"`
+	EndDate      string `json:"enddate"`
+	Memo         string `json:"memo"`
+	CustBody2    string `json:"custbody2"`
 }
 
 type SalesOrderLinesParams struct {
