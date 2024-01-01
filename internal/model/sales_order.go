@@ -3,15 +3,16 @@ package model
 import "middleware/internal/entity"
 
 type SalesOrder struct {
-	ID          int
-	Entity      string `json:"entity"`
-	TranDate    string `json:"trandate"`
-	OrderStatus string `json:"orderstatus"`
-	StartDate   string `json:"startdate"`
-	EndDate     string `json:"enddate"`
-	Memo        string `json:"memo"`
-	CustBody2   string `json:"custbody2"`
-	Lines       []SalesOrderLines
+	ID           int
+	Entity       string `json:"entity"`
+	EnterpriseID string `json:"enterpriseid"`
+	TranDate     string `json:"trandate"`
+	OrderStatus  string `json:"orderstatus"`
+	StartDate    string `json:"startdate"`
+	EndDate      string `json:"enddate"`
+	Memo         string `json:"memo"`
+	CustBody2    string `json:"custbody2"`
+	Lines        []SalesOrderLines
 }
 
 type SalesOrderLines struct {
