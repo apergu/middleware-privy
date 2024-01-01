@@ -161,7 +161,7 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 	log.Println("SALES ORDER ", order)
 
 	custPrivyUsgParam := credential.SalesOrderParams{
-		RecordType:  "salesord",
+		RecordType:  "salesorder",
 		Entity:      order.Entity,
 		TranDate:    order.TranDate,
 		OrderStatus: order.OrderStatus,
