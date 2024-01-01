@@ -2,6 +2,7 @@ package credential
 
 type SalesOrderParams struct {
 	RecordType  string `json:"recordtype"`
+	CustomForm  string `json:"customform"`
 	Entity      string `json:"entity"`
 	TranDate    string `json:"trandate"`
 	OrderStatus string `json:"orderstatus"`
