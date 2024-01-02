@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
@@ -32,6 +33,7 @@ func (r *requester) Do(ctx context.Context, req *http.Request, env Envelope) err
 			nil,
 		)
 	}
+	log.Println("resp.StatusCode", resp)
 	defer resp.Body.Close()
 
 	_ = json.NewDecoder(resp.Body).Decode(env)
