@@ -159,17 +159,31 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 	}
 
 	log.Println("SALES ORDER ", order)
+	lines := []credential.SalesOrderLinesParams{}
+	for _, v := range order.Lines {
+		linesPayload := credential.SalesOrderLinesParams{
+			Merchant:            v.Merchant,
+			Channel:             v.Channel,
+			UnitPriceBeforeDisc: v.UnitPriceBeforeDisc,
+			Item:                v.Item,
+			TaxCode:             v.TaxCode,
+		}
+
+		lines = append(lines, linesPayload)
+		
+	}
 
 	custPrivyUsgParam := credential.SalesOrderParams{
-		RecordType:  "salesorder",
-		CustomForm:  "144",
-		Entity:      order.Entity,
-		TranDate:    order.TranDate,
-		OrderStatus: order.OrderStatus,
-		StartDate:   order.StartDate,
-		EndDate:     order.EndDate,
-		Memo:        order.Memo,
-		CustBody2:   order.CustBody2,
+		RecordType:   "salesorder",
+		CustomForm:   "144",
+		EnterpriseID: order.EnterpriseID,
+		Entity:       order.Entity,
+		TranDate:     order.TranDate,
+		StartDate:    order.StartDate,
+		EndDate:      order.EndDate,
+		Memo:         order.Memo,
+		CustBody2:    order.CustBody2,
+		Lines:        lines,
 	}
 
 	log.Println("ORDER PRIVY ", r.orderPrivy)
