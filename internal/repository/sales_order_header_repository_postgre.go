@@ -307,20 +307,23 @@ func (c *SalesOrderHeaderRepositoryPostgre) Create(ctx context.Context, order en
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
 	) RETURNING id`
 
+	arg := []interface{}{
+		"test_order_number",
+		"asdf",
+		order.Entity,
+		10,
+		10,
+		10,
+		1,
+		2,
+		3,
+		4,
+	}
 	err := cmd.
 		QueryRow(
 			ctx,
 			query,
-			10,
-			10,
-			order.Entity,
-			10,
-			10,
-			10,
-			"test",
-			time.Now(),
-			"test",
-			time.Now(),
+			arg...
 		).
 		Scan(&id)
 
