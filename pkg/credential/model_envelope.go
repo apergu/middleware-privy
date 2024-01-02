@@ -8,6 +8,7 @@ type Envelope interface {
 type MainEnvelope struct {
 	TotalTransactionCreated       int                    `json:"total_transaction_created"`
 	TotalTransactionFailedCreated int                    `json:"total_transaction_failed_created"`
+	FailedMessage                 string                 `json:"failed_message"`
 	Error                         map[string]interface{} `json:"error"`
 }
 
