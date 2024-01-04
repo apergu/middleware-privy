@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"log"
-	"strconv"
 	"time"
 
 	"middleware/internal/entity"
@@ -93,7 +92,7 @@ func (r *TransferBalanceCommandUsecaseGeneral) Create(ctx context.Context, merch
 		CustRecordStartDateLayanan: merchant.StartDate,
 		CustRecordEndDateLayanan:   merchant.EndDate,
 		CustRecordIsTrxIdCreated:   merchant.IsTrxCreated,
-		CustRecordFromQuantity:     strconv.FormatInt(merchant.Quantity, 10),
+		CustRecordFromQuantity:     merchant.Quantity,
 	}
 
 	log.Println("PRIVY PARAM ", privyParam)
