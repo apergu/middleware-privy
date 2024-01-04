@@ -12,7 +12,7 @@ type TransferBalance struct {
 	StartDate    string `json:"startDate"`
 	EndDate      string `json:"endDate"`
 	IsTrxCreated bool   `json:"isTrxCreated"`
-	Quantity     int64  `json:"quantity"`
+	Quantity     string `json:"quantity"`
 	CreatedBy    int64  `json:"-"`
 	CreatedAt    int64  `json:"createdAt"`
 	UpdatedBy    int64  `json:"-"`
