@@ -3,7 +3,7 @@ package credential
 type SalesOrderParams struct {
 	RecordType   string                  `json:"recordtype"`
 	CustomForm   string                  `json:"customform"`
-	EnterpriseID string                  `json:"custbody_privy_so_custid"`
+	EnterpriseID string                  `json:"custbody_privy_so_enterpriseid"`
 	Entity       string                  `json:"custbody_privy_tb_cust"`
 	TranDate     string                  `json:"trandate"`
 	OrderStatus  string                  `json:"orderstatus"`
