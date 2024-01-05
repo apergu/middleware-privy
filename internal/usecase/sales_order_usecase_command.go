@@ -166,11 +166,11 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 			Channel:             v.Channel,
 			UnitPriceBeforeDisc: v.UnitPriceBeforeDisc,
 			Item:                v.Item,
-			TaxCode:             v.TaxCode,
+			TaxCode:             "5",
 		}
 
 		lines = append(lines, linesPayload)
-		
+
 	}
 
 	custPrivyUsgParam := credential.SalesOrderParams{
