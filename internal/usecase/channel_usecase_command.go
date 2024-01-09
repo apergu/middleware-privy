@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"log"
 	"strconv"
 	"time"
 
@@ -53,6 +54,8 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 		UpdatedBy:    channelParam.CreatedBy,
 		UpdatedAt:    tmNow,
 	}
+
+	log.Println("insertChannel", insertChannel)
 
 	channelId, err := r.channelRepo.Create(ctx, insertChannel, tx)
 	if err != nil {
