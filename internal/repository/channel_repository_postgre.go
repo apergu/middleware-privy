@@ -349,6 +349,8 @@ func (c *ChannelRepositoryPostgre) Create(ctx context.Context, channel entity.Ch
 		QueryRow(ctx, duplicateQuery, channel.ChannelID).
 		Scan(&existingID)
 
+	fmt.Println("existingID: ", err)
+
 	if err == nil {
 		// Duplicate entry found
 		return 0, fmt.Errorf("duplicate entry with channel_id %s", channel.ChannelID)
@@ -356,8 +358,6 @@ func (c *ChannelRepositoryPostgre) Create(ctx context.Context, channel entity.Ch
 		// An error occurred while checking for duplicates
 		return 0, pgxerror.FromPgxError(err, "", "ChannelRepositoryPostgre.Create")
 	}
-
-	fmt.Println("existingID: ", existingID)
 
 	var id int64
 	query := `insert into channels (
