@@ -342,7 +342,7 @@ func (c *ChannelRepositoryPostgre) Create(ctx context.Context, channel entity.Ch
 	}
 
 	// Check for duplicate channel_id
-	duplicateQuery := `SELECT id FROM channels WHERE channel_id = ? LIMIT 1`
+	duplicateQuery := `SELECT id FROM channels WHERE channel_id = 'test-005Jan' LIMIT 1`
 	fmt.Println("duplicateQuery", duplicateQuery)
 	var existingID int64
 	err := cmd.
