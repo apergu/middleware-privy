@@ -357,6 +357,8 @@ func (c *ChannelRepositoryPostgre) Create(ctx context.Context, channel entity.Ch
 		return 0, pgxerror.FromPgxError(err, "", "ChannelRepositoryPostgre.Create")
 	}
 
+	fmt.Println("existingID: ", existingID)
+
 	var id int64
 	query := `insert into channels (
 		merchant_id,
