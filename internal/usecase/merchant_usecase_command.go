@@ -101,6 +101,7 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 	log.Println("PRIVY PARAM ", privyParam)
 	log.Println("PRIVY PARAM 2", r.merchantPrivy)
 	resp, err := r.merchantPrivy.CreateMerchant(ctx, privyParam)
+	log.Println("RESP ", err)
 	if err != nil {
 		r.merchantRepo.RollbackTx(ctx, tx)
 
