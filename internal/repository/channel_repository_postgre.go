@@ -348,8 +348,6 @@ func (c *ChannelRepositoryPostgre) Create(ctx context.Context, channel entity.Ch
 	var existingID int64
 	err := cmd.QueryRow(ctx, duplicateQuery, channel.ChannelID).Scan(&existingID)
 
-	fmt.Println("existingID: ", err)
-
 	if err == nil {
 		// Duplicate entry found
 		return 0, fmt.Errorf("duplicate entry with channel_id %s", channel.ChannelID)

@@ -340,6 +340,21 @@ func (c *MerchantRepositoryPostgre) Create(ctx context.Context, merchant entity.
 		cmd = tx
 	}
 
+	// Check for duplicate channel_id
+	duplicateQuery := "SELECT id FROM merchants WHERE merchant_id = $1 AND enterprise_id = $2 LIMIT 1;"
+	fmt.Println("duplicateQuery", duplicateQuery)
+
+	var existingID int64
+	err := cmd.QueryRow(ctx, duplicateQuery, merchant.MerchantID, merchant.EnterpriseID).Scan(&existingID)
+
+	if err == nil {
+		// Duplicate entry found
+		return 0, fmt.Errorf("duplicate entry with merchant_id %s", merchant.MerchantID)
+	} else if err != pgx.ErrNoRows {
+		// An error occurred while checking for duplicates
+		return 0, pgxerror.FromPgxError(err, "", "ChannelRepositoryPostgre.Create")
+	}
+
 	var id int64
 	query := `insert into merchants (
 		customer_id,
@@ -361,7 +376,7 @@ func (c *MerchantRepositoryPostgre) Create(ctx context.Context, merchant entity.
 		,$11, $12 ,$13, $14, $15, $16, $17
 	) RETURNING id`
 
-	err := cmd.
+	err = cmd.
 		QueryRow(
 			ctx,
 			query,
