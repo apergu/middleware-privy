@@ -74,8 +74,8 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 	}
 
 	crdCustParam := credential.CustomerParam{
-		Recordtype:                     "customer",
-		Customform:                     "2",
+		Recordtype: "customer",
+		// Customform:                     "2",
 		EntityID:                       cust.EnterprisePrivyID,
 		IsPerson:                       "F",
 		CompanyName:                    cust.CustomerName,
@@ -205,8 +205,8 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 	}
 
 	crdCustParam := credential.CustomerParam{
-		Recordtype:                     "lead",
-		Customform:                     "2",
+		Recordtype: "lead",
+		// Customform:                     "2",
 		EntityID:                       cust.CRMLeadID,
 		IsPerson:                       "F",
 		CompanyName:                    cust.CustomerName,
@@ -336,8 +336,8 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 	}
 
 	crdCustParam := credential.CustomerParam{
-		Recordtype:                     "lead",
-		Customform:                     "2",
+		Recordtype: "lead",
+		// Customform:                     "2",
 		EntityID:                       cust.CRMLeadID,
 		IsPerson:                       "F",
 		CompanyName:                    cust.CustomerName,
@@ -463,8 +463,8 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 	}
 
 	crdCustParam := credential.CustomerParam{
-		Recordtype:                     "lead",
-		Customform:                     "2",
+		Recordtype: "lead",
+		// Customform:                     "2",
 		EntityID:                       cust.CRMLeadID,
 		IsPerson:                       "F",
 		CompanyName:                    cust.CustomerName,
@@ -588,8 +588,8 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id int6
 	}
 
 	crdCustParam := credential.CustomerParam{
-		Recordtype:                     "lead",
-		Customform:                     "2",
+		Recordtype: "lead",
+		// Customform:                     "2",
 		EntityID:                       cust.CRMLeadID,
 		IsPerson:                       "F",
 		CompanyName:                    cust.CustomerName,
