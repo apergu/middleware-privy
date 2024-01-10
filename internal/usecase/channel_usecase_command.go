@@ -37,8 +37,15 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 
 	tmNow := time.Now().UnixNano() / 1000000
 
+	merchantFind := repository.MerchantFilter{
+		MerchantID: &channelParam.MerchantID,
+	}
+
+	merchants, _ := r.merchantRepo.Find(ctx, merchantFind, 1, 0, nil)
+	log.Println("merchants", merchants)
+
 	insertChannel := entity.Channel{
-		EnterpriseID: channelParam.EnterpriseID,
+		EnterpriseID: merchants[0].EnterpriseID,
 		MerchantID:   channelParam.MerchantID,
 		ChannelCode:  channelParam.ChannelCode,
 		ChannelID:    channelParam.ChannelID,
