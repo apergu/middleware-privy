@@ -37,15 +37,19 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 
 	tmNow := time.Now().UnixNano() / 1000000
 
-	merchantFind := repository.MerchantFilter{
+	// find merchant by merchant.EnterpriseID
+	merchant_filter := repository.MerchantFilter{
 		MerchantID: &channelParam.MerchantID,
 	}
+	merchants, _ := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
 
-	merchants, _ := r.merchantRepo.Find(ctx, merchantFind, 1, 0, nil)
-	log.Println("merchants", merchants)
+	var merchant entity.Merchant
+	if len(merchants) > 0 {
+		merchant = merchants[0]
+	}
 
 	insertChannel := entity.Channel{
-		EnterpriseID: merchants[0].EnterpriseID,
+		EnterpriseID: merchant.EnterpriseID,
 		MerchantID:   channelParam.MerchantID,
 		ChannelCode:  channelParam.ChannelCode,
 		ChannelID:    channelParam.ChannelID,
@@ -77,17 +81,6 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 			Error(err)
 
 		return 0, nil, err
-	}
-
-	// find merchant by merchant.EnterpriseID
-	merchant_filter := repository.MerchantFilter{
-		MerchantID: &channelParam.MerchantID,
-	}
-	merchants, _ := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
-
-	var merchant entity.Merchant
-	if len(merchants) > 0 {
-		merchant = merchants[0]
 	}
 
 	privyParam := credential.ChannelParam{
