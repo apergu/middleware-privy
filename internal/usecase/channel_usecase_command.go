@@ -88,7 +88,7 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 		CustRecordCustomerName:     strconv.Itoa(int(merchant.CustomerInternalID)),
 		CustRecordEnterpriseID:     channelParam.EnterpriseID,
 		CustRecordChannelID:        channelParam.ChannelID,
-		CustRecordMerchantID:       channelParam.MerchantID,
+		CustRecordMerchantID:       channelParam.MerchantID + " - " + merchant.MerchantName,
 		CustRecordPrivyCodeChannel: channelParam.ChannelCode,
 		CustRecordChannelName:      channelParam.ChannelName,
 		CustRecordAddress:          channelParam.Address,
