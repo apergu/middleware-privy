@@ -3,8 +3,8 @@ package model
 import "github.com/go-playground/validator/v10"
 
 type Channel struct {
-	MerchantID   string `json:"merchantId" validate:"max=255"`
-	EnterpriseID string `json:"enterpriseId" validate:"required,max=255"`
+	MerchantID   string `json:"merchantId" validate:"required,max=255"`
+	EnterpriseID string `json:"enterpriseId" validate:"max=255"`
 	ChannelCode  string `json:"channelCode" `
 	ChannelID    string `json:"channelId" validate:"required,max=255"`
 	ChannelName  string `json:"channelName" validate:"required,max=255"`
