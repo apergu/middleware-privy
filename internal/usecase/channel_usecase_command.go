@@ -83,12 +83,21 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 		return 0, nil, err
 	}
 
+	var merchantId string
+
+	if channelParam.MerchantID == "PUT" {
+		merchantId = channelParam.MerchantID
+	} else {
+		merchantId = channelParam.MerchantID + " - " + merchant.MerchantName
+
+	}
+
 	privyParam := credential.ChannelParam{
 		RecordType:                 "customrecord_customer_hierarchy",
 		CustRecordCustomerName:     strconv.Itoa(int(merchant.CustomerInternalID)),
 		CustRecordEnterpriseID:     merchant.EnterpriseID,
 		CustRecordChannelID:        channelParam.ChannelID,
-		CustRecordMerchantID:       channelParam.MerchantID,
+		CustRecordMerchantID:       merchantId,
 		CustRecordPrivyCodeChannel: channelParam.ChannelCode,
 		CustRecordChannelName:      channelParam.ChannelName,
 		CustRecordAddress:          channelParam.Address,
