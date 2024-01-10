@@ -137,7 +137,7 @@ func (c *CredentialPrivy) CreateCustomer(ctx context.Context, param CustomerPara
 	req.Header.Set("Authorization", credential.TokenType+" "+credential.AccessToken)
 
 	q := req.URL.Query()
-	q.Add("script", "126")
+	q.Add("script", "9")
 	q.Add("deploy", "1")
 
 	req.URL.RawQuery = q.Encode()
