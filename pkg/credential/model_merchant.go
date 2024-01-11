@@ -7,6 +7,7 @@ package credential
 type MerchantParam struct {
 	RecordType                  string `json:"recordtype"`
 	CustRecordCustomerName      string `json:"custrecordcustomer_name"`
+	CustRecordEnterpriseID      string `json:"custrecordenterprise_id"`
 	CustRecordMerchantID        string `json:"custrecordmerchant_id"`
 	CustRecordPrivyCodeMerchant string `json:"custrecordprivy_code_merchant"`
 	CustRecordMerchantName      string `json:"custrecordmerchant_name"`
