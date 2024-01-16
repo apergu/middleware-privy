@@ -24,6 +24,7 @@ func NewCustomerUsageCommandUsecaseGeneral(prop CustomerUsageUsecaseProperty) *C
 	return &CustomerUsageCommandUsecaseGeneral{
 		custUsageRepo:      prop.CustomerUsageRepo,
 		merchantRepo:       prop.MerchantRepo,
+		custRepo:           prop.CustRepo,
 		customerUsagePrivy: prop.CustomerPrivy,
 	}
 }
