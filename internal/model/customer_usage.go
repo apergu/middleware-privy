@@ -1,8 +1,9 @@
 package model
 
 import (
-	"github.com/go-playground/validator/v10"
 	"time"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type CustomerUsage struct {
@@ -19,7 +20,7 @@ type CustomerUsage struct {
 	SalesOrderReference int64     `json:"salesOrderReference"`
 	MerchantName        string    `json:"merchantID" validate:"required"`
 	EnterpriseID        string    `json:"enterpriseId" validate:"required,max=255"`
-	EnterpriseName      string    `json:"enterpriseName" validate:"required,max=255"`
+	EnterpriseName      string    `json:"enterpriseName" validate:"max=255"`
 	ChannelName         string    `json:"channelID" validate:"required,max=255"`
 	TrxId               string    `json:"transactionID" validate:"required,max=255"`
 	ServiceID           string    `json:"serviceId" validate:"required,max=255"`
