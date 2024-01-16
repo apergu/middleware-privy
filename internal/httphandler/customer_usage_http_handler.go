@@ -28,6 +28,9 @@ func NewCustomerUsageHttpHandler(prop HTTPHandlerProperty) http.Handler {
 	ucProp := usecase.CustomerUsageUsecaseProperty{
 		CustomerUsageRepo: repository.NewCustomerUsageRepositoryPostgre(prop.DBPool),
 		CustomerPrivy:     prop.DefaultCredential,
+		MerchantRepo:      repository.NewMerchantRepositoryPostgre(prop.DBPool),
+		CustRepo:          repository.NewCustomerRepositoryPostgre(prop.DBPool),
+		ChannelRepo:       repository.NewChannelRepositoryPostgre(prop.DBPool),
 	}
 
 	handler := CustomerUsageHttpHandler{
