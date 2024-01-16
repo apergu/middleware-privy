@@ -84,7 +84,7 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 
 	privyParam := credential.MerchantParam{
 		RecordType:                  "customrecord_customer_hierarchy",
-		CustRecordCustomerName:      customer.CustomerName,
+		CustRecordCustomerName:      customer.CustomerInternalID,
 		CustRecordEnterpriseID:      customer.CustomerID,
 		CustRecordMerchantID:        merchant.MerchantID,
 		CustRecordPrivyCodeMerchant: merchant.MerchantCode,
