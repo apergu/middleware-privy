@@ -16,11 +16,14 @@ import (
 type CustomerUsageCommandUsecaseGeneral struct {
 	custUsageRepo      repository.CustomerUsageCommandRepository
 	customerUsagePrivy credential.CustomerUsage
+	custRepo           repository.CustomerQueryRepository
+	merchantRepo       repository.MerchantQueryRepository
 }
 
 func NewCustomerUsageCommandUsecaseGeneral(prop CustomerUsageUsecaseProperty) *CustomerUsageCommandUsecaseGeneral {
 	return &CustomerUsageCommandUsecaseGeneral{
 		custUsageRepo:      prop.CustomerUsageRepo,
+		merchantRepo:       prop.MerchantRepo,
 		customerUsagePrivy: prop.CustomerPrivy,
 	}
 }
@@ -71,6 +74,26 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		return 0, nil, err
 	}
 
+	customer_filter := repository.CustomerFilter{
+		EnterprisePrivyID: &cust.EnterpriseID,
+	}
+	customers, _ := r.custRepo.Find(ctx, customer_filter, 1, 0, nil)
+
+	var customer entity.Customer
+	if len(customers) > 0 {
+		customer = customers[0]
+	}
+
+	merchant_filter := repository.MerchantFilter{
+		MerchantID: &cust.MerchantName,
+	}
+	merchants, _ := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
+
+	var merchant entity.Merchant
+	if len(merchants) > 0 {
+		merchant = merchants[0]
+	}
+
 	// custPrivyUsgProdId, _ := strconv.Atoi(cust.ProductID)
 
 	custPrivyUsgParam := credential.CustomerUsageParam{
@@ -84,9 +107,9 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		// CustrecordPrivySoTransaction:    int(cust.SalesOrderReference),
 
 		CustrecordPrivyUsageDateIntegrasi:    cust.TransactionDate,
-		CustrecordPrivyCustomerNameIntegrasi: cust.EnterpriseName,
+		CustrecordPrivyCustomerNameIntegrasi: customer.CustomerName,
 		CustrecordPrivyServiceIntegrasi:      cust.ServiceID,
-		CustrecordPrivyMerchantNameIntgrasi:  cust.MerchantName,
+		CustrecordPrivyMerchantNameIntgrasi:  merchant.MerchantName,
 		CustrecordPrivyQuantityIntegrasi:     int64(cust.Usage),
 		CustrecordPrivyTypeTransIntegrasi:    false,
 		CustrecordPrivyChannelNameIntgrasi:   cust.ChannelName,
