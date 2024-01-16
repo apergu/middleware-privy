@@ -73,6 +73,14 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		return 0, nil, err
 	}
 
+	var entityStatus string
+
+	if cust.CRMLeadID != "" {
+		entityStatus = "6"
+	} else {
+		entityStatus = "13"
+	}
+
 	crdCustParam := credential.CustomerParam{
 		Recordtype:                     "customer",
 		Customform:                     "2",
@@ -81,7 +89,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		CompanyName:                    cust.CustomerName,
 		Comments:                       "",
 		Email:                          cust.Email,
-		EntityStatus:                   cust.EntityStatus,
+		EntityStatus:                   entityStatus,
 		URL:                            cust.URL,
 		Phone:                          cust.PhoneNo,
 		AltPhone:                       cust.AltPhone,
