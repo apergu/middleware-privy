@@ -14,6 +14,7 @@ type CustomerUsageUsecaseProperty struct {
 	CustomerPrivy     credential.Credential
 	MerchantRepo      repository.MerchantQueryRepository
 	CustRepo          repository.CustomerQueryRepository
+	ChannelRepo       repository.ChannelQueryRepository
 }
 
 type CustomerUsageQueryUsecase interface {

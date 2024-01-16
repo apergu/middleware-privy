@@ -18,6 +18,7 @@ type CustomerUsageCommandUsecaseGeneral struct {
 	customerUsagePrivy credential.CustomerUsage
 	custRepo           repository.CustomerQueryRepository
 	merchantRepo       repository.MerchantQueryRepository
+	channelRepo        repository.ChannelQueryRepository
 }
 
 func NewCustomerUsageCommandUsecaseGeneral(prop CustomerUsageUsecaseProperty) *CustomerUsageCommandUsecaseGeneral {
@@ -26,6 +27,7 @@ func NewCustomerUsageCommandUsecaseGeneral(prop CustomerUsageUsecaseProperty) *C
 		merchantRepo:       prop.MerchantRepo,
 		custRepo:           prop.CustRepo,
 		customerUsagePrivy: prop.CustomerPrivy,
+		channelRepo:        prop.ChannelRepo,
 	}
 }
 
@@ -96,6 +98,17 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		merchant = merchants[0]
 	}
 
+	channel_filter := repository.ChannelFilter{
+		ChannelID: &cust.ChannelName,
+	}
+
+	channels, _ := r.channelRepo.Find(ctx, channel_filter, 1, 0, nil)
+
+	var channel entity.Channel
+	if len(channels) > 0 {
+		channel = channels[0]
+	}
+
 	// custPrivyUsgProdId, _ := strconv.Atoi(cust.ProductID)
 
 	custPrivyUsgParam := credential.CustomerUsageParam{
@@ -111,10 +124,10 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		CustrecordPrivyUsageDateIntegrasi:    cust.TransactionDate,
 		CustrecordPrivyCustomerNameIntegrasi: customer.CustomerName,
 		CustrecordPrivyServiceIntegrasi:      cust.ServiceID,
-		CustrecordPrivyMerchantNameIntgrasi:  merchant.MerchantName,
+		CustrecordPrivyMerchantNameIntgrasi:  merchant.MerchantName + " - " + merchant.MerchantName,
 		CustrecordPrivyQuantityIntegrasi:     int64(cust.Usage),
 		CustrecordPrivyTypeTransIntegrasi:    false,
-		CustrecordPrivyChannelNameIntgrasi:   cust.ChannelName,
+		CustrecordPrivyChannelNameIntgrasi:   channel.ChannelID + " - " + channel.ChannelName,
 		CcustrecordPrivyTrxIdIntegrasi:       cust.TrxId,
 		CustrecordEnterpriseeID:              cust.EnterpriseID,
 		CustrecordServiceID:                  cust.ServiceID,
