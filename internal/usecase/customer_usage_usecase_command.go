@@ -73,6 +73,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 
 		return 0, nil, err
 	}
+	println("custId", cust.EnterpriseID)
 
 	customer_filter := repository.CustomerFilter{
 		EnterprisePrivyID: &cust.EnterpriseID,
