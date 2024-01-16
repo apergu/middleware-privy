@@ -12,6 +12,7 @@ import (
 type CustomerUsageUsecaseProperty struct {
 	CustomerUsageRepo repository.CustomerUsageRepository
 	CustomerPrivy     credential.Credential
+	MerchantRepo      repository.MerchantQueryRepository
 }
 
 type CustomerUsageQueryUsecase interface {
