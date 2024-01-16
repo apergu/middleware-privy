@@ -127,7 +127,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		CustrecordPrivyMerchantNameIntgrasi:  merchant.MerchantID + " - " + merchant.MerchantName,
 		CustrecordPrivyQuantityIntegrasi:     int64(cust.Usage),
 		CustrecordPrivyTypeTransIntegrasi:    false,
-		CustrecordPrivyChannelNameIntgrasi:   channel.ChannelID + " - " + channel.ChannelName,
+		CustrecordPrivyChannelNameIntgrasi:   channel.ChannelCode + " - " + channel.ChannelName,
 		CcustrecordPrivyTrxIdIntegrasi:       cust.TrxId,
 		CustrecordEnterpriseeID:              cust.EnterpriseID,
 		CustrecordServiceID:                  cust.ServiceID,
