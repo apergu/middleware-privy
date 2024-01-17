@@ -73,6 +73,8 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		return 0, nil, err
 	}
 
+	log.Println("After ERRROR ")
+
 	var entityStatus string
 
 	if cust.CRMLeadID == "" {
@@ -81,7 +83,9 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		entityStatus = "13"
 	}
 
+	log.Println("Before entityStatus log statement")
 	log.Println("entityStatus", entityStatus)
+	log.Println("After entityStatus log statement")
 
 	crdCustParam := credential.CustomerParam{
 		Recordtype:                     "customer",
