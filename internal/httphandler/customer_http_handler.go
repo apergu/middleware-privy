@@ -178,23 +178,24 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	})
 	// } else {
 	if payload.CRMLeadID != "" {
-		if payload.EntityStatus == "13" {
-			roleId, meta, err := h.Command.Create(ctx, payload)
-			if err != nil {
-				response = rresponser.NewResponserError(err)
-				rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-				return
-			}
-			response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
-		} else {
-			roleId, meta, err := h.Command.CreateLead2(ctx, payload)
-			if err != nil {
-				response = rresponser.NewResponserError(err)
-				rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-				return
-			}
-			response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
+		// if payload.EntityStatus == "13" {
+		roleId, meta, err := h.Command.Create(ctx, payload)
+		if err != nil {
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
 		}
+		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
+		// } else {
+		// }
+	} else {
+		roleId, meta, err := h.Command.CreateLead2(ctx, payload)
+		if err != nil {
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		}
+		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 	}
 
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
