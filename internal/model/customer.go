@@ -5,7 +5,7 @@ import (
 )
 
 type Customer struct {
-	CustomerID        string  `json:"customerId" validate:"required,max=255"`
+	CustomerID        string  `json:"customerId" validate:"max=255"`
 	CustomerType      string  `json:"customerType" `
 	CustomerName      string  `json:"customerName" validate:"required,max=255"`
 	FirstName         string  `json:"firstName"`

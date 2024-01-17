@@ -80,6 +80,10 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 		customer = customers[0]
 	}
 
+	// if customer.CustomerInternalID == 0 {
+
+	// }
+
 	// custrecordcustomer_name ambil dari customer
 
 	privyParam := credential.MerchantParam{
