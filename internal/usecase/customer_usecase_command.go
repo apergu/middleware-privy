@@ -81,6 +81,8 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		entityStatus = "13"
 	}
 
+	log.Println("entityStatus", entityStatus)
+
 	crdCustParam := credential.CustomerParam{
 		Recordtype:                     "customer",
 		Customform:                     "2",
