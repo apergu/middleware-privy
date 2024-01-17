@@ -58,6 +58,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 
 	custId, err := r.custRepo.Create(ctx, insertCustomer, tx)
 	log.Println("response", err)
+	log.Println("BEFORE ERRROR ")
 
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)
