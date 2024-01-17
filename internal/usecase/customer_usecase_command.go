@@ -75,7 +75,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 
 	var entityStatus string
 
-	if cust.CRMLeadID != "" {
+	if cust.CRMLeadID == "" {
 		entityStatus = "6"
 	} else {
 		entityStatus = "13"
