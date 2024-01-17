@@ -5,16 +5,16 @@ import (
 )
 
 type Customer struct {
-	CustomerID        string  `json:"customerId" validate:"max=255"`
-	CustomerType      string  `json:"customerType" `
-	CustomerName      string  `json:"customerName" validate:"required,max=255"`
-	FirstName         string  `json:"firstName"`
-	LastName          string  `json:"lastName"`
-	Email             string  `json:"email" validate:"max=255"`
-	PhoneNo           string  `json:"phoneNo" validate:"max=255"`
-	Address           string  `json:"address" validate:"max=1000"`
-	IsPerson          bool    `json:"isPerson"`
-	EntityStatus      string  `json:"entityStatus"`
+	CustomerID   string `json:"customerId" validate:"max=255"`
+	CustomerType string `json:"customerType" `
+	CustomerName string `json:"customerName" validate:"required,max=255"`
+	FirstName    string `json:"firstName"`
+	LastName     string `json:"lastName"`
+	Email        string `json:"email" validate:"max=255"`
+	PhoneNo      string `json:"phoneNo" validate:"max=255"`
+	Address      string `json:"address" validate:"max=1000"`
+	IsPerson     bool   `json:"isPerson"`
+	// EntityStatus      string  `json:"entityStatus"`
 	URL               string  `json:"url"`
 	AltPhone          *string `json:"altPhone"`
 	Fax               *string `json:"fax"`
@@ -31,16 +31,16 @@ type Customer struct {
 }
 
 type Lead struct {
-	CustomerID        string  `json:"customerId" validate:"max=255"`
-	CustomerType      string  `json:"customerType" `
-	CustomerName      string  `json:"customerName" validate:"required,max=255"`
-	FirstName         string  `json:"firstName"`
-	LastName          string  `json:"lastName"`
-	Email             string  `json:"email" validate:"max=255"`
-	PhoneNo           string  `json:"phoneNo" validate:"max=255"`
-	Address           string  `json:"address" validate:"max=1000"`
-	IsPerson          bool    `json:"isPerson"`
-	EntityStatus      string  `json:"entityStatus"`
+	CustomerID   string `json:"customerId" validate:"max=255"`
+	CustomerType string `json:"customerType" `
+	CustomerName string `json:"customerName" validate:"required,max=255"`
+	FirstName    string `json:"firstName"`
+	LastName     string `json:"lastName"`
+	Email        string `json:"email" validate:"max=255"`
+	PhoneNo      string `json:"phoneNo" validate:"max=255"`
+	Address      string `json:"address" validate:"max=1000"`
+	IsPerson     bool   `json:"isPerson"`
+	// EntityStatus      string  `json:"entityStatus"`
 	URL               string  `json:"url"`
 	AltPhone          *string `json:"altPhone"`
 	Fax               *string `json:"fax"`
