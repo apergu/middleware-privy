@@ -219,6 +219,14 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 		return 0, nil, err
 	}
 
+	var entityStatus string
+
+	if cust.CRMLeadID == "" {
+		entityStatus = "6"
+	} else {
+		entityStatus = "13"
+	}
+
 	crdCustParam := credential.CustomerParam{
 		Recordtype:                     "lead",
 		Customform:                     "2",
@@ -227,7 +235,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 		CompanyName:                    cust.CustomerName,
 		Comments:                       "",
 		Email:                          cust.Email,
-		EntityStatus:                   cust.EntityStatus,
+		EntityStatus:                   entityStatus,
 		URL:                            cust.URL,
 		Phone:                          cust.PhoneNo,
 		AltPhone:                       cust.AltPhone,
@@ -350,6 +358,14 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 		return 0, nil, err
 	}
 
+	var entityStatus string
+
+	if cust.CRMLeadID == "" {
+		entityStatus = "6"
+	} else {
+		entityStatus = "13"
+	}
+
 	crdCustParam := credential.CustomerParam{
 		Recordtype:                     "lead",
 		Customform:                     "2",
@@ -358,7 +374,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 		CompanyName:                    cust.CustomerName,
 		Comments:                       "",
 		Email:                          cust.Email,
-		EntityStatus:                   cust.EntityStatus,
+		EntityStatus:                   entityStatus,
 		URL:                            cust.URL,
 		Phone:                          cust.PhoneNo,
 		AltPhone:                       cust.AltPhone,
@@ -477,6 +493,14 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 		return 0, nil, err
 	}
 
+	var entityStatus string
+
+	if cust.CRMLeadID == "" {
+		entityStatus = "6"
+	} else {
+		entityStatus = "13"
+	}
+
 	crdCustParam := credential.CustomerParam{
 		Recordtype:                     "lead",
 		Customform:                     "2",
@@ -485,7 +509,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 		CompanyName:                    cust.CustomerName,
 		Comments:                       "",
 		Email:                          cust.Email,
-		EntityStatus:                   cust.EntityStatus,
+		EntityStatus:                   entityStatus,
 		URL:                            cust.URL,
 		Phone:                          cust.PhoneNo,
 		AltPhone:                       cust.AltPhone,
@@ -602,6 +626,14 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id int6
 		return 0, nil, err
 	}
 
+	var entityStatus string
+
+	if cust.CRMLeadID == "" {
+		entityStatus = "6"
+	} else {
+		entityStatus = "13"
+	}
+
 	crdCustParam := credential.CustomerParam{
 		Recordtype:                     "lead",
 		Customform:                     "2",
@@ -610,7 +642,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id int6
 		CompanyName:                    cust.CustomerName,
 		Comments:                       "",
 		Email:                          cust.Email,
-		EntityStatus:                   cust.EntityStatus,
+		EntityStatus:                   entityStatus,
 		URL:                            cust.URL,
 		Phone:                          cust.PhoneNo,
 		AltPhone:                       cust.AltPhone,
