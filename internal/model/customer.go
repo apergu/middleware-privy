@@ -14,7 +14,7 @@ type Customer struct {
 	PhoneNo           string  `json:"phoneNo" validate:"max=255"`
 	Address           string  `json:"address" validate:"max=1000"`
 	IsPerson          bool    `json:"isPerson"`
-	EntityStatus      string  `json:"entityStatus"`
+	EntityStatus      string  `json:"entityStatus" validate:"max=2"`
 	URL               string  `json:"url"`
 	AltPhone          *string `json:"altPhone"`
 	Fax               *string `json:"fax"`
