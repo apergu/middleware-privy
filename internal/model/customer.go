@@ -21,7 +21,7 @@ type Customer struct {
 	Balance           int     `json:"balanceAmount"`
 	Usage             int     `json:"usageAmount"`
 	CRMLeadID         string  `json:"crmLeadId" validate:"max=255"`
-	EnterprisePrivyID string  `json:"enterprisePrivyId" validate:"required,max=255"`
+	EnterprisePrivyID string  `json:"enterprisePrivyId" validate:"max=255"`
 	Address1          string  `json:"address1"`
 	NPWP              string  `json:"npwp" validate:"max=255"`
 	State             string  `json:"state" validate:"max=255"`
