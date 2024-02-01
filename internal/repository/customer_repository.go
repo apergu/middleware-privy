@@ -18,6 +18,7 @@ type CustomerQueryRepository interface {
 	Find(ctx context.Context, filter CustomerFilter, limit, skip int64, tx pgx.Tx) ([]entity.Customer, error)
 	Count(ctx context.Context, filter CustomerFilter, tx pgx.Tx) (int64, error)
 	FindOneById(ctx context.Context, id int64, tx pgx.Tx) (entity.Customer, error)
+	GetLast(ctx context.Context, tx pgx.Tx) (entity.Customer, error)
 }
 
 type CustomerCommandRepository interface {
@@ -26,6 +27,7 @@ type CustomerCommandRepository interface {
 	Create(ctx context.Context, Customer entity.Customer, tx pgx.Tx) (int64, error)
 	CreateLead(ctx context.Context, Customer entity.Customer, tx pgx.Tx) (int64, error)
 	Update(ctx context.Context, id int64, Customer entity.Customer, tx pgx.Tx) error
+	GetLast(ctx context.Context, tx pgx.Tx) (entity.Customer, error)
 	//UpdateLead(ctx context.Context, id int64, Customer entity.Customer, tx pgx.Tx) error
 	UpdateLead(ctx context.Context, id string, Customer entity.Customer, tx pgx.Tx) error
 	Delete(ctx context.Context, id int64, tx pgx.Tx) error

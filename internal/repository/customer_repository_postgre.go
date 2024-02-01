@@ -295,6 +295,28 @@ func (c *CustomerRepositoryPostgre) RollbackTx(ctx context.Context, tx pgx.Tx) e
 	return tx.Rollback(ctx)
 }
 
+func (c *CustomerRepositoryPostgre) GetLast(ctx context.Context, tx pgx.Tx) (entity.Customer, error) {
+	if tx == nil {
+		return entity.Customer{}, rapperror.ErrInternalServerError(
+			"",
+			"Tx is required",
+			"CustomerRepositoryPostgre.GetLast",
+			nil,
+		)
+	}
+
+	var cmd sqlcommand.Command = tx
+
+	query := `select
+		customers.id,
+		from
+		customers
+	order by id desc
+	limit 1`
+
+	return c.queryOne(ctx, cmd, query)
+}
+
 func (c *CustomerRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, id int64, tx pgx.Tx) (entity.Customer, error) {
 	if tx == nil {
 		return entity.Customer{}, rapperror.ErrInternalServerError(

@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"log"
+	"strconv"
 	"time"
 
 	"middleware/internal/entity"
@@ -35,8 +36,26 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 
 	tmNow := time.Now().UnixNano() / 1000000
 
+	var lastId int64
+
+	idLast, err := r.custRepo.GetLast(ctx, &lastId, tx)
+	if err != nil {
+		r.custRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "CustomerCommandUsecaseGeneral.Create",
+				"src": "custRepo.GetLast",
+			}).
+			Error(err)
+
+	}
+
+	id := idLast.ID + 1
+	// id = strconv.FormatInt(id, 6)
+
 	insertCustomer := entity.Customer{
-		CustomerID:        cust.EnterprisePrivyID,
+		CustomerID:        strconv.FormatInt(id, 6),
 		CustomerType:      cust.CustomerType,
 		CustomerName:      cust.CustomerName,
 		FirstName:         cust.FirstName,
