@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -179,6 +180,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	// } else {
 	if payload.CRMLeadID != "" {
 		if payload.EntityStatus == "13" {
+			log.Println("payload masuk 13", payload)
 			roleId, meta, err := h.Command.Create(ctx, payload)
 			if err != nil {
 				response = rresponser.NewResponserError(err)
@@ -187,6 +189,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 			response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 		} else {
+			log.Println("payload masuk 6", payload)
 			roleId, meta, err := h.Command.CreateLead2(ctx, payload)
 			if err != nil {
 				response = rresponser.NewResponserError(err)
