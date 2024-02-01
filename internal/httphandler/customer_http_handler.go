@@ -198,6 +198,15 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 			response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 		}
+	} else {
+		log.Println("CRM LEAD ID KOSONG", payload)
+		roleId, meta, err := h.Command.CreateLead2(ctx, payload)
+		if err != nil {
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		}
+		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 	}
 
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
