@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -250,6 +251,8 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 	} else {
 		entityStatus = "13"
 	}
+
+	fmt.Println("========= entityStatus ========", entityStatus)
 
 	crdCustParam := credential.CustomerParam{
 		Recordtype:                     "lead",
