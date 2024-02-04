@@ -433,7 +433,7 @@ func (c *CustomerRepositoryPostgre) CreateLead(ctx context.Context, cust entity.
 		cmd = tx
 	}
 
-	fmt.Println("============== LEAD CREATED ==============")
+	fmt.Println("============== LEAD CREATED ==============", cust)
 
 	var id int64
 
