@@ -36,9 +36,9 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 
 	tmNow := time.Now().UnixNano() / 1000000
 
-	var lastId int64
+	// var lastId int64
 
-	idLast, err := r.custRepo.GetLast(ctx, &lastId, tx)
+	idLast, err := r.custRepo.GetLast(ctx, tx)
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)
 
