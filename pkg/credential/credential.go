@@ -4,12 +4,12 @@ import "context"
 
 type Customer interface {
 	CreateCustomer(ctx context.Context, param CustomerParam) (CustomerResponse, error)
-	CreateLead(ctx context.Context, param CustomerParam) (CustomerResponse, error)
+	CreateLead(ctx context.Context, param LeadParam) (CustomerResponse, error)
 	UpdateLead(ctx context.Context, param CustomerParam) (CustomerResponse, error)
 }
 
 type Lead interface {
-	CreateLead(ctx context.Context, param CustomerParam) (CustomerResponse, error)
+	CreateLead(ctx context.Context, param LeadParam) (CustomerResponse, error)
 }
 
 type TopUp interface {
