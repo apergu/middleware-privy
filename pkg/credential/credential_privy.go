@@ -167,7 +167,7 @@ func (c *CredentialPrivy) CreateCustomer(ctx context.Context, param CustomerPara
 	return custResp.SuccessTransaction[0], nil
 }
 
-func (c *CredentialPrivy) CreateLead(ctx context.Context, param CustomerParam) (CustomerResponse, error) {
+func (c *CredentialPrivy) CreateLead(ctx context.Context, param LeadParam) (CustomerResponse, error) {
 	// get jwt
 	isNode := true
 	jwtToken := JWTToken{}
