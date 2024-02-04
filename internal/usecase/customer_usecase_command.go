@@ -97,16 +97,16 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 	log.Println("After ERRROR ")
 
 	var entityStatus string
-	var recordType string
+	// var recordType string
 
 	var crdCustParam credential.CustomerParam
 
 	if cust.CRMLeadID == "" {
 		entityStatus = "6"
-		recordType = "customer"
+		// recordType = "customer"
 	} else {
 		entityStatus = "13"
-		recordType = "lead"
+		// recordType = "lead"
 	}
 
 	log.Println("Before entityStatus log statement")
@@ -114,14 +114,14 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 	log.Println("After entityStatus log statement")
 
 	crdCustParam = credential.CustomerParam{
-		Recordtype:                     recordType,
+		Recordtype:                     "customer",
 		Customform:                     "2",
 		EntityID:                       cust.EnterprisePrivyID,
 		IsPerson:                       "F",
 		CompanyName:                    cust.CustomerName,
 		Comments:                       "",
 		Email:                          cust.Email,
-		EntityStatus:                   entityStatus,
+		EntityStatus:                   "13",
 		URL:                            cust.URL,
 		Phone:                          cust.PhoneNo,
 		AltPhone:                       cust.AltPhone,
