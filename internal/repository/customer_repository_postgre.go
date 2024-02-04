@@ -433,6 +433,8 @@ func (c *CustomerRepositoryPostgre) CreateLead(ctx context.Context, cust entity.
 		cmd = tx
 	}
 
+	fmt.Println("============== LEAD CREATED ==============")
+
 	var id int64
 
 	query := `insert into customers (
