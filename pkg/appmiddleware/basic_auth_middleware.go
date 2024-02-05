@@ -2,6 +2,7 @@ package appmiddleware
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"middleware/internal/constants"
@@ -21,6 +22,8 @@ func BasicAuth(basicUsername, basicPassword string, decorder rdecoder.Decoder) f
 func basicAuthHandler(next http.Handler, basicUsername, basicPassword string, decorder rdecoder.Decoder) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		fmt.Println("basicAuthHandler = = = = = =", r.Header.Get("Authorization"))
 
 		username, password, ok := r.BasicAuth()
 		if !ok {
