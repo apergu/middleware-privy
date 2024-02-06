@@ -2,7 +2,6 @@ package appmiddleware
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"middleware/internal/constants"
@@ -23,12 +22,7 @@ func basicAuthHandler(next http.Handler, basicUsername, basicPassword string, de
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		fmt.Println("basicAuthHandler = = = = = =", r.Header.Get("Authorization"))
-
 		username, password, ok := r.BasicAuth()
-
-		fmt.Println("Username = = = = = =", username)
-		fmt.Println("password = = = = = =", password)
 
 		if !ok {
 			err := rapperror.ErrUnauthorized(
@@ -50,8 +44,6 @@ func basicAuthHandler(next http.Handler, basicUsername, basicPassword string, de
 			return
 		}
 
-		fmt.Println("BasicUsername = = = = = =", basicUsername)
-		fmt.Println("basicpassword = = = = = =", basicPassword)
 		usernameMatch := username == basicUsername
 		passwordMatch := password == basicPassword
 
