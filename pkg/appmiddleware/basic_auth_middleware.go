@@ -26,6 +26,10 @@ func basicAuthHandler(next http.Handler, basicUsername, basicPassword string, de
 		fmt.Println("basicAuthHandler = = = = = =", r.Header.Get("Authorization"))
 
 		username, password, ok := r.BasicAuth()
+
+		fmt.Println("Username = = = = = =", username)
+		fmt.Println("password = = = = = =", password)
+
 		if !ok {
 			err := rapperror.ErrUnauthorized(
 				"",
