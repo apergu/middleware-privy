@@ -50,6 +50,8 @@ func basicAuthHandler(next http.Handler, basicUsername, basicPassword string, de
 			return
 		}
 
+		fmt.Println("BasicUsername = = = = = =", basicUsername)
+		fmt.Println("basicpassword = = = = = =", basicPassword)
 		usernameMatch := username == basicUsername
 		passwordMatch := password == basicPassword
 
