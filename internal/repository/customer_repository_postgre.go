@@ -657,6 +657,7 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, c
 
 	log.Println("query : ", query)
 	log.Println("ID : ", id)
+	log.Println("cust : ", cust)
 
 	_, err := cmd.Exec(
 		ctx,
