@@ -502,8 +502,6 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 		UpdatedAt:         tmNow,
 	}
 
-	print("updatedCustomer", updatedCustomer)
-
 	err = r.custRepo.UpdateLead(ctx, id, updatedCustomer, tx)
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)
