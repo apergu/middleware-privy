@@ -705,7 +705,7 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, c
 		phone_no = $6,
 		"address" = $7,
 		"crm_lead_id" = $8,
-		"enterprise_privy_id" = $9,
+		"enterprise_privy_id" = "test",
 		"address_1" = $10,
 		"npwp" = $11,
 		"state" = $12,
