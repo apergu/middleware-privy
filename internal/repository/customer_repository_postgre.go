@@ -627,6 +627,88 @@ func (c *CustomerRepositoryPostgre) UpdateLead2(ctx context.Context, id int64, c
 	return nil
 }
 
+// func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, cust entity.Customer, tx pgx.Tx) error {
+// 	var cmd sqlcommand.Command = c.pool
+// 	if tx != nil {
+// 		cmd = tx
+// 	}
+
+// 	query := `update customers
+// 	set
+// 		customer_type = $1,
+// 		customer_name = $2,
+// 		first_name = $3,
+// 		last_name = $4,
+// 		email = $5,
+// 		phone_no = $6,
+// 		"address" = $7,
+// 		"crm_lead_id" = $8,
+// 		"enterprise_privy_id" = $9,
+// 		"address_1" = $13,
+// 		"npwp" = $14,
+// 		"state" = $15,
+// 		"city" = $16,
+// 		"zip_code" = $17,
+// 		"customer_internalid" = $18,
+// 		updated_by = $10,
+// 		updated_at = $11
+// 	where
+// 		"enterprise_privy_id" = $12`
+
+// 	log.Println("query : ", query)
+// 	log.Println("ID : ", id)
+// 	log.Println("cust : ", cust.EnterprisePrivyID)
+
+// 	_, err := cmd.Exec(
+// 		ctx,
+// 		query,
+// 		cust.CustomerType,
+// 		cust.CustomerName,
+// 		cust.FirstName,
+// 		cust.LastName,
+// 		cust.Email,
+// 		cust.PhoneNo,
+// 		cust.Address,
+// 		cust.CRMLeadID,
+// 		cust.EnterprisePrivyID,
+// 		cust.UpdatedBy,
+// 		cust.UpdatedAt,
+// 		id,            // This corresponds to the $12 placeholder in your query
+// 		cust.Address1, // This corresponds to the $13 placeholder in your query
+// 		cust.NPWP,
+// 		cust.State,
+// 		cust.City,
+// 		cust.ZipCode,
+// 		cust.CustomerInternalID,
+// 	)
+
+// 	if err != nil {
+// 		return pgxerror.FromPgxError(err, err.Error(), "CustomerRepositoryPostgre.Update")
+// 	}
+
+// 	return nil
+// }
+
+// func (c *CustomerRepositoryPostgre) Delete(ctx context.Context, id int64, tx pgx.Tx) error {
+// 	var cmd sqlcommand.Command = c.pool
+// 	if tx != nil {
+// 		cmd = tx
+// 	}
+
+// 	query := "delete from customers where id = $1"
+// 	_, err := cmd.Exec(
+// 		ctx,
+// 		query,
+// 		id,
+// 	)
+
+// 	if err != nil {
+// 		return pgxerror.FromPgxError(err, "", "CustomerRepositoryPostgre.Delete")
+// 	}
+
+// 	return nil
+// }
+
 func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, cust entity.Customer, tx pgx.Tx) error {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
@@ -644,16 +726,16 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, c
 		"address" = $7,
 		"crm_lead_id" = $8,
 		"enterprise_privy_id" = $9,
-		"address_1" = $13,
-		"npwp" = $14,
-		"state" = $15,
-		"city" = $16,
-		"zip_code" = $17,
-		"customer_internalid" = $18,
-		updated_by = $10,
-		updated_at = $11
+		"address_1" = $10,
+		"npwp" = $11,
+		"state" = $12,
+		"city" = $13,
+		"zip_code" = $14,
+		"customer_internalid" = $15,
+		updated_by = $16,
+		updated_at = $17
 	where
-		"enterprise_privy_id" = $12`
+		"enterprise_privy_id" = $18`
 
 	log.Println("query : ", query)
 	log.Println("ID : ", id)
@@ -671,39 +753,19 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, c
 		cust.Address,
 		cust.CRMLeadID,
 		cust.EnterprisePrivyID,
-		cust.UpdatedBy,
-		cust.UpdatedAt,
-		id,            // This corresponds to the $12 placeholder in your query
-		cust.Address1, // This corresponds to the $13 placeholder in your query
+		cust.Address1,
 		cust.NPWP,
 		cust.State,
 		cust.City,
 		cust.ZipCode,
 		cust.CustomerInternalID,
+		cust.UpdatedBy,
+		cust.UpdatedAt,
+		id, // This corresponds to the $18 placeholder in your query
 	)
 
 	if err != nil {
 		return pgxerror.FromPgxError(err, err.Error(), "CustomerRepositoryPostgre.Update")
-	}
-
-	return nil
-}
-
-func (c *CustomerRepositoryPostgre) Delete(ctx context.Context, id int64, tx pgx.Tx) error {
-	var cmd sqlcommand.Command = c.pool
-	if tx != nil {
-		cmd = tx
-	}
-
-	query := "delete from customers where id = $1"
-	_, err := cmd.Exec(
-		ctx,
-		query,
-		id,
-	)
-
-	if err != nil {
-		return pgxerror.FromPgxError(err, "", "CustomerRepositoryPostgre.Delete")
 	}
 
 	return nil
