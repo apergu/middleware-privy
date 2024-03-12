@@ -689,26 +689,6 @@ func (c *CustomerRepositoryPostgre) UpdateLead2(ctx context.Context, id int64, c
 // 	return nil
 // }
 
-// func (c *CustomerRepositoryPostgre) Delete(ctx context.Context, id int64, tx pgx.Tx) error {
-// 	var cmd sqlcommand.Command = c.pool
-// 	if tx != nil {
-// 		cmd = tx
-// 	}
-
-// 	query := "delete from customers where id = $1"
-// 	_, err := cmd.Exec(
-// 		ctx,
-// 		query,
-// 		id,
-// 	)
-
-// 	if err != nil {
-// 		return pgxerror.FromPgxError(err, "", "CustomerRepositoryPostgre.Delete")
-// 	}
-
-// 	return nil
-// }
-
 func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, cust entity.Customer, tx pgx.Tx) error {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
@@ -766,6 +746,26 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, c
 
 	if err != nil {
 		return pgxerror.FromPgxError(err, err.Error(), "CustomerRepositoryPostgre.Update")
+	}
+
+	return nil
+}
+
+func (c *CustomerRepositoryPostgre) Delete(ctx context.Context, id int64, tx pgx.Tx) error {
+	var cmd sqlcommand.Command = c.pool
+	if tx != nil {
+		cmd = tx
+	}
+
+	query := "delete from customers where id = $1"
+	_, err := cmd.Exec(
+		ctx,
+		query,
+		id,
+	)
+
+	if err != nil {
+		return pgxerror.FromPgxError(err, "", "CustomerRepositoryPostgre.Delete")
 	}
 
 	return nil
