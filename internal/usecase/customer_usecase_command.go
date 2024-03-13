@@ -18,6 +18,7 @@ import (
 type CustomerCommandUsecaseGeneral struct {
 	custRepo      repository.CustomerCommandRepository
 	customerPrivy credential.Customer
+	custQuer      repository.CustomerQueryRepository
 }
 
 func NewCustomerCommandUsecaseGeneral(prop CustomerUsecaseProperty) *CustomerCommandUsecaseGeneral {
@@ -525,12 +526,23 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 		entityStatus = "13"
 	}
 
+	customer_filter := repository.CustomerFilter{
+		EnterprisePrivyID: &cust.EnterprisePrivyID,
+	}
+
+	customers, _ := r.custQuer.Find(ctx, customer_filter, 1, 0, nil)
+
+	var customer entity.Customer
+	if len(customers) > 0 {
+		customer = customers[0]
+	}
+
 	crdCustParam := credential.CustomerParam{
 		Recordtype:                     "lead",
 		Customform:                     "2",
 		EntityID:                       cust.CRMLeadID,
 		IsPerson:                       "F",
-		CompanyName:                    cust.CustomerName,
+		CompanyName:                    customer.CustomerName,
 		Comments:                       "",
 		Email:                          cust.Email,
 		EntityStatus:                   entityStatus,
