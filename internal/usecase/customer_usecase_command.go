@@ -516,6 +516,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 
 		return 0, nil, err
 	}
+	r.custRepo.CommitTx(ctx, tx)
 
 	var entityStatus string
 
