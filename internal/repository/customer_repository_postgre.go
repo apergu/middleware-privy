@@ -711,11 +711,10 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, c
 		"state" = $12,
 		"city" = $13,
 		"zip_code" = $14,
-		"customer_internalid" = $15,
-		updated_by = $16,
-		updated_at = $17
+		updated_by = $15,
+		updated_at = $16
 	where
-		"customer_name" = $18`
+		"customer_name" = $17`
 
 	log.Println("query : ", query)
 	log.Println("ID : ", id)
@@ -732,13 +731,12 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, c
 		cust.PhoneNo,
 		cust.Address,
 		cust.CRMLeadID,
-		"cust.EnterprisePrivyID",
+		cust.EnterprisePrivyID,
 		cust.Address1,
 		cust.NPWP,
 		cust.State,
 		cust.City,
 		cust.ZipCode,
-		cust.CustomerInternalID,
 		cust.UpdatedBy,
 		cust.UpdatedAt,
 		id, // This corresponds to the $18 placeholder in your query
