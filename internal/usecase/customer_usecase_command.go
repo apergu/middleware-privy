@@ -1,9 +1,12 @@
 package usecase
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"middleware/internal/entity"
@@ -283,6 +286,52 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 			Zip:   cust.ZipCode,
 		},
 	}
+
+	requestData := map[string]interface{}{
+		"zd_lead_id":    cust.CRMLeadID,
+		"first_name":    cust.FirstName,
+		"last_name":     cust.LastName,
+		"status":        "New Client - Referral",
+		"email":         cust.Email,
+		"company_name":  cust.CustomerName,
+		"mobile":        "",
+		"phone":         cust.PhoneNo,
+		"enterprise_id": cust.EnterprisePrivyID,
+	}
+
+	jsonData, err := json.Marshal(requestData)
+
+	if err != nil {
+		// Handle error
+		r.custRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerCommandUsecaseGeneral.Create",
+				"src":   "customerPrivy.CreateCustomer",
+				"param": requestData,
+			}).
+			Error(err)
+	}
+
+	// leadResp, err := http.Post("http://apergu.tech:9002/api/v1/zendesk/lead/on-create", "application/json", bytes.NewBuffer(requestData))
+	leadResp, err := http.Post("http://apergu.tech:9002/api/v1/zendesk/lead/on-create", "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		// Handle error
+		r.custRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerCommandUsecaseGeneral.Create",
+				"src":   "customerPrivy.CreateCustomer",
+				"param": requestData,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	defer leadResp.Body.Close()
 
 	privyResp, err := r.customerPrivy.CreateLead(ctx, crdCustParam)
 	if err != nil {
