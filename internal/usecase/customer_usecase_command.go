@@ -287,16 +287,17 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 		},
 	}
 
+	customFields := map[string]interface{}{
+		"Enterprise ID": cust.EnterprisePrivyID,
+	}
+
 	requestData := map[string]interface{}{
-		"zd_lead_id":    cust.CRMLeadID,
-		"first_name":    cust.FirstName,
-		"last_name":     cust.LastName,
-		"status":        "New Client - Referral",
-		"email":         cust.Email,
-		"company_name":  cust.CustomerName,
-		"mobile":        "",
-		"phone":         cust.PhoneNo,
-		"enterprise_id": cust.EnterprisePrivyID,
+		"first_name":        cust.FirstName,
+		"last_name":         cust.LastName,
+		"email":             cust.Email,
+		"organization_name": cust.CustomerName,
+		"phone":             cust.PhoneNo,
+		"custom_fields":     customFields,
 	}
 
 	jsonData, err := json.Marshal(requestData)
@@ -313,9 +314,16 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 			}).
 			Error(err)
 	}
-
+	client := &http.Client{}
 	// leadResp, err := http.Post("http://apergu.tech:9002/api/v1/zendesk/lead/on-create", "application/json", bytes.NewBuffer(requestData))
-	leadResp, err := http.Post("http://apergu.tech:9002/api/v1/zendesk/lead/on-create", "application/json", bytes.NewBuffer(jsonData))
+	leadResp, err := http.NewRequest("POST", "https://api.getbase.com/v2/deals", bytes.NewBuffer(jsonData))
+	leadResp.Header.Set("Authorization", "26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+	leadResp.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(leadResp)
+
+	log.Println("response", resp)
+	log.Println("err", err)
 	if err != nil {
 		// Handle error
 		r.custRepo.RollbackTx(ctx, tx)
@@ -331,7 +339,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 		return 0, nil, err
 	}
 
-	defer leadResp.Body.Close()
+	defer resp.Body.Close()
 
 	privyResp, err := r.customerPrivy.CreateLead(ctx, crdCustParam)
 	if err != nil {
