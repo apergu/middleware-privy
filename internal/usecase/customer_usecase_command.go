@@ -319,7 +319,6 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 			Error(err)
 	}
 	client := &http.Client{}
-	// leadResp, err := http.Post("http://apergu.tech:9002/api/v1/zendesk/lead/on-create", "application/json", bytes.NewBuffer(requestData))
 	leadResp, _ := http.NewRequest("POST", "https://api.getbase.com/v2/leads", bytes.NewBuffer(jsonData))
 	leadResp.Header.Set("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
 	leadResp.Header.Set("Content-Type", "application/json")

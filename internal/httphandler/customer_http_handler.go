@@ -1,12 +1,10 @@
 package httphandler
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"middleware/internal/constants"
 	"middleware/internal/model"
@@ -130,53 +128,53 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// if payload.CRMLeadID == "" {
-	url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
+	// url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
 
-	// Replace the following map with your actual data
-	data := map[string]interface{}{
-		"zd_lead_id":          payload.CRMLeadID,
-		"first_name":          payload.FirstName,
-		"last_name":           payload.LastName,
-		"enterprise_privy_id": payload.EnterprisePrivyID,
-		"enterprise_name":     payload.CustomerName,
-		"address":             payload.Address,
-		"email":               payload.Email,
-		"zip":                 payload.ZipCode,
-		"state":               payload.State,
-		"country":             "Indonesia",
-		"city":                payload.City,
-		"npwp":                payload.NPWP,
-	}
+	// // Replace the following map with your actual data
+	// data := map[string]interface{}{
+	// 	"zd_lead_id":          payload.CRMLeadID,
+	// 	"first_name":          payload.FirstName,
+	// 	"last_name":           payload.LastName,
+	// 	"enterprise_privy_id": payload.EnterprisePrivyID,
+	// 	"enterprise_name":     payload.CustomerName,
+	// 	"address":             payload.Address,
+	// 	"email":               payload.Email,
+	// 	"zip":                 payload.ZipCode,
+	// 	"state":               payload.State,
+	// 	"country":             "Indonesia",
+	// 	"city":                payload.City,
+	// 	"npwp":                payload.NPWP,
+	// }
 
 	// Convert data to JSON
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		panic(err)
-	}
+	// jsonData, err := json.Marshal(data)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	// Make the HTTP POST request
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
-	if err != nil {
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
-	}
+	// // Make the HTTP POST request
+	// req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	// if err != nil {
+	// 	response = rresponser.NewResponserError(err)
+	// 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	// 	return
+	// }
 
-	req.Header.Add("Content-Type", "application/json")
-	req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
+	// req.Header.Add("Content-Type", "application/json")
+	// req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
-	}
-	defer resp.Body.Close()
+	// client := &http.Client{}
+	// resp, err := client.Do(req)
+	// if err != nil {
+	// 	response = rresponser.NewResponserError(err)
+	// 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	// 	return
+	// }
+	// defer resp.Body.Close()
 
-	response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", 2, map[string]interface{}{
-		"test": 200,
-	})
+	// response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", 2, map[string]interface{}{
+	// 	"test": 200,
+	// })
 	// } else {
 	// if payload.CRMLeadID != "" {
 	if payload.EntityStatus == "13" {
