@@ -1,12 +1,9 @@
 package usecase
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
 	"time"
 
 	"middleware/internal/entity"
@@ -287,62 +284,62 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 		},
 	}
 
-	customFields := map[string]interface{}{
-		"Enterprise ID": cust.EnterprisePrivyID,
-	}
+	// customFields := map[string]interface{}{
+	// 	"Enterprise ID": cust.EnterprisePrivyID,
+	// }
 
-	requestData := map[string]interface{}{
-		"first_name":        cust.FirstName,
-		"last_name":         cust.LastName,
-		"email":             cust.Email,
-		"organization_name": cust.CustomerName,
-		"phone":             cust.PhoneNo,
-		"custom_fields":     customFields,
-	}
+	// requestData := map[string]interface{}{
+	// 	"first_name":        cust.FirstName,
+	// 	"last_name":         cust.LastName,
+	// 	"email":             cust.Email,
+	// 	"organization_name": cust.CustomerName,
+	// 	"phone":             cust.PhoneNo,
+	// 	"custom_fields":     customFields,
+	// }
 
-	dataReq := map[string]interface{}{
-		"data": requestData,
-	}
+	// dataReq := map[string]interface{}{
+	// 	"data": requestData,
+	// }
 
-	jsonData, err := json.Marshal(dataReq)
+	// jsonData, err := json.Marshal(dataReq)
 
-	if err != nil {
-		// Handle error
-		r.custRepo.RollbackTx(ctx, tx)
+	// if err != nil {
+	// 	// Handle error
+	// 	r.custRepo.RollbackTx(ctx, tx)
 
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "CustomerCommandUsecaseGeneral.Create",
-				"src":   "customerPrivy.CreateCustomer",
-				"param": requestData,
-			}).
-			Error(err)
-	}
-	client := &http.Client{}
-	leadResp, _ := http.NewRequest("POST", "https://api.getbase.com/v2/leads", bytes.NewBuffer(jsonData))
-	leadResp.Header.Set("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
-	leadResp.Header.Set("Content-Type", "application/json")
+	// 	logrus.
+	// 		WithFields(logrus.Fields{
+	// 			"at":    "CustomerCommandUsecaseGeneral.Create",
+	// 			"src":   "customerPrivy.CreateCustomer",
+	// 			"param": requestData,
+	// 		}).
+	// 		Error(err)
+	// }
+	// client := &http.Client{}
+	// leadResp, _ := http.NewRequest("POST", "https://api.getbase.com/v2/leads", bytes.NewBuffer(jsonData))
+	// leadResp.Header.Set("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+	// leadResp.Header.Set("Content-Type", "application/json")
 
-	resp, err := client.Do(leadResp)
+	// resp, err := client.Do(leadResp)
 
-	log.Println("response", resp)
-	log.Println("err", err)
-	if err != nil {
-		// Handle error
-		r.custRepo.RollbackTx(ctx, tx)
+	// log.Println("response", resp)
+	// log.Println("err", err)
+	// if err != nil {
+	// 	// Handle error
+	// 	r.custRepo.RollbackTx(ctx, tx)
 
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "CustomerCommandUsecaseGeneral.Create",
-				"src":   "customerPrivy.CreateCustomer",
-				"param": requestData,
-			}).
-			Error(err)
+	// 	logrus.
+	// 		WithFields(logrus.Fields{
+	// 			"at":    "CustomerCommandUsecaseGeneral.Create",
+	// 			"src":   "customerPrivy.CreateCustomer",
+	// 			"param": requestData,
+	// 		}).
+	// 		Error(err)
 
-		return 0, nil, err
-	}
+	// 	return 0, nil, err
+	// }
 
-	defer resp.Body.Close()
+	// defer resp.Body.Close()
 
 	privyResp, err := r.customerPrivy.CreateLead(ctx, crdCustParam)
 	if err != nil {
