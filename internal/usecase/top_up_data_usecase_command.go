@@ -124,7 +124,7 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 		UpdatedAt:   tmNow,
 	}
 
-	topupDataId, err := r.topupRepo.Create(ctx, insertTopUp, tx)
+	// topupDataId, err := r.topupRepo.Create(ctx, insertTopUp, tx)
 	if err != nil {
 		r.topupRepo.RollbackTx(ctx, tx)
 
@@ -219,7 +219,7 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 	insertTopUp.TopupID = resp.Data.RecordID
 	//insertTopUp.TopUpInternalID = insertTopUp
 
-	err = r.topupRepo.Update(ctx, topupDataId, insertTopUp, tx)
+	// err = r.topupRepo.Update(ctx, topupDataId, insertTopUp, tx)
 	if err != nil {
 		r.topupRepo.RollbackTx(ctx, tx)
 
@@ -272,7 +272,7 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 		)
 	}
 
-	return topupDataId, nil, nil
+	return insertTopUp.TopupID, nil, nil
 }
 
 func (r *TopUpDataCommandUsecaseGeneral) Update(ctx context.Context, id int64, topUpData model.TopUpData) (int64, interface{}, error) {
