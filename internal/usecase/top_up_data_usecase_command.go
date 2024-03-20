@@ -142,24 +142,24 @@ func (r *TopUpDataCommandUsecaseGeneral) Create(ctx context.Context, topUpData m
 	trDate, err := time.Parse("2006-01-02 15:04:05", topUpData.StartDate)
 
 	param := privy.TopupCreateParam{
-		TransactionID:   "213/12321/123231",
-		SONumber:        "",
-		EnterpriseID:    topUpData.MerchantId,
-		MerchantID:      merchant.MerchantID,
-		ChannelID:       channel.ChannelID,
-		ServiceID:       topUpData.ItemId,
-		PostID:          "",
-		Quantity:        topUpData.QtyBalance,
-		StartPeriodDate: tmNow,
-		EndPeriodDate:   tmNow,
+		TopUpUUID:       "e60fe3a7-0035-4e26-b955-54499f35e224",
+		TopUpID:         "01-02-SERVICE/028",
+		EnterpriseID:    "30376d69-333a-4c70-80d3-97904f8c0971",
+		MerchantID:      "",
+		ChannelID:       "",
+		ServiceID:       "ACTION",
+		PostPaid:        false,
+		StartPeriodDate: trDate,
+		EndPeriodDate:   trDate,
 		TransactionDate: trDate,
 		Reversal:        false,
-		ID:              topupIdUUID,
+		Qty:             1,
 	}
 	log.Println("topupPrivy", r.topupPrivy)
 	log.Println("tup2", r.topupRepo)
 	log.Println("tup3", r.channelRepo)
 	log.Println("tup4", r.customerRepo)
+
 	_, err = r.topupPrivy.CreateTopup(ctx, param)
 	if err != nil {
 		r.topupRepo.RollbackTx(ctx, tx)

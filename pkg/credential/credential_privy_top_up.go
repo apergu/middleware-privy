@@ -87,15 +87,19 @@ func (c *CredentialPrivy) CreateTopUp(ctx context.Context, param TopUpParam) (To
 		}).
 		Info(body.String())
 
-	req, _ = http.NewRequest(http.MethodPost, postSalesOrderURL, body)
+	req, _ = http.NewRequest(http.MethodPost, "https://stg-b2b-api-service.privy.id/v1/orchestrator-erp-goldengate/webhook/apergu/top-up", body)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", credential.TokenType+" "+credential.AccessToken)
+	req.Header.Set("Authorization", "Basic YXBlcmd1OnNlY3JldA==")
+	req.Header.Set("application-key", "VUNSAT9GP6e5Rc7qv8ZDnh")
+	req.Header.Set("application_creds_username", "apergu")
+	req.Header.Set("application_creds_password", "2dp$m48k#ut9")
+	req.Header.Set("application_creds_key", "VUNSAT9GP6e5Rc7qv8ZDnh")
 
-	q := req.URL.Query()
-	q.Add("script", "175")
-	q.Add("deploy", "1")
+	// q := req.URL.Query()
+	// q.Add("script", "175")
+	// q.Add("deploy", "1")
 
-	req.URL.RawQuery = q.Encode()
+	// req.URL.RawQuery = q.Encode()
 
 	custResp := EnvelopeTopUp{}
 	err = c.requester.Do(ctx, req, &custResp)
