@@ -9,7 +9,7 @@ type Channel struct {
 	ChannelID    string `json:"channelId" validate:"required,max=255"`
 	ChannelName  string `json:"channelName" validate:"required,max=255"`
 	Address      string `json:"address" validate:"max=1000"`
-	Email        string `json:"email" validate:"email,max=255"`
+	Email        string `json:"email" validate:"max=255"`
 	PhoneNo      string `json:"phoneNo"`
 	State        string `json:"state" validate:"max=255"`
 	City         string `json:"city" validate:"max=255"`
