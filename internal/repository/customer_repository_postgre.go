@@ -463,7 +463,7 @@ func (c *CustomerRepositoryPostgre) CreateLead(ctx context.Context, cust entity.
 	var custId *string
 
 	if cust.CustomerID == "" {
-		custId = nil
+		custId = &cust.EnterprisePrivyID
 	} else {
 		custId = &cust.CustomerID
 	}

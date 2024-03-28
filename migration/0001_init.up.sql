@@ -1,17 +1,24 @@
 create table if not exists customers (
     id BIGSERIAL PRIMARY KEY,
     customer_id text NOT NULL UNIQUE,
-    customer_type text NOT NULL,
+    customer_type text,
     customer_name text NOT NULL,
-    first_name text NOT NULL,
-    last_name text NOT NULL,
+    first_name text,
+    last_name text,
     email text NOT NULL,
-    phone_no text NOT NULL,
-    "address" text NOT NULL,
-    created_by BIGINT NOT NULL,
-    created_at BIGINT NOT NULL,
-    updated_by BIGINT NOT NULL,
-    updated_at BIGINT NOT NULL
+    phone_no text,
+    "address" text,
+    created_by BIGINT,
+    created_at BIGINT,
+    updated_by BIGINT,
+    updated_at BIGINT,
+    crm_lead_id text,
+    enterprise_privy_id text NOT NUll,
+    "address_1" text, 
+    npwp text, 
+    state text,
+    city text, 
+    zip_code text
 );
 create table if not exists customer_usages (
     id BIGSERIAL PRIMARY KEY,
