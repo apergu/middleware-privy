@@ -67,6 +67,7 @@ services:
       PRIVY_HOST: https://8113915-sb1.restlets.api.netsuite.com
       PRIVY_USERNAME: f8b4fb43614c756a168b1d1367607569ae547e8ffb6001b0ec7526641627c112
       PRIVY_PASSWORD: 7e068bf2d6a20f9fd949efee8eca6927b440181b2bfa8d2dbbbe4af05a285aae
+      ACZD_BASE: http://apergu.tech:9002/
     links:
       - db
   # apache2:

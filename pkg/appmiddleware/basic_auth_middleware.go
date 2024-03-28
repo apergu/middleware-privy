@@ -2,14 +2,15 @@ package appmiddleware
 
 import (
 	"context"
+	"fmt"
 	"net/http"
-
-	"middleware/internal/constants"
 
 	"github.com/sirupsen/logrus"
 	"gitlab.com/rteja-library3/rapperror"
 	"gitlab.com/rteja-library3/rdecoder"
 	"gitlab.com/rteja-library3/rresponser"
+
+	"middleware/internal/constants"
 )
 
 func BasicAuth(basicUsername, basicPassword string, decorder rdecoder.Decoder) func(http.Handler) http.Handler {
@@ -44,6 +45,10 @@ func basicAuthHandler(next http.Handler, basicUsername, basicPassword string, de
 			return
 		}
 
+		fmt.Println(username)
+		fmt.Println(password)
+		fmt.Println(basicUsername)
+		fmt.Println(basicPassword)
 		usernameMatch := username == basicUsername
 		passwordMatch := password == basicPassword
 
