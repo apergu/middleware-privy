@@ -39,7 +39,9 @@ type CustomerParam struct {
 	Fax                            *string     `json:"fax"`
 	CustEntityPrivyCustomerBalance int         `json:"custentity_privy_customer_balance"`
 	CustEntityPrivyCustomerUsage   int         `json:"custentityprivy_customer_usage"`
+	Address                        string      `json:"address"`
 }
+
 type LeadParam struct {
 	Recordtype                     string      `json:"recordtype"`
 	Customform                     string      `json:"customform"`
@@ -64,6 +66,7 @@ type LeadParam struct {
 	Fax                            *string     `json:"fax"`
 	CustEntityPrivyCustomerBalance int         `json:"custentity_privy_customer_balance"`
 	CustEntityPrivyCustomerUsage   int         `json:"custentityprivy_customer_usage"`
+	Address                        string      `json:"address"`
 }
 
 type CustomerResponseDetail struct {
