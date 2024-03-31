@@ -6,13 +6,13 @@ import (
 	"log"
 	"time"
 
+	"github.com/sirupsen/logrus"
+	"gitlab.com/rteja-library3/rapperror"
+
 	"middleware/internal/entity"
 	"middleware/internal/model"
 	"middleware/internal/repository"
 	"middleware/pkg/credential"
-
-	"github.com/sirupsen/logrus"
-	"gitlab.com/rteja-library3/rapperror"
 )
 
 type CustomerCommandUsecaseGeneral struct {
@@ -142,6 +142,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 			City:  cust.City,
 			Zip:   cust.ZipCode,
 		},
+		Address: cust.Address,
 	}
 
 	privyResp, err := r.customerPrivy.CreateCustomer(ctx, crdCustParam)
@@ -282,6 +283,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 			City:  cust.City,
 			Zip:   cust.ZipCode,
 		},
+		Address: cust.Address,
 	}
 
 	// customFields := map[string]interface{}{
@@ -477,6 +479,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 			City:  cust.City,
 			Zip:   cust.ZipCode,
 		},
+		Address: cust.Address,
 	}
 
 	privyResp, err := r.customerPrivy.CreateLead(ctx, crdCustParam)
@@ -612,6 +615,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 			City:  cust.City,
 			Zip:   cust.ZipCode,
 		},
+		Address: cust.Address,
 	}
 
 	privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
@@ -745,6 +749,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id int6
 			City:  cust.City,
 			Zip:   cust.ZipCode,
 		},
+		Address: cust.Address,
 	}
 
 	//privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
