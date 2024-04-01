@@ -142,7 +142,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 			City:  cust.City,
 			Zip:   cust.ZipCode,
 		},
-		Address: cust.Address,
+		DefaultAddress: cust.Address,
 	}
 
 	privyResp, err := r.customerPrivy.CreateCustomer(ctx, crdCustParam)
@@ -283,7 +283,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 			City:  cust.City,
 			Zip:   cust.ZipCode,
 		},
-		Address: cust.Address,
+		DefaultAddress: cust.Address,
 	}
 
 	privyResp, err := r.customerPrivy.CreateLead(ctx, crdCustParam)
@@ -422,7 +422,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 			City:  cust.City,
 			Zip:   cust.ZipCode,
 		},
-		Address: cust.Address,
+		DefaultAddress: cust.Address,
 	}
 
 	privyResp, err := r.customerPrivy.CreateLead(ctx, crdCustParam)
@@ -558,7 +558,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 			City:  cust.City,
 			Zip:   cust.ZipCode,
 		},
-		Address: cust.Address,
+		DefaultAddress: cust.Address,
 	}
 
 	privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
@@ -692,7 +692,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id int6
 			City:  cust.City,
 			Zip:   cust.ZipCode,
 		},
-		Address: cust.Address,
+		DefaultAddress: cust.Address,
 	}
 
 	//privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
