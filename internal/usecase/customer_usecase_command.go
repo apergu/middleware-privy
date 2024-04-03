@@ -55,20 +55,20 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 	// id = strconv.FormatInt(id, 6)
 
 	insertCustomer := entity.Customer{
-		CustomerID:        cust.EnterprisePrivyID,
-		CustomerType:      cust.CustomerType,
-		CustomerName:      cust.CustomerName,
-		FirstName:         cust.FirstName,
-		LastName:          cust.LastName,
-		Email:             cust.Email,
-		PhoneNo:           cust.PhoneNo,
-		Address:           cust.Address,
-		CRMLeadID:         cust.CRMLeadID,
-		EnterprisePrivyID: cust.EnterprisePrivyID,
-		NPWP:              cust.NPWP,
-		Address1:          cust.Address1,
-		State:             cust.State,
-		City:              cust.City,
+		CustomerID:        *cust.EnterprisePrivyID,
+		CustomerType:      *cust.CustomerType,
+		CustomerName:      *cust.CustomerName,
+		FirstName:         *cust.FirstName,
+		LastName:          *cust.LastName,
+		Email:             *cust.Email,
+		PhoneNo:           *cust.PhoneNo,
+		Address:           *cust.Address,
+		CRMLeadID:         *cust.CRMLeadID,
+		EnterprisePrivyID: *cust.EnterprisePrivyID,
+		NPWP:              *cust.NPWP,
+		Address1:          *cust.Address1,
+		State:             *cust.State,
+		City:              *cust.City,
 		CreatedBy:         cust.CreatedBy,
 		CreatedAt:         tmNow,
 		UpdatedBy:         cust.CreatedBy,
@@ -100,7 +100,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 
 	var crdCustParam credential.CustomerParam
 
-	if cust.CRMLeadID == "" {
+	if cust.CRMLeadID != nil && *cust.CRMLeadID == "" {
 		entityStatus = "6"
 		// recordType = "customer"
 	} else {
@@ -115,34 +115,33 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 	crdCustParam = credential.CustomerParam{
 		Recordtype:                     "customer",
 		Customform:                     "2",
-		EntityID:                       cust.EnterprisePrivyID,
+		EntityID:                       *cust.EnterprisePrivyID,
 		IsPerson:                       "F",
-		CompanyName:                    cust.CustomerName,
+		CompanyName:                    *cust.CustomerName,
 		Comments:                       "",
-		Email:                          cust.Email,
+		Email:                          *cust.Email,
 		EntityStatus:                   "13",
-		URL:                            cust.URL,
-		Phone:                          cust.PhoneNo,
+		URL:                            *cust.URL,
+		Phone:                          *cust.PhoneNo,
 		AltPhone:                       cust.AltPhone,
 		Fax:                            cust.Fax,
-		CustEntityPrivyCustomerBalance: cust.Balance,
-		CustEntityPrivyCustomerUsage:   cust.Usage,
-		EnterprisePrivyID:              cust.EnterprisePrivyID,
-		NPWP:                           cust.NPWP,
-		Address1:                       cust.Address1,
-		State:                          cust.State,
-		City:                           cust.City,
-		ZipCode:                        cust.ZipCode,
-		CompanyNameLong:                cust.CustomerName,
-		CRMLeadID:                      cust.CRMLeadID,
+		CustEntityPrivyCustomerBalance: *cust.Balance,
+		CustEntityPrivyCustomerUsage:   *cust.Usage,
+		EnterprisePrivyID:              *cust.EnterprisePrivyID,
+		NPWP:                           *cust.NPWP,
+		Address1:                       *cust.Address1,
+		State:                          *cust.State,
+		City:                           *cust.City,
+		ZipCode:                        *cust.ZipCode,
+		CompanyNameLong:                *cust.CustomerName,
+		CRMLeadID:                      *cust.CRMLeadID,
 		BankAccount:                    "103",
 		AddressBook: credential.AddressBook{
-			Addr1: cust.Address1,
-			State: cust.State,
-			City:  cust.City,
-			Zip:   cust.ZipCode,
+			Addr1: *cust.Address1,
+			State: *cust.State,
+			City:  *cust.City,
+			Zip:   *cust.ZipCode,
 		},
-		DefaultAddress: cust.Address,
 	}
 
 	privyResp, err := r.customerPrivy.CreateCustomer(ctx, crdCustParam)
@@ -207,20 +206,20 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 	tmNow := time.Now().UnixNano() / 1000000
 
 	insertCustomer := entity.Customer{
-		CustomerID:        cust.CRMLeadID,
-		CustomerType:      cust.CustomerType,
-		CustomerName:      cust.CustomerName,
-		FirstName:         cust.FirstName,
-		LastName:          cust.LastName,
-		Email:             cust.Email,
-		PhoneNo:           cust.PhoneNo,
-		Address:           cust.Address,
-		CRMLeadID:         cust.CRMLeadID,
-		EnterprisePrivyID: cust.EnterprisePrivyID,
-		NPWP:              cust.NPWP,
-		Address1:          cust.Address1,
-		State:             cust.State,
-		City:              cust.City,
+		CustomerID:        *cust.CRMLeadID,
+		CustomerType:      *cust.CustomerType,
+		CustomerName:      *cust.CustomerName,
+		FirstName:         *cust.FirstName,
+		LastName:          *cust.LastName,
+		Email:             *cust.Email,
+		PhoneNo:           *cust.PhoneNo,
+		Address:           *cust.Address,
+		CRMLeadID:         *cust.CRMLeadID,
+		EnterprisePrivyID: *cust.EnterprisePrivyID,
+		NPWP:              *cust.NPWP,
+		Address1:          *cust.Address1,
+		State:             *cust.State,
+		City:              *cust.City,
 		CreatedBy:         cust.CreatedBy,
 		CreatedAt:         tmNow,
 		UpdatedBy:         cust.CreatedBy,
@@ -246,7 +245,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 
 	var entityStatus string
 
-	if cust.CRMLeadID == "" {
+	if cust.CRMLeadID != nil && *cust.CRMLeadID == "" {
 		entityStatus = "6"
 	} else {
 		entityStatus = "13"
@@ -258,32 +257,31 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 		Recordtype:                     "lead",
 		Customform:                     "2",
 		IsPerson:                       "F",
-		CompanyName:                    cust.CustomerName,
+		CompanyName:                    *cust.CustomerName,
 		Comments:                       "",
-		Email:                          cust.Email,
+		Email:                          *cust.Email,
 		EntityStatus:                   "6",
-		URL:                            cust.URL,
-		Phone:                          cust.PhoneNo,
+		URL:                            *cust.URL,
+		Phone:                          *cust.PhoneNo,
 		AltPhone:                       cust.AltPhone,
 		Fax:                            cust.Fax,
-		CustEntityPrivyCustomerBalance: cust.Balance,
-		CustEntityPrivyCustomerUsage:   cust.Usage,
-		EnterprisePrivyID:              cust.EnterprisePrivyID,
-		NPWP:                           cust.NPWP,
-		Address1:                       cust.Address1,
-		State:                          cust.State,
-		City:                           cust.City,
-		ZipCode:                        cust.ZipCode,
-		CompanyNameLong:                cust.CustomerName,
-		CRMLeadID:                      cust.CRMLeadID,
+		CustEntityPrivyCustomerBalance: *cust.Balance,
+		CustEntityPrivyCustomerUsage:   *cust.Usage,
+		EnterprisePrivyID:              *cust.EnterprisePrivyID,
+		NPWP:                           *cust.NPWP,
+		Address1:                       *cust.Address1,
+		State:                          *cust.State,
+		City:                           *cust.City,
+		ZipCode:                        *cust.ZipCode,
+		CompanyNameLong:                *cust.CustomerName,
+		CRMLeadID:                      *cust.CRMLeadID,
 		BankAccount:                    "103",
 		AddressBook: credential.AddressBook{
-			Addr1: cust.Address1,
-			State: cust.State,
-			City:  cust.City,
-			Zip:   cust.ZipCode,
+			Addr1: *cust.Address1,
+			State: *cust.State,
+			City:  *cust.City,
+			Zip:   *cust.ZipCode,
 		},
-		DefaultAddress: cust.Address,
 	}
 
 	// customFields := map[string]interface{}{
@@ -479,7 +477,6 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 			City:  cust.City,
 			Zip:   cust.ZipCode,
 		},
-		DefaultAddress: cust.Address,
 	}
 
 	privyResp, err := r.customerPrivy.CreateLead(ctx, crdCustParam)
@@ -615,7 +612,6 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 			City:  cust.City,
 			Zip:   cust.ZipCode,
 		},
-		DefaultAddress: cust.Address,
 	}
 
 	privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
@@ -749,7 +745,6 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id int6
 			City:  cust.City,
 			Zip:   cust.ZipCode,
 		},
-		DefaultAddress: cust.Address,
 	}
 
 	//privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
@@ -814,20 +809,20 @@ func (r *CustomerCommandUsecaseGeneral) Update(ctx context.Context, id int64, cu
 	tmNow := time.Now().UnixNano() / 1000000
 
 	updatedCustomer := entity.Customer{
-		CustomerID:        cust.CRMLeadID,
-		CustomerType:      cust.CustomerType,
-		CustomerName:      cust.CustomerName,
-		FirstName:         cust.FirstName,
-		LastName:          cust.LastName,
-		Email:             cust.Email,
-		PhoneNo:           cust.PhoneNo,
-		Address:           cust.Address,
-		CRMLeadID:         cust.CRMLeadID,
-		EnterprisePrivyID: cust.CRMLeadID,
-		NPWP:              cust.NPWP,
-		Address1:          cust.Address1,
-		State:             cust.State,
-		City:              cust.City,
+		CustomerID:        *cust.CRMLeadID,
+		CustomerType:      *cust.CustomerType,
+		CustomerName:      *cust.CustomerName,
+		FirstName:         *cust.FirstName,
+		LastName:          *cust.LastName,
+		Email:             *cust.Email,
+		PhoneNo:           *cust.PhoneNo,
+		Address:           *cust.Address,
+		CRMLeadID:         *cust.CRMLeadID,
+		EnterprisePrivyID: *cust.CRMLeadID,
+		NPWP:              *cust.NPWP,
+		Address1:          *cust.Address1,
+		State:             *cust.State,
+		City:              *cust.City,
 		UpdatedBy:         cust.CreatedBy,
 		UpdatedAt:         tmNow,
 	}
