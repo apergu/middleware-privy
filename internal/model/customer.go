@@ -1,6 +1,8 @@
 package model
 
 import (
+	"fmt"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -106,6 +108,7 @@ func (c Customer) ValidateLogic() bool {
 	// Validate mandatory fields first
 	mandatoryFieldsValid := c.CustomerName != nil && c.Email != nil && c.EnterprisePrivyID != nil
 	if !mandatoryFieldsValid {
+		fmt.Println("satu")
 		return false // Mandatory fields are not all valid
 	}
 	//Count provided fields
@@ -123,10 +126,12 @@ func (c Customer) ValidateLogic() bool {
 	if fieldsProvided > 3 {
 		for _, field := range fields[3:] { // Skip the first 3 as they are already validated
 			if field == nil {
+				fmt.Println("dua")
 				return false // An optional field was provided but is not valid
 			}
 		}
 	}
 
+	fmt.Println("tiga")
 	return true // Passed all validations
 }
