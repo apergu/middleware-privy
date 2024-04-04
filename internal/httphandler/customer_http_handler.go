@@ -135,7 +135,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		// Replace the following map with your actual data
 		data := map[string]interface{}{
-			"zd_lead_id":          payload.CRMLeadID,
 			"first_name":          payload.FirstName,
 			"last_name":           payload.LastName,
 			"enterprise_privy_id": payload.EnterprisePrivyID,
@@ -148,6 +147,11 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			"city":                payload.City,
 			"npwp":                payload.NPWP,
 		}
+
+		if payload.CRMLeadID != nil {
+			data["zd_lead_id"] = *payload.CRMLeadID
+		}
+		fmt.Println(data)
 
 		// Convert data to JSON
 		jsonData, err := json.Marshal(data)
@@ -175,6 +179,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 
 		defer resp.Body.Close()
+		fmt.Println(resp)
 
 		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", 2, map[string]interface{}{
 			"test": 200,
