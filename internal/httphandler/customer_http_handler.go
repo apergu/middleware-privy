@@ -174,6 +174,14 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		logrus.WithFields(logrus.Fields{
+			"at":     "CustomerUsageHttpHandler.Create",
+			"src":    "http.NewRequest",
+			"params": req,
+		}).Error(err)
+		fmt.Println("-------------------")
+		fmt.Println(resp.StatusCode)
+
 		defer resp.Body.Close()
 
 		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", 2, map[string]interface{}{
