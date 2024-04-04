@@ -56,7 +56,6 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 
 	insertCustomer := entity.Customer{
 		CustomerID:        *cust.EnterprisePrivyID,
-		CustomerType:      *cust.CustomerType,
 		CustomerName:      *cust.CustomerName,
 		FirstName:         *cust.FirstName,
 		LastName:          *cust.LastName,
@@ -73,6 +72,10 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		CreatedAt:         tmNow,
 		UpdatedBy:         cust.CreatedBy,
 		UpdatedAt:         tmNow,
+	}
+
+	if cust.CustomerType != nil {
+		insertCustomer.CustomerType = *cust.CustomerType
 	}
 
 	custId, err := r.custRepo.Create(ctx, insertCustomer, tx)
@@ -142,6 +145,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 			City:  *cust.City,
 			Zip:   *cust.ZipCode,
 		},
+		DefaultAddress: *cust.Address,
 	}
 
 	privyResp, err := r.customerPrivy.CreateCustomer(ctx, crdCustParam)

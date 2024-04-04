@@ -135,19 +135,33 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		// Replace the following map with your actual data
 		data := map[string]interface{}{
-			"first_name":          payload.FirstName,
-			"last_name":           payload.LastName,
 			"enterprise_privy_id": payload.EnterprisePrivyID,
 			"enterprise_name":     payload.CustomerName,
-			"address":             payload.Address,
 			"email":               payload.Email,
-			"zip":                 payload.ZipCode,
-			"state":               payload.State,
 			"country":             "Indonesia",
-			"city":                payload.City,
-			"npwp":                payload.NPWP,
 		}
 
+		if payload.FirstName != nil {
+			data["first_name"] = payload.FirstName
+		}
+		if payload.LastName != nil {
+			data["last_name"] = payload.LastName
+		}
+		if payload.Address != nil {
+			data["address"] = payload.Address
+		}
+		if payload.ZipCode != nil {
+			data["zip"] = payload.ZipCode
+		}
+		if payload.State != nil {
+			data["state"] = payload.State
+		}
+		if payload.City != nil {
+			data["city"] = payload.City
+		}
+		if payload.NPWP != nil {
+			data["npwp"] = payload.NPWP
+		}
 		if payload.CRMLeadID != nil {
 			data["zd_lead_id"] = *payload.CRMLeadID
 		}
@@ -180,22 +194,23 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		defer resp.Body.Close()
 		fmt.Println(resp)
-		if resp.StatusCode != 400 {
+		if resp.StatusCode == 200 {
 			response = rresponser.NewResponserSuccessCreated("201", "Customer successfully created", 2, map[string]interface{}{
 				"test": 200,
 			})
+		} else {
+
+			err = rapperror.ErrBadRequest(
+				"400",
+				"Invalid body",
+				"CustomerHttpHandler.Create",
+				nil,
+			)
+
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
 		}
-
-		err = rapperror.ErrBadRequest(
-			"400",
-			"Invalid body",
-			"CustomerHttpHandler.Create",
-			nil,
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
 
 	} else {
 
