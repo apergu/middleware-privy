@@ -180,10 +180,23 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		defer resp.Body.Close()
 		fmt.Println(resp)
+		if resp.StatusCode != 400 {
+			response = rresponser.NewResponserSuccessCreated("201", "Customer successfully created", 2, map[string]interface{}{
+				"test": 200,
+			})
+		}
 
-		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", 2, map[string]interface{}{
-			"test": 200,
-		})
+		err = rapperror.ErrBadRequest(
+			"400",
+			"Invalid body",
+			"CustomerHttpHandler.Create",
+			nil,
+		)
+
+		response = rresponser.NewResponserError(err)
+		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		return
+
 	} else {
 
 		logrus.
