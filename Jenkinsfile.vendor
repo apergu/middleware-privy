@@ -1,17 +1,17 @@
-properties([
-  pipelineTriggers([pollSCM('* * * * *')])
-])
+properties(
+[pipelineTriggers([pollSCM('* * * * *')])]
+)
 
 def FAILED_STAGE
 
 pipeline {
   agent any
 
-  // environment
+  //environment
   environment {
     // Repository
-    GIT_CREDENTIAL = "github.com"
-    GIT_HASH = sh(returnStdout: true, script: 'git log -1 --pretty=format:"%h"').trim()
+    def GIT_CREDENTIAL = "git.dev1.my.id"
+    def GIT_HASH = sh(returnStdout: true, script: 'git log -1 --pretty=format:"%h"').trim()
     DOCKERHUB_CREDENTIALS = credentials('dockerhub')
   }
 
@@ -19,7 +19,7 @@ pipeline {
     stage("BUILD MIDDLEWARE") {
       steps {
         script {
-          FAILED_STAGE = env.STAGE_NAME
+          FAILED_STAGE=env.STAGE_NAME
           echo "BUILD MIDDLEWARE"
         }
         sh label: 'Build Middleware Script', script:
@@ -34,7 +34,7 @@ pipeline {
     stage("BUILD NODEJS") {
       steps {
         script {
-          FAILED_STAGE = env.STAGE_NAME
+          FAILED_STAGE=env.STAGE_NAME
           echo "BUILD NODEJS"
         }
         sh label: 'Build NodeJS-jwt Script', script:
@@ -47,24 +47,22 @@ pipeline {
     stage("RELEASE") {
       steps {
         script {
-          FAILED_STAGE = env.STAGE_NAME
+          FAILED_STAGE=env.STAGE_NAME
           echo "RELEASE"
         }
 
         sh label: 'STEP RELEASE', script:
         """
-        echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
-        docker push apergudev/privy-middleware:latest
-        docker push apergudev/privy-nodejs-jwt:latest
+          echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+          docker push apergudev/privy-middleware:latest
+          docker push apergudev/privy-nodejs-jwt:latest
         """
       }
     }
   }
   post {
     always {
-      script {
-        sh 'docker logout'
-      }
+      sh 'docker logout'
     }
   }
 }
