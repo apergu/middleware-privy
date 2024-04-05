@@ -1,5 +1,7 @@
 package credential
 
+type CommonParam interface{}
+
 type AddressBook struct {
 	Addr1           string `json:"addr1"`
 	Addr2           string `json:"addr2"`

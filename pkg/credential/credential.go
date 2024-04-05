@@ -4,7 +4,7 @@ import "context"
 
 type Customer interface {
 	CreateCustomer(ctx context.Context, param CustomerParam) (CustomerResponse, error)
-	CreateLead(ctx context.Context, param LeadParam) (CustomerResponse, error)
+	CreateLead(ctx context.Context, param CustomerParam) (CustomerResponse, error)
 	UpdateLead(ctx context.Context, param CustomerParam) (CustomerResponse, error)
 }
 
@@ -27,6 +27,7 @@ type SalesOrder interface {
 type Merchant interface {
 	CreateMerchant(ctx context.Context, param MerchantParam) (MerchantResponse, error)
 }
+
 type TransferBalance interface {
 	CreateTransferBalance(ctx context.Context, param TransferBalanceParam) (TransferBalanceResponse, error)
 }
@@ -36,7 +37,6 @@ type Channel interface {
 }
 
 type Credential interface {
-	Lead
 	TopUp
 	Customer
 	CustomerUsage

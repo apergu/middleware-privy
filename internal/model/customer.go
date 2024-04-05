@@ -15,13 +15,13 @@ type Customer struct {
 	Email             *string `json:"email" validate:"max=255"`
 	PhoneNo           *string `json:"phoneNo" validate:"max=255"`
 	Address           *string `json:"address" validate:"max=1000"`
-	IsPerson          *bool   `json:"isPerson"`
+	IsPerson          bool    `json:"isPerson"`
 	EntityStatus      *string `json:"entityStatus" validate:"max=2"`
 	URL               *string `json:"url"`
 	AltPhone          *string `json:"altPhone"`
 	Fax               *string `json:"fax"`
-	Balance           *int    `json:"balanceAmount"`
-	Usage             *int    `json:"usageAmount"`
+	Balance           int     `json:"balanceAmount"`
+	Usage             int     `json:"usageAmount"`
 	CRMLeadID         *string `json:"crmLeadId" validate:"max=255"`
 	EnterprisePrivyID *string `json:"enterprisePrivyId" validate:"max=255"`
 	Address1          *string `json:"address1"`

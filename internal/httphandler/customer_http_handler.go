@@ -254,7 +254,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	//only status won and have crmLeadID send to NetSweet
 	if payload.CRMLeadID != nil && payload.EntityStatus != nil {
-		if *payload.EntityStatus == "13" {
+		if *payload.EntityStatus == "13" && payload.ValidateLogic() {
 			log.Println("payload masuk 13", payload)
 			roleId, meta, err := h.Command.Create(ctx, payload)
 			if err != nil {
@@ -274,7 +274,7 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 	var err error
 	ctx := r.Context()
 
-	var payload model.Lead
+	var payload model.Customer
 
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 	if err != nil {
@@ -304,7 +304,7 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 	// set created by value
 	payload.CreatedBy = user
 
-	errors := payload.ValidateLead()
+	errors := payload.Validate()
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
@@ -360,7 +360,7 @@ func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) 
 	var err error
 	ctx := r.Context()
 
-	var payload model.Lead
+	var payload model.Customer
 
 	id := chi.URLParam(r, "id")
 	//id := rhelper.ToInt64(chi.URLParam(r, "id"), 0)
@@ -405,7 +405,7 @@ func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) 
 	// set created by value
 	payload.CreatedBy = user
 
-	errors := payload.ValidateLead()
+	errors := payload.Validate()
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
