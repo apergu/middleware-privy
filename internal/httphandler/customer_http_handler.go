@@ -8,17 +8,17 @@ import (
 	"net/http"
 	"os"
 
-	"middleware/internal/constants"
-	"middleware/internal/model"
-	"middleware/internal/repository"
-	"middleware/internal/usecase"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/rteja-library3/rapperror"
 	"gitlab.com/rteja-library3/rdecoder"
 	"gitlab.com/rteja-library3/rhelper"
 	"gitlab.com/rteja-library3/rresponser"
+
+	"middleware/internal/constants"
+	"middleware/internal/model"
+	"middleware/internal/repository"
+	"middleware/internal/usecase"
 )
 
 type CustomerHttpHandler struct {
@@ -89,8 +89,9 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	// set created by value
 	payload.CreatedBy = user
 
-	errors := payload.Validate()
-	if len(errors) > 0 {
+	// errors := payload.Validate()
+
+	if !payload.ValidateLogic() {
 		logrus.
 			WithFields(logrus.Fields{
 				"at":     "CustomerUsageHttpHandler.Create",
@@ -103,7 +104,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			"code":    422,
 			"success": false,
 			"message": "Validation failed",
-			"errors":  errors,
+			"errors":  "some data required",
 		}
 
 		// Convert error response to JSON
@@ -127,59 +128,78 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 
 		return
+	} else {
+
+		// if payload.CRMLeadID == "" {
+		url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
+
+		// Replace the following map with your actual data
+		data := map[string]interface{}{
+			"enterprise_privy_id": payload.EnterprisePrivyID,
+			"enterprise_name":     payload.CustomerName,
+			"email":               payload.Email,
+		}
+
+		if payload.CRMLeadID != nil {
+			data["zd_lead_id"] = payload.CRMLeadID
+		}
+		if payload.FirstName != nil {
+			data["first_name"] = payload.FirstName
+		}
+		if payload.LastName != nil {
+			data["last_name"] = payload.LastName
+		}
+		if payload.Address != nil {
+			data["address"] = payload.Address
+		}
+		if payload.ZipCode != nil {
+			data["zip"] = payload.ZipCode
+		}
+		if payload.City != nil {
+			data["city"] = payload.City
+		}
+		if payload.State != nil {
+			data["state"] = payload.State
+		}
+		if payload.NPWP != nil {
+			data["npwp"] = payload.NPWP
+		}
+		data["country"] = "Indonesia"
+
+		// Convert data to JSON
+		jsonData, err := json.Marshal(data)
+		if err != nil {
+			panic(err)
+		}
+
+		// Make the HTTP POST request
+		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+		if err != nil {
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		}
+
+		req.Header.Add("Content-Type", "application/json")
+		req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		fmt.Println(resp)
+		if err != nil {
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		}
+		defer resp.Body.Close()
+
+		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", 2, map[string]interface{}{
+			"test": 200,
+		})
 	}
-
-	// if payload.CRMLeadID == "" {
-	url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
-
-	// Replace the following map with your actual data
-	data := map[string]interface{}{
-		"zd_lead_id":          payload.CRMLeadID,
-		"first_name":          payload.FirstName,
-		"last_name":           payload.LastName,
-		"enterprise_privy_id": payload.EnterprisePrivyID,
-		"enterprise_name":     payload.CustomerName,
-		"address":             payload.Address,
-		"email":               payload.Email,
-		"zip":                 payload.ZipCode,
-		"state":               payload.State,
-		"country":             "Indonesia",
-		"city":                payload.City,
-		"npwp":                payload.NPWP,
-	}
-
-	// Convert data to JSON
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		panic(err)
-	}
-
-	// Make the HTTP POST request
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
-	if err != nil {
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
-	}
-
-	req.Header.Add("Content-Type", "application/json")
-	req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
-	}
-	defer resp.Body.Close()
-
-	response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", 2, map[string]interface{}{
-		"test": 200,
-	})
 	// } else {
-	if payload.CRMLeadID != "" {
-		if payload.EntityStatus == "13" {
+	if payload.CRMLeadID != nil {
+		if payload.EntityStatus != nil && *payload.EntityStatus == "13" {
 			log.Println("payload masuk 13", payload)
 			roleId, meta, err := h.Command.Create(ctx, payload)
 			if err != nil {
@@ -188,7 +208,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
-		} else {
+		}
+		if payload.EntityStatus != nil && *payload.EntityStatus == "6" {
 			log.Println("payload masuk 6", payload)
 			roleId, meta, err := h.Command.CreateLead2(ctx, payload)
 			if err != nil {
@@ -198,15 +219,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 			response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 		}
-	} else {
-		log.Println("CRM LEAD ID KOSONG", payload)
-		roleId, meta, err := h.Command.CreateLead2(ctx, payload)
-		if err != nil {
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			return
-		}
-		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 	}
 
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
