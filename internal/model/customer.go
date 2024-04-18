@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/go-playground/validator/v10"
 )
 
@@ -108,30 +106,27 @@ func (c Customer) ValidateLogic() bool {
 	// Validate mandatory fields first
 	mandatoryFieldsValid := c.CustomerName != nil && c.Email != nil && c.EnterprisePrivyID != nil
 	if !mandatoryFieldsValid {
-		fmt.Println("satu")
 		return false // Mandatory fields are not all valid
 	}
 	//Count provided fields
-	fieldsProvided := 0
-	fields := []interface{}{c.FirstName, c.Address,
-		c.PhoneNo, c.EntityStatus, c.CRMLeadID, c.NPWP,
-		c.State, c.City, c.ZipCode}
-	for _, field := range fields {
-		if field != nil {
-			fieldsProvided++
-		}
-	}
-
+	// fieldsProvided := 0
+	// fields := []interface{}{c.FirstName, c.Address,
+	// 	c.PhoneNo, c.EntityStatus, c.CRMLeadID, c.NPWP,
+	// 	c.State, c.City, c.ZipCode}
+	// for _, field := range fields {
+	// 	if field != nil {
+	// 		fieldsProvided++
+	// 	}
+	// }
+	//
 	// If more than the mandatory fields are provided, all must be valid
-	if fieldsProvided > 3 {
-		for _, field := range fields[3:] { // Skip the first 3 as they are already validated
-			if field == nil {
-				fmt.Println("dua")
-				return false // An optional field was provided but is not valid
-			}
-		}
-	}
+	// if fieldsProvided > 3 {
+	// 	for _, field := range fields[3:] { // Skip the first 3 as they are already validated
+	// 		if field == nil {
+	// 			return false // An optional field was provided but is not valid
+	// 		}
+	// 	}
+	// }
 
-	fmt.Println("tiga")
 	return true // Passed all validations
 }
