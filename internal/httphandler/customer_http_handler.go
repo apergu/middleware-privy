@@ -193,32 +193,30 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		defer resp.Body.Close()
 
-		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", 2, map[string]interface{}{
-			"test": 200,
+		response = rresponser.NewResponserSuccessCreated("201", "Lead successfully created", 2, map[string]interface{}{
+			"code": 201,
 		})
 	}
 	// } else {
-	if payload.CRMLeadID != nil {
-		if payload.EntityStatus != nil && *payload.EntityStatus == "13" {
-			log.Println("payload masuk 13", payload)
-			roleId, meta, err := h.Command.Create(ctx, payload)
-			if err != nil {
-				response = rresponser.NewResponserError(err)
-				rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-				return
-			}
-			response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
+	if payload.EntityStatus != nil && *payload.EntityStatus == "13" {
+		log.Println("payload masuk 13", payload)
+		roleId, meta, err := h.Command.Create(ctx, payload)
+		if err != nil {
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
 		}
-		if payload.EntityStatus != nil && *payload.EntityStatus == "6" {
-			log.Println("payload masuk 6", payload)
-			roleId, meta, err := h.Command.CreateLead2(ctx, payload)
-			if err != nil {
-				response = rresponser.NewResponserError(err)
-				rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-				return
-			}
-			response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
+		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
+	}
+	if payload.EntityStatus != nil && *payload.EntityStatus == "6" {
+		log.Println("payload masuk 6", payload)
+		roleId, meta, err := h.Command.CreateLead2(ctx, payload)
+		if err != nil {
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
 		}
+		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 	}
 
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
