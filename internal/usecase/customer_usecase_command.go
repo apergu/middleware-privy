@@ -587,23 +587,50 @@ func CreateEntityCustomer(cust model.Customer) entity.Customer {
 	tmNow := time.Now().UnixNano() / 1000000
 	entityCust := entity.Customer{
 		CustomerID:        *cust.EnterprisePrivyID,
-		CustomerType:      *cust.CustomerType,
 		CustomerName:      *cust.CustomerName,
-		FirstName:         *cust.FirstName,
-		LastName:          *cust.LastName,
-		Email:             *cust.Email,
-		PhoneNo:           *cust.PhoneNo,
-		Address:           *cust.Address,
-		CRMLeadID:         *cust.CRMLeadID,
 		EnterprisePrivyID: *cust.EnterprisePrivyID,
-		NPWP:              *cust.NPWP,
-		Address1:          *cust.Address1,
-		State:             *cust.State,
-		City:              *cust.City,
-		CreatedBy:         cust.CreatedBy,
+		Email:             *cust.Email,
 		CreatedAt:         tmNow,
-		UpdatedBy:         cust.CreatedBy,
 		UpdatedAt:         tmNow,
+	}
+	if cust.CustomerType != nil {
+
+		entityCust.CustomerType = *cust.CustomerType
+	}
+	if cust.CustomerType != nil {
+
+		entityCust.FirstName = *cust.FirstName
+	}
+	if cust.LastName != nil {
+		entityCust.LastName = *cust.LastName
+	}
+	if cust.PhoneNo != nil {
+		entityCust.PhoneNo = *cust.PhoneNo
+	}
+	if cust.Address != nil {
+		entityCust.Address = *cust.Address
+	}
+	if cust.CRMLeadID != nil {
+		entityCust.CRMLeadID = *cust.CRMLeadID
+	}
+	if cust.NPWP != nil {
+		entityCust.NPWP = *cust.NPWP
+	}
+	if cust.Address1 != nil {
+		entityCust.Address1 = *cust.Address1
+	}
+	if cust.State != nil {
+		entityCust.State = *cust.State
+	}
+	if cust.City != nil {
+		entityCust.City = *cust.City
+	}
+	if cust.City != nil {
+		entityCust.City = *cust.City
+	}
+	if cust.CreatedBy != 0 {
+		entityCust.CreatedBy = cust.CreatedBy
+		entityCust.UpdatedBy = cust.CreatedBy
 	}
 
 	return entityCust
@@ -638,132 +665,195 @@ func CreateCustomerParam(cust model.Customer, lead model.Lead, isLead bool, from
 	var paramCust credential.CustomerParam
 	if isLead {
 		if fromLead {
-			paramLead = credential.LeadParam{
-				Recordtype:                     "lead",
-				Customform:                     "2",
-				IsPerson:                       "F",
-				CompanyName:                    lead.CustomerName,
-				Comments:                       "",
-				Email:                          lead.Email,
-				URL:                            lead.URL,
-				Phone:                          lead.PhoneNo,
-				AltPhone:                       lead.AltPhone,
-				Fax:                            lead.Fax,
-				CustEntityPrivyCustomerBalance: lead.Balance,
-				CustEntityPrivyCustomerUsage:   lead.Usage,
-				EnterprisePrivyID:              lead.EnterprisePrivyID,
-				NPWP:                           lead.NPWP,
-				Address1:                       lead.Address1,
-				State:                          lead.State,
-				City:                           lead.City,
-				ZipCode:                        lead.ZipCode,
-				CompanyNameLong:                lead.CustomerName,
-				CRMLeadID:                      lead.CRMLeadID,
-				BankAccount:                    "103",
-				AddressBook: credential.AddressBook{
-					Addr1: lead.Address1,
-					State: lead.State,
-					City:  lead.City,
-					Zip:   lead.ZipCode,
-				},
-			}
+			paramLead = createLeadParamfromLead(lead)
 		}
-		paramLead = credential.LeadParam{
-			Recordtype:                     "lead",
-			Customform:                     "2",
-			IsPerson:                       "F",
-			CompanyName:                    *cust.CustomerName,
-			Comments:                       "",
-			Email:                          *cust.Email,
-			EntityStatus:                   "6",
-			URL:                            *cust.URL,
-			Phone:                          *cust.PhoneNo,
-			AltPhone:                       cust.AltPhone,
-			Fax:                            cust.Fax,
-			CustEntityPrivyCustomerBalance: cust.Balance,
-			CustEntityPrivyCustomerUsage:   cust.Usage,
-			EnterprisePrivyID:              *cust.EnterprisePrivyID,
-			NPWP:                           *cust.NPWP,
-			Address1:                       *cust.Address1,
-			State:                          *cust.State,
-			City:                           *cust.City,
-			ZipCode:                        *cust.ZipCode,
-			CompanyNameLong:                *cust.CustomerName,
-			CRMLeadID:                      *cust.CRMLeadID,
-			BankAccount:                    "103",
-			AddressBook: credential.AddressBook{
-				Addr1: *cust.Address1,
-				State: *cust.State,
-				City:  *cust.City,
-				Zip:   *cust.ZipCode,
-			},
-		}
+		paramLead = createLeadParamfromCust(cust)
 		return paramCust, paramLead
 	}
 	if fromLead {
-		paramCust = credential.CustomerParam{
-			Recordtype:                     "lead",
-			Customform:                     "2",
-			EntityID:                       lead.CRMLeadID,
-			IsPerson:                       "F",
-			CompanyName:                    lead.CustomerName,
-			Comments:                       "",
-			Email:                          lead.Email,
-			URL:                            lead.URL,
-			Phone:                          lead.PhoneNo,
-			AltPhone:                       lead.AltPhone,
-			Fax:                            lead.Fax,
-			CustEntityPrivyCustomerBalance: lead.Balance,
-			CustEntityPrivyCustomerUsage:   lead.Usage,
-			EnterprisePrivyID:              lead.EnterprisePrivyID,
-			NPWP:                           lead.NPWP,
-			Address1:                       lead.Address1,
-			State:                          lead.State,
-			City:                           lead.City,
-			ZipCode:                        lead.ZipCode,
-			CompanyNameLong:                lead.CustomerName,
-			CRMLeadID:                      lead.CRMLeadID,
-			BankAccount:                    "103",
-			AddressBook: credential.AddressBook{
-				Addr1: lead.Address1,
-				State: lead.State,
-				City:  lead.City,
-				Zip:   lead.ZipCode,
-			},
-		}
+		paramCust = createCustParamfromLead(lead)
 		return paramCust, paramLead
 	}
-	paramCust = credential.CustomerParam{
-		Recordtype:                     "customer",
+	paramCust = createCustParamfromCust(cust)
+	return paramCust, paramLead
+
+}
+
+func createLeadParamfromLead(lead model.Lead) credential.LeadParam {
+	return credential.LeadParam{
+		Recordtype:                     "lead",
 		Customform:                     "2",
-		EntityID:                       *cust.EnterprisePrivyID,
+		IsPerson:                       "F",
+		CompanyName:                    lead.CustomerName,
+		Comments:                       "",
+		Email:                          lead.Email,
+		URL:                            lead.URL,
+		Phone:                          lead.PhoneNo,
+		AltPhone:                       lead.AltPhone,
+		Fax:                            lead.Fax,
+		CustEntityPrivyCustomerBalance: lead.Balance,
+		CustEntityPrivyCustomerUsage:   lead.Usage,
+		EnterprisePrivyID:              lead.EnterprisePrivyID,
+		NPWP:                           lead.NPWP,
+		Address1:                       lead.Address1,
+		State:                          lead.State,
+		City:                           lead.City,
+		ZipCode:                        lead.ZipCode,
+		CompanyNameLong:                lead.CustomerName,
+		CRMLeadID:                      lead.CRMLeadID,
+		BankAccount:                    "103",
+		AddressBook: credential.AddressBook{
+			Addr1: lead.Address1,
+			State: lead.State,
+			City:  lead.City,
+			Zip:   lead.ZipCode,
+		},
+	}
+}
+
+func createCustParamfromLead(lead model.Lead) credential.CustomerParam {
+	return credential.CustomerParam{
+		Recordtype:                     "lead",
+		Customform:                     "2",
+		EntityID:                       lead.CRMLeadID,
+		IsPerson:                       "F",
+		CompanyName:                    lead.CustomerName,
+		Comments:                       "",
+		Email:                          lead.Email,
+		URL:                            lead.URL,
+		Phone:                          lead.PhoneNo,
+		AltPhone:                       lead.AltPhone,
+		Fax:                            lead.Fax,
+		CustEntityPrivyCustomerBalance: lead.Balance,
+		CustEntityPrivyCustomerUsage:   lead.Usage,
+		EnterprisePrivyID:              lead.EnterprisePrivyID,
+		NPWP:                           lead.NPWP,
+		Address1:                       lead.Address1,
+		State:                          lead.State,
+		City:                           lead.City,
+		ZipCode:                        lead.ZipCode,
+		CompanyNameLong:                lead.CustomerName,
+		CRMLeadID:                      lead.CRMLeadID,
+		BankAccount:                    "103",
+		AddressBook: credential.AddressBook{
+			Addr1: lead.Address1,
+			State: lead.State,
+			City:  lead.City,
+			Zip:   lead.ZipCode,
+		},
+	}
+}
+
+func createLeadParamfromCust(cust model.Customer) credential.LeadParam {
+
+	leadPrm := credential.LeadParam{
+		Recordtype:                     "lead",
+		Customform:                     "2",
 		IsPerson:                       "F",
 		CompanyName:                    *cust.CustomerName,
-		Comments:                       "",
 		Email:                          *cust.Email,
-		EntityStatus:                   "13",
-		URL:                            *cust.URL,
-		Phone:                          *cust.PhoneNo,
+		EnterprisePrivyID:              *cust.EnterprisePrivyID,
+		Comments:                       "",
+		EntityStatus:                   "6",
 		AltPhone:                       cust.AltPhone,
 		Fax:                            cust.Fax,
 		CustEntityPrivyCustomerBalance: cust.Balance,
 		CustEntityPrivyCustomerUsage:   cust.Usage,
-		EnterprisePrivyID:              *cust.EnterprisePrivyID,
-		NPWP:                           *cust.NPWP,
-		Address1:                       *cust.Address1,
-		State:                          *cust.State,
-		City:                           *cust.City,
-		ZipCode:                        *cust.ZipCode,
-		CompanyNameLong:                *cust.CustomerName,
-		CRMLeadID:                      *cust.CRMLeadID,
 		BankAccount:                    "103",
-		AddressBook: credential.AddressBook{
-			Addr1: *cust.Address1,
-			State: *cust.State,
-			City:  *cust.City,
-			Zip:   *cust.ZipCode,
-		},
+		AddressBook:                    credential.AddressBook{},
 	}
-	return paramCust, paramLead
+	if cust.URL != nil {
+		leadPrm.URL = *cust.URL
+	}
+	if cust.PhoneNo != nil {
+		leadPrm.Phone = *cust.PhoneNo
+	}
+	if cust.NPWP != nil {
+		leadPrm.NPWP = *cust.NPWP
+	}
+	if cust.Address1 != nil {
+		leadPrm.Address1 = *cust.Address1
+	}
+	if cust.State != nil {
+		leadPrm.State = *cust.State
+	}
+	if cust.City != nil {
+		leadPrm.City = *cust.City
+	}
+	if cust.ZipCode != nil {
+		leadPrm.ZipCode = *cust.ZipCode
+	}
+	if cust.CustomerName != nil {
+		leadPrm.CompanyNameLong = *cust.CustomerName
+	}
+	if cust.CRMLeadID != nil {
+		leadPrm.CRMLeadID = *cust.CRMLeadID
+	}
+	if cust.URL != nil {
+		leadPrm.AddressBook.State = *cust.State
+	}
+	if cust.URL != nil {
+		leadPrm.AddressBook.City = *cust.City
+	}
+	if cust.URL != nil {
+		leadPrm.AddressBook.Zip = *cust.ZipCode
+	}
+	return leadPrm
+}
 
+func createCustParamfromCust(cust model.Customer) credential.CustomerParam {
+	custPrm := credential.CustomerParam{
+		Recordtype:                     "customer",
+		Customform:                     "2",
+		IsPerson:                       "F",
+		EntityID:                       *cust.EnterprisePrivyID,
+		CompanyName:                    *cust.CustomerName,
+		Email:                          *cust.Email,
+		Comments:                       "",
+		EntityStatus:                   "13",
+		AltPhone:                       cust.AltPhone,
+		Fax:                            cust.Fax,
+		CustEntityPrivyCustomerBalance: cust.Balance,
+		CustEntityPrivyCustomerUsage:   cust.Usage,
+		BankAccount:                    "103",
+		AddressBook:                    credential.AddressBook{},
+	}
+	if cust.URL != nil {
+		custPrm.URL = *cust.URL
+	}
+	if cust.PhoneNo != nil {
+		custPrm.Phone = *cust.PhoneNo
+	}
+	if cust.NPWP != nil {
+		custPrm.NPWP = *cust.NPWP
+	}
+	if cust.Address1 != nil {
+		custPrm.Address1 = *cust.Address1
+		custPrm.AddressBook.Addr1 = *cust.Address1
+	}
+	if cust.State != nil {
+		custPrm.State = *cust.State
+	}
+	if cust.City != nil {
+		custPrm.City = *cust.City
+	}
+	if cust.ZipCode != nil {
+		custPrm.ZipCode = *cust.ZipCode
+	}
+	if cust.CustomerName != nil {
+		custPrm.CompanyNameLong = *cust.CustomerName
+	}
+	if cust.CRMLeadID != nil {
+		custPrm.CRMLeadID = *cust.CRMLeadID
+	}
+	if cust.URL != nil {
+		custPrm.AddressBook.State = *cust.State
+	}
+	if cust.URL != nil {
+		custPrm.AddressBook.City = *cust.City
+	}
+	if cust.URL != nil {
+		custPrm.AddressBook.Zip = *cust.ZipCode
+	}
+	return custPrm
 }
