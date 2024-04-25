@@ -171,6 +171,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		// Make the HTTP POST request
 		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+
 		if err != nil {
 			response = rresponser.NewResponserError(err)
 			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
@@ -182,6 +183,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		client := &http.Client{}
 		resp, err := client.Do(req)
+		fmt.Println("response", err)
+
 		if err != nil {
 			response = rresponser.NewResponserError(err)
 			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
@@ -193,12 +196,17 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		// 	"test": 200,
 		// })
 
+		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", resp.StatusCode, resp.Body)
+	}
+
+	if payload.EntityStatus == "7" {
 		roleId, meta, err := h.Command.CreateLead2(ctx, payload)
 		if err != nil {
 			response = rresponser.NewResponserError(err)
 			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 			return
 		}
+
 		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 	}
 	// } else {
