@@ -142,7 +142,9 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
-	} else {
+	}
+
+	if payload.EntityStatus == "6" || payload.EntityStatus == "" {
 		log.Println("payload masuk 6", payload)
 
 		url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
