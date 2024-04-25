@@ -190,6 +190,14 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 			return
 		}
+
+		if resp.StatusCode != 200 {
+			newErr := fmt.Errorf("Error: %s", resp.Body)
+			response = rresponser.NewResponserError(newErr)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		}
+
 		defer resp.Body.Close()
 
 		// response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", 2, map[string]interface{}{
