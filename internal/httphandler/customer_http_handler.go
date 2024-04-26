@@ -1,10 +1,12 @@
 package httphandler
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"middleware/internal/constants"
 	"middleware/internal/helper"
@@ -79,7 +81,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		// response = rresponser.NewResponserError(err)
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		http.Error(w, "Invalid Body", 422)
+		http.Error(w, "Invalid Body", http.StatusBadRequest)
 		return
 	}
 
@@ -90,7 +92,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	payload.CreatedBy = user
 
 	errors := payload.Validate()
-
 	if payload.EntityStatus == "6" || payload.EntityStatus == "" {
 		if payload.SubIndustry == "" {
 			errors = append(errors, map[string]interface{}{
@@ -147,12 +148,12 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		log.Println("payload masuk 13", payload)
 		roleId, meta, err := h.Command.Create(ctx, payload)
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(422, false, "Create Customer Failed", map[string]interface{}{
+			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, "Create Customer Failed", map[string]interface{}{
 				"roleId": roleId,
 				"meta":   meta,
 			})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, 422)
+			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
 			return
 		}
 
@@ -170,11 +171,70 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		roleId, meta, err := h.Command.CreateLeadZD(ctx, payload)
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, 422)
+			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
 			return
 		}
+
+		url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
+
+		fmt.Println("url", url)
+
+		// Replace the following map with your actual data
+		data := map[string]interface{}{
+			"zd_lead_id":          payload.CRMLeadID,
+			"first_name":          payload.FirstName,
+			"last_name":           payload.LastName,
+			"enterprise_privy_id": payload.EnterprisePrivyID,
+			"enterprise_name":     payload.CustomerName,
+			"address":             payload.Address,
+			"email":               payload.Email,
+			"zip":                 payload.ZipCode,
+			"state":               payload.State,
+			"country":             "Indonesia",
+			"city":                payload.City,
+			"npwp":                payload.NPWP,
+		}
+
+		// Convert data to JSON
+		jsonData, err := json.Marshal(data)
+		if err != nil {
+			panic(err)
+		}
+
+		// Make the HTTP POST request
+		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+
+		if err != nil {
+			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+			return
+		}
+
+		req.Header.Add("Content-Type", "application/json")
+		req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		fmt.Println("response", err)
+
+		if err != nil {
+			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+			return
+		}
+
+		if resp.StatusCode != 200 {
+			fmt.Println("response status code", resp.StatusCode)
+			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+			return
+		}
+		defer resp.Body.Close()
 
 		response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer successfully created", map[string]interface{}{
 			"roleId": roleId,
@@ -189,9 +249,9 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if payload.EntityStatus == "7" {
 		roleId, meta, err := h.Command.CreateLead2(ctx, payload)
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, 422)
+			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
 			return
 		}
 
@@ -241,9 +301,9 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 		// 	nil,
 		// )
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, 422)
+			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
 			return
 		}
 
@@ -298,9 +358,9 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 
 	roleId, meta, err := h.Command.CreateLead(ctx, payload)
 	if err != nil {
-		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		helper.WriteJSONResponse(w, response, 422)
+		helper.WriteJSONResponse(w, response, http.StatusBadRequest)
 		return
 	}
 
@@ -346,9 +406,9 @@ func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) 
 			Error(err)
 
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, 422)
+			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
 			return
 		}
 	}
@@ -402,9 +462,9 @@ func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) 
 	roleId, meta, err := h.Command.UpdateLead(ctx, id, payload)
 
 	if err != nil {
-		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		helper.WriteJSONResponse(w, response, 422)
+		helper.WriteJSONResponse(w, response, http.StatusBadRequest)
 		return
 	}
 
@@ -434,9 +494,9 @@ func (h CustomerHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 		)
 
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, 422)
+			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
 			return
 		}
 
@@ -445,9 +505,9 @@ func (h CustomerHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 
 	if err != nil {
-		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		helper.WriteJSONResponse(w, response, 422)
+		helper.WriteJSONResponse(w, response, http.StatusBadRequest)
 		return
 	}
 
@@ -520,9 +580,9 @@ func (h CustomerHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	roleId, meta, err := h.Command.Update(ctx, id, payload)
 	if err != nil {
-		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		helper.WriteJSONResponse(w, response, 422)
+		helper.WriteJSONResponse(w, response, http.StatusBadRequest)
 		return
 	}
 

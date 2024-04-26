@@ -1,13 +1,9 @@
 package usecase
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
-	"os"
 	"time"
 
 	"middleware/internal/entity"
@@ -443,58 +439,6 @@ func (r *CustomerCommandUsecaseGeneral) CreateLeadZD(ctx context.Context, cust m
 
 		return 0, nil, err
 	}
-
-	url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
-
-	// Replace the following map with your actual data
-	data := map[string]interface{}{
-		"zd_lead_id":          cust.CRMLeadID,
-		"first_name":          cust.FirstName,
-		"last_name":           cust.LastName,
-		"enterprise_privy_id": cust.EnterprisePrivyID,
-		"enterprise_name":     cust.CustomerName,
-		"address":             cust.Address,
-		"email":               cust.Email,
-		"zip":                 cust.ZipCode,
-		"state":               cust.State,
-		"country":             "Indonesia",
-		"city":                cust.City,
-		"npwp":                cust.NPWP,
-		"sub_industry":        cust.SubIndustry,
-	}
-
-	// Convert data to JSON
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		panic(err)
-	}
-
-	// Make the HTTP POST request
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
-
-	if err != nil {
-		return 0, nil, err
-	}
-
-	req.Header.Add("Content-Type", "application/json")
-	req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	fmt.Println("response", err)
-
-	if err != nil {
-		return 0, nil, err
-	}
-
-	// if resp.StatusCode != 200 {
-	// 	fmt.Println("response status code", resp.StatusCode)
-	// 	response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
-	// 	// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-	// 	helper.WriteJSONResponse(w, response, http.StatusBadRequest)
-	// 	return
-	// }
-	defer resp.Body.Close()
 
 	// var entityStatus string
 
