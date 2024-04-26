@@ -227,13 +227,13 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if resp.StatusCode != 200 {
-			fmt.Println("response status code", resp.StatusCode)
-			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
-			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
-			return
-		}
+		// if resp.StatusCode != 200 {
+		// 	fmt.Println("response status code", resp.StatusCode)
+		// 	response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+		// 	// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		// 	helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+		// 	return
+		// }
 		defer resp.Body.Close()
 
 		response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer successfully created", map[string]interface{}{
