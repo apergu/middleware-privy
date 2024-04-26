@@ -195,6 +195,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			"country":             "Indonesia",
 			"city":                payload.City,
 			"npwp":                payload.NPWP,
+			"sub_industry":        payload.SubIndustry,
+			"phone":               payload.PhoneNo,
 		}
 
 		// Convert data to JSON
