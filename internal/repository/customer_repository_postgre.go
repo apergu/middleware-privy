@@ -505,7 +505,6 @@ func (c *CustomerRepositoryPostgre) CreateLead(ctx context.Context, cust entity.
 
 		return 0, pgxerror.FromPgxError(err, "", "CustomerRepositoryPostgre.Create")
 	}
-
 	return id, nil
 }
 

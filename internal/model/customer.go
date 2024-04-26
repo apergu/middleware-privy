@@ -9,9 +9,9 @@ type Customer struct {
 	CustomerType      string  `json:"customerType" `
 	CustomerName      string  `json:"customerName" validate:"required,max=255"`
 	FirstName         string  `json:"firstName"`
-	LastName          string  `json:"lastName"`
-	Email             string  `json:"email" validate:"max=255"`
-	PhoneNo           string  `json:"phoneNo" validate:"max=255"`
+	LastName          string  `json:"lastName"  validate:"required,max=255"`
+	Email             string  `json:"email" validate:"required,max=255"`
+	PhoneNo           string  `json:"phoneNo" validate:"required,max=255"`
 	Address           string  `json:"address" validate:"max=1000"`
 	IsPerson          bool    `json:"isPerson"`
 	EntityStatus      string  `json:"entityStatus" validate:"max=2"`
@@ -21,13 +21,14 @@ type Customer struct {
 	Balance           int     `json:"balanceAmount"`
 	Usage             int     `json:"usageAmount"`
 	CRMLeadID         string  `json:"crmLeadId" validate:"max=255"`
-	EnterprisePrivyID string  `json:"enterprisePrivyId" validate:"max=255"`
+	EnterprisePrivyID string  `json:"enterprisePrivyId" validate:"required,max=255"`
 	Address1          string  `json:"address1"`
 	NPWP              string  `json:"npwp" validate:"max=255"`
 	State             string  `json:"state" validate:"max=255"`
 	City              string  `json:"city"`
 	ZipCode           string  `json:"zip" validate:"max=255"`
 	CreatedBy         int64   `json:"-"`
+	SubIndustry       string  `json:"subIndustry" validate:"max=255"`
 }
 
 type Lead struct {

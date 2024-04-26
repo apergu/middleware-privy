@@ -1,4 +1,4 @@
-package credential
+package helper
 
 import (
 	"encoding/json"
@@ -7,6 +7,22 @@ import (
 
 	"github.com/labstack/echo"
 )
+
+func CreateResponse(w http.ResponseWriter, statusCode int, message string, data interface{}) {
+	response := map[string]interface{}{
+		"status":  http.StatusText(statusCode),
+		"code":    statusCode,
+		"message": message,
+		"data":    data,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Printf("Error encoding response: %v", err)
+	}
+}
 
 type JSONResponse struct {
 	StatusCode int         `json:"status_code"`

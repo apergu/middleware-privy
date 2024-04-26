@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"middleware/internal/constants"
+	"middleware/internal/helper"
 	"middleware/internal/model"
 	"middleware/internal/repository"
 	"middleware/internal/usecase"
@@ -50,33 +51,41 @@ func NewChannelHttpHandler(prop HTTPHandlerProperty) http.Handler {
 }
 
 func (h ChannelHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
+	// var response rresponser.Responser
 	var err error
 	ctx := r.Context()
 
 	var payload model.Channel
 
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
+
 	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to decode data",
-				"at":     "ChannelHttpHandler.Create",
-				"src":    "rdecoder.DecodeRest",
-			}).
-			Error(err)
-
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"ChannelHttpHandler.Create",
-			nil,
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, response, http.StatusBadRequest)
 		return
 	}
+
+	// if err != nil {
+	// 	logrus.
+	// 		WithFields(logrus.Fields{
+	// 			"action": "try to decode data",
+	// 			"at":     "ChannelHttpHandler.Create",
+	// 			"src":    "rdecoder.DecodeRest",
+	// 		}).
+	// 		Error(err)
+
+	// 	err = rapperror.ErrBadRequest(
+	// 		rapperror.AppErrorCodeBadRequest,
+	// 		"Invalid body",
+	// 		"ChannelHttpHandler.Create",
+	// 		nil,
+	// 	)
+
+	// 	response = rresponser.NewResponserError(err)
+	// 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	// 	return
+	// }
 
 	// get user from context
 	user := ctx.Value(constants.SessionUserId).(int64)
@@ -126,13 +135,17 @@ func (h ChannelHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	roleId, meta, err := h.Command.Create(ctx, payload)
 	if err != nil {
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, response, http.StatusBadRequest)
 		return
 	}
+	response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer successfully created", map[string]interface{}{
+		"roleId": roleId,
+		"meta":   meta,
+	})
 
-	response = rresponser.NewResponserSuccessCreated("", "Channel successfully created", roleId, meta)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.WriteJSONResponse(w, response, http.StatusCreated)
 }
 
 func (h ChannelHttpHandler) Update(w http.ResponseWriter, r *http.Request) {

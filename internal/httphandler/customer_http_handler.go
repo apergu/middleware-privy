@@ -1,14 +1,13 @@
 package httphandler
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"middleware/internal/constants"
+	"middleware/internal/helper"
 	"middleware/internal/model"
 	"middleware/internal/repository"
 	"middleware/internal/usecase"
@@ -54,7 +53,7 @@ func NewCustomerHttpHandler(prop HTTPHandlerProperty) http.Handler {
 }
 
 func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
+	// var response rresponser.Responser
 	var err error
 	ctx := r.Context()
 
@@ -78,8 +77,9 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			nil,
 		)
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		// response = rresponser.NewResponserError(err)
+		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		http.Error(w, "Invalid Body", 422)
 		return
 	}
 
@@ -90,6 +90,16 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	payload.CreatedBy = user
 
 	errors := payload.Validate()
+
+	if payload.EntityStatus == "6" || payload.EntityStatus == "" {
+		if payload.SubIndustry == "" {
+			errors = append(errors, map[string]interface{}{
+				"field":   "SubIndustry",
+				"message": "Sub Industry is required",
+			})
+		}
+	}
+
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
@@ -137,87 +147,61 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		log.Println("payload masuk 13", payload)
 		roleId, meta, err := h.Command.Create(ctx, payload)
 		if err != nil {
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			response, _ := helper.GenerateJSONResponse(422, false, "Create Customer Failed", map[string]interface{}{
+				"roleId": roleId,
+				"meta":   meta,
+			})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, 422)
 			return
 		}
-		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
+
+		response, _ := helper.GenerateJSONResponse(http.StatusCreated, true, "Customer successfully created", map[string]interface{}{
+			"roleId": roleId,
+			"meta":   meta,
+		})
+
+		// response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
+		helper.WriteJSONResponse(w, response, http.StatusCreated)
 	}
 
 	if payload.EntityStatus == "6" || payload.EntityStatus == "" {
 		log.Println("payload masuk 6", payload)
 
-		url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
-
-		// Replace the following map with your actual data
-		data := map[string]interface{}{
-			"zd_lead_id":          payload.CRMLeadID,
-			"first_name":          payload.FirstName,
-			"last_name":           payload.LastName,
-			"enterprise_privy_id": payload.EnterprisePrivyID,
-			"enterprise_name":     payload.CustomerName,
-			"address":             payload.Address,
-			"email":               payload.Email,
-			"zip":                 payload.ZipCode,
-			"state":               payload.State,
-			"country":             "Indonesia",
-			"city":                payload.City,
-			"npwp":                payload.NPWP,
-		}
-
-		// Convert data to JSON
-		jsonData, err := json.Marshal(data)
+		roleId, meta, err := h.Command.CreateLeadZD(ctx, payload)
 		if err != nil {
-			panic(err)
-		}
-
-		// Make the HTTP POST request
-		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
-
-		if err != nil {
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, 422)
 			return
 		}
 
-		req.Header.Add("Content-Type", "application/json")
-		req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
+		response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer successfully created", map[string]interface{}{
+			"roleId": roleId,
+			"meta":   meta,
+		})
+		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, response, http.StatusCreated)
 
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		fmt.Println("response", err)
-
-		if err != nil {
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			return
-		}
-
-		if resp.StatusCode != 200 {
-			newErr := fmt.Errorf("Error: %s", resp.Body)
-			response = rresponser.NewResponserError(newErr)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			return
-		}
-
-		defer resp.Body.Close()
-
-		// response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", 2, map[string]interface{}{
-		// 	"test": 200,
-		// })
-
-		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", resp.StatusCode, resp.Body)
+		// response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", resp.StatusCode, resp.Body)
 	}
 
 	if payload.EntityStatus == "7" {
 		roleId, meta, err := h.Command.CreateLead2(ctx, payload)
 		if err != nil {
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, 422)
 			return
 		}
 
-		response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
+		response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer successfully created", map[string]interface{}{
+			"roleId": roleId,
+			"meta":   meta,
+		})
+		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, response, http.StatusCreated)
+		// response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 	}
 	// } else {
 	// 	log.Println("CRM LEAD ID KOSONG", payload)
@@ -230,11 +214,11 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	// 	response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 	// }
 
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 }
 
 func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
+	// var response rresponser.Responser
 	var err error
 	ctx := r.Context()
 
@@ -250,15 +234,19 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 			}).
 			Error(err)
 
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"CustomerHttpHandler.Create",
-			nil,
-		)
+		// err = rapperror.ErrBadRequest(
+		// 	rapperror.AppErrorCodeBadRequest,
+		// 	"Invalid body",
+		// 	"CustomerHttpHandler.Create",
+		// 	nil,
+		// )
+		if err != nil {
+			response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, 422)
+			return
+		}
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 		return
 	}
 
@@ -310,17 +298,23 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 
 	roleId, meta, err := h.Command.CreateLead(ctx, payload)
 	if err != nil {
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, response, 422)
 		return
 	}
 
-	response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer successfully created", map[string]interface{}{
+		"roleId": roleId,
+		"meta":   meta,
+	})
+	// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.WriteJSONResponse(w, response, http.StatusCreated)
+
 }
 
 func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
+	// var response rresponser.Responser
 	var err error
 	ctx := r.Context()
 
@@ -351,16 +345,12 @@ func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) 
 			}).
 			Error(err)
 
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"CustomerHttpHandler.Update",
-			nil,
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
+		if err != nil {
+			response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, 422)
+			return
+		}
 	}
 
 	// get user from context
@@ -410,18 +400,25 @@ func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) 
 	}
 
 	roleId, meta, err := h.Command.UpdateLead(ctx, id, payload)
+
 	if err != nil {
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, response, 422)
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "Customer successfully updated", roleId, meta)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer successfully created", map[string]interface{}{
+		"roleId": roleId,
+		"meta":   meta,
+	})
+
+	helper.WriteJSONResponse(w, response, http.StatusCreated)
+
 }
 
 func (h CustomerHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
+	// var response rresponser.Responser
 	var err error
 	ctx := r.Context()
 
@@ -436,32 +433,44 @@ func (h CustomerHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 			nil,
 		)
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
+		if err != nil {
+			response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, 422)
+			return
+		}
+
 	}
 
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
+
 	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to decode data",
-				"at":     "CustomerHttpHandler.Update",
-				"src":    "rdecoder.DecodeRest",
-			}).
-			Error(err)
-
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"CustomerHttpHandler.Update",
-			nil,
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, response, 422)
 		return
 	}
+
+	// if err != nil {
+	// 	logrus.
+	// 		WithFields(logrus.Fields{
+	// 			"action": "try to decode data",
+	// 			"at":     "CustomerHttpHandler.Update",
+	// 			"src":    "rdecoder.DecodeRest",
+	// 		}).
+	// 		Error(err)
+
+	// 	err = rapperror.ErrBadRequest(
+	// 		rapperror.AppErrorCodeBadRequest,
+	// 		"Invalid body",
+	// 		"CustomerHttpHandler.Update",
+	// 		nil,
+	// 	)
+
+	// 	response = rresponser.NewResponserError(err)
+	// 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	// 	return
+	// }
 
 	// get user from context
 	user := ctx.Value(constants.SessionUserId).(int64)
@@ -511,13 +520,19 @@ func (h CustomerHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	roleId, meta, err := h.Command.Update(ctx, id, payload)
 	if err != nil {
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, response, 422)
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "Customer successfully updated", roleId, meta)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer successfully created", map[string]interface{}{
+		"roleId": roleId,
+		"meta":   meta,
+	})
+
+	helper.WriteJSONResponse(w, response, http.StatusCreated)
+
 }
 
 func (h CustomerHttpHandler) Delete(w http.ResponseWriter, r *http.Request) {
