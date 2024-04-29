@@ -79,9 +79,9 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			nil,
 		)
 
-		// response = rresponser.NewResponserError(err)
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		http.Error(w, "Invalid Body", helper.GetErrorStatusCode(err))
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}
 
@@ -90,6 +90,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	// set created by value
 	payload.CreatedBy = user
+
+	// fmt.Println("BEFORE ERRROR ")
 
 	errors := payload.Validate()
 	if payload.EntityStatus == "6" || payload.EntityStatus == "" {
