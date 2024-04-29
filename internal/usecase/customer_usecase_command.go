@@ -36,6 +36,33 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 
 	tmNow := time.Now().UnixNano() / 1000000
 
+	respCust, err := r.custRepo.FindByName(ctx, cust.CustomerName, tx)
+	if err != nil {
+		r.custRepo.RollbackTx(ctx, tx)
+	}
+
+	if respCust.CustomerName != "" {
+		return 0, nil, rapperror.ErrConflict(
+			"",
+			"Customer with name "+cust.CustomerName+" already exist",
+			"CustomerCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
+
+	respCust, err = r.custRepo.FindByEnterprisePrivyID(ctx, cust.EnterprisePrivyID, tx)
+	if err != nil {
+		r.custRepo.RollbackTx(ctx, tx)
+	}
+
+	if respCust.EnterprisePrivyID != "" {
+		return 0, nil, rapperror.ErrConflict(
+			"",
+			"Customer with enterprise privy id "+cust.EnterprisePrivyID+" already exist",
+			"CustomerCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
 	// var lastId int64
 
 	// idLast, err := r.custRepo.GetLast(ctx, tx)

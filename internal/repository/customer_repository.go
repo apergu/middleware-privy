@@ -24,6 +24,8 @@ type CustomerQueryRepository interface {
 type CustomerCommandRepository interface {
 	Command
 	FindOneByIdForUpdate(ctx context.Context, id int64, tx pgx.Tx) (entity.Customer, error)
+	FindByEnterprisePrivyID(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.Customer, error)
+	FindByName(ctx context.Context, customerName string, tx pgx.Tx) (entity.Customer, error)
 	Create(ctx context.Context, Customer entity.Customer, tx pgx.Tx) (int64, error)
 	CreateLead(ctx context.Context, Customer entity.Customer, tx pgx.Tx) (int64, error)
 	Update(ctx context.Context, id int64, Customer entity.Customer, tx pgx.Tx) error
