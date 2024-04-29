@@ -77,6 +77,8 @@ func GetErrorStatusCode(err error) int {
 		return http.StatusConflict
 	case "[err_invalid_payload]":
 		return http.StatusUnprocessableEntity
+	case "[err_bad_request]":
+		return http.StatusBadRequest
 	case "[err_internal_server]":
 		return http.StatusInternalServerError
 	case "[err_not_found]":

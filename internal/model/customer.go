@@ -55,6 +55,7 @@ type Lead struct {
 	City              string  `json:"city"`
 	ZipCode           string  `json:"zip" validate:"max=255"`
 	CreatedBy         int64   `json:"-"`
+	SubIndustry       string  `json:"subIndustry" validate:"max=255"`
 }
 
 func (c Customer) Validate() []map[string]interface{} {
