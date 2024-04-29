@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo"
 )
@@ -64,4 +65,27 @@ func GenerateJSONResponse(code int, status bool, message string, data interface{
 	}
 
 	return response, nil
+}
+
+func GetErrorStatusCode(err error) int {
+	newErr := strings.Split(err.Error(), " ")
+
+	switch newErr[0] {
+	case "":
+		return http.StatusOK
+	case "[err_duplicate]":
+		return http.StatusConflict
+	case "[err_invalid_payload]":
+		return http.StatusUnprocessableEntity
+	case "[err_internal_server]":
+		return http.StatusInternalServerError
+	case "[err_not_found]":
+		return http.StatusNotFound
+	case "[err_unauthorized]":
+		return http.StatusUnauthorized
+	case "[err_forbidden]":
+		return http.StatusForbidden
+	default:
+		return http.StatusInternalServerError
+	}
 }

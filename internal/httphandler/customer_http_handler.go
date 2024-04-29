@@ -81,7 +81,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		// response = rresponser.NewResponserError(err)
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		http.Error(w, "Invalid Body", http.StatusBadRequest)
+		http.Error(w, "Invalid Body", helper.GetErrorStatusCode(err))
 		return
 	}
 
@@ -148,12 +148,13 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		log.Println("payload masuk 13", payload)
 		roleId, meta, err := h.Command.Create(ctx, payload)
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, "Create Customer Failed", map[string]interface{}{
+			// fmt.Println("error", err.Error())
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{
 				"roleId": roleId,
 				"meta":   meta,
 			})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 			return
 		}
 
@@ -171,9 +172,9 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		roleId, meta, err := h.Command.CreateLeadZD(ctx, payload)
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 			return
 		}
 
@@ -209,9 +210,9 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 			return
 		}
 
@@ -223,17 +224,17 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("response", err)
 
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 			return
 		}
 
 		// if resp.StatusCode != 200 {
 		// 	fmt.Println("response status code", resp.StatusCode)
-		// 	response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+		// 	response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 		// 	// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		// 	helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+		// 	helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		// 	return
 		// }
 		defer resp.Body.Close()
@@ -251,9 +252,9 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if payload.EntityStatus == "7" {
 		roleId, meta, err := h.Command.CreateLead2(ctx, payload)
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 			return
 		}
 
@@ -303,9 +304,9 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 		// 	nil,
 		// )
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 			return
 		}
 
@@ -360,9 +361,9 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 
 	roleId, meta, err := h.Command.CreateLead(ctx, payload)
 	if err != nil {
-		response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}
 
@@ -408,9 +409,9 @@ func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) 
 			Error(err)
 
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 			return
 		}
 	}
@@ -464,9 +465,9 @@ func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) 
 	roleId, meta, err := h.Command.UpdateLead(ctx, id, payload)
 
 	if err != nil {
-		response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}
 
@@ -496,9 +497,9 @@ func (h CustomerHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 		)
 
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 			return
 		}
 
@@ -507,9 +508,9 @@ func (h CustomerHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 
 	if err != nil {
-		response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}
 
@@ -582,9 +583,9 @@ func (h CustomerHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	roleId, meta, err := h.Command.Update(ctx, id, payload)
 	if err != nil {
-		response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}
 
