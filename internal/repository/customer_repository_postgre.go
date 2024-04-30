@@ -568,10 +568,6 @@ func (c *CustomerRepositoryPostgre) CreateLead(ctx context.Context, cust entity.
 		).
 		Scan(&id)
 
-	errSplit := strings.Split(err.Error(), " ")
-
-	fmt.Println("============== LEAD CREATED ==============", errSplit)
-
 	if err != nil {
 		logrus.
 			WithFields(logrus.Fields{
