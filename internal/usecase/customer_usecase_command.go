@@ -36,10 +36,8 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 
 	tmNow := time.Now().UnixNano() / 1000000
 
-	respCust, err := r.custRepo.FindByName(ctx, cust.CustomerName, tx)
-	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
-	}
+	fmt.Println("respCust FIND NAME")
+	respCust, _ := r.custRepo.FindByName(ctx, cust.CustomerName, tx)
 
 	if respCust.CustomerName != "" {
 		return 0, nil, rapperror.ErrConflict(
@@ -50,12 +48,10 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		)
 	}
 
-	respCust, err = r.custRepo.FindByEnterprisePrivyID(ctx, cust.EnterprisePrivyID, tx)
-	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
-	}
+	fmt.Println("respCust FIND NAME")
+	respCust2, _ := r.custRepo.FindByEnterprisePrivyID(ctx, cust.EnterprisePrivyID, tx)
 
-	if respCust.EnterprisePrivyID != "" {
+	if respCust2.EnterprisePrivyID != "" {
 		return 0, nil, rapperror.ErrConflict(
 			"",
 			"Customer with enterprise privy id "+cust.EnterprisePrivyID+" already exist",
@@ -63,6 +59,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 			nil,
 		)
 	}
+
 	// var lastId int64
 
 	// idLast, err := r.custRepo.GetLast(ctx, tx)
@@ -302,9 +299,9 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 		City:                           cust.City,
 		ZipCode:                        cust.ZipCode,
 		CompanyNameLong:                cust.CustomerName,
-		SubIndustry:                    cust.SubIndustry,
-		CRMLeadID:                      cust.CRMLeadID,
-		BankAccount:                    "103",
+		// SubIndustry:                    cust.SubIndustry,
+		CRMLeadID:   cust.CRMLeadID,
+		BankAccount: "103",
 		AddressBook: credential.AddressBook{
 			Addr1: cust.Address1,
 			State: cust.State,
@@ -965,9 +962,9 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id int6
 		City:                           cust.City,
 		ZipCode:                        cust.ZipCode,
 		CompanyNameLong:                cust.CustomerName,
-		SubIndustry:                    cust.SubIndustry,
-		CRMLeadID:                      cust.CRMLeadID,
-		BankAccount:                    "103",
+		// SubIndustry:                    cust.SubIndustry,
+		CRMLeadID:   cust.CRMLeadID,
+		BankAccount: "103",
 		AddressBook: credential.AddressBook{
 			Addr1: cust.Address1,
 			State: cust.State,

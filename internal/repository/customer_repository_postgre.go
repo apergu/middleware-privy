@@ -449,6 +449,16 @@ func (c *CustomerRepositoryPostgre) Create(ctx context.Context, cust entity.Cust
 		,$11, $12 ,$13, $14, $15, $16, $17, $18, $19, $20
 	) RETURNING id`
 
+	fmt.Println("============== ID ==============", cust)
+
+	// var custId *string
+
+	// if cust.CustomerID == "" {
+	// 	custId = &cust.EnterprisePrivyID
+	// } else {
+	// 	custId = &cust.CustomerID
+	// }
+
 	err := cmd.
 		QueryRow(
 			ctx,
@@ -557,6 +567,10 @@ func (c *CustomerRepositoryPostgre) CreateLead(ctx context.Context, cust entity.
 			cust.UpdatedAt,
 		).
 		Scan(&id)
+
+	errSplit := strings.Split(err.Error(), " ")
+
+	fmt.Println("============== LEAD CREATED ==============", errSplit)
 
 	if err != nil {
 		logrus.
