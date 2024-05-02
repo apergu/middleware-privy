@@ -162,17 +162,62 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// START GET DATA
+		// GET DETAIL DATA
+		urlDetailData := "https://api.getbase.com/v2/leads/"
+		reqDetailData, err := http.NewRequest("GET", urlDetailData+payload.CRMLeadID, nil)
+
+		reqDetailData.Header.Add("Content-Type", "application/json")
+		reqDetailData.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+
+		clientDetailData := &http.Client{}
+		respDetailData, err := clientDetailData.Do(reqDetailData)
+		fmt.Println("response", respDetailData.Body)
+
+		defer respDetailData.Body.Close()
+
+		bodyDetailData, err := ioutil.ReadAll(respDetailData.Body)
+
+		var responsDetailData struct {
+			Data interface{} `json:"data"`
+		}
+
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+
+		err = json.Unmarshal(bodyDetailData, &responsDetailData)
+		fmt.Println("response Body", responsDetailData)
+
+		var responseDetail struct {
+			FirstName   string `json:"first_name"`
+			LastName    string `json:"last_name"`
+			Email       string `json:"email"`
+			PhoneNumber string `json:"phone"`
+		}
+
+		newResp := responsDetailData.Data.(map[string]interface{})
+		responseDetail.FirstName = newResp["first_name"].(string)
+		responseDetail.LastName = newResp["last_name"].(string)
+		responseDetail.Email = newResp["email"].(string)
+		responseDetail.PhoneNumber = newResp["phone"].(string)
+		// err = json.Unmarshal([]byte(newResp), &responseDetail)
+		fmt.Println("response Body Detail", responseDetail)
+
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+
+		// END DETAIL DATA
+
+		// START GET DATA =================
 
 		urlGetData := "https://api.getbase.com/v2/leads/"
 
 		// Make the HTTP POST request
 		payloadEdit := map[string]interface{}{
 			"organization_name": payload.CustomerName,
-			"first_name":        payload.FirstName,
-			"last_name":         payload.LastName,
-			"email":             payload.Email,
-			"mobile":            payload.PhoneNo,
 			"address": map[string]interface{}{
 				"line1":       payload.Address,
 				"city":        payload.City,
@@ -184,6 +229,22 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				"NPWP":          payload.NPWP,
 				"Enterprise ID": payload.EnterprisePrivyID,
 			},
+		}
+
+		if responseDetail.FirstName != payload.FirstName {
+			payloadEdit["custom_fields"].(map[string]interface{})["First Name - Adonara"] = payload.FirstName
+		}
+
+		if responseDetail.LastName != payload.LastName {
+			payloadEdit["custom_fields"].(map[string]interface{})["Last Name - Adonara"] = payload.LastName
+		}
+
+		if responseDetail.Email != payload.Email {
+			payloadEdit["custom_fields"].(map[string]interface{})["Email - Adonara"] = payload.Email
+		}
+
+		if responseDetail.PhoneNumber != payload.PhoneNo {
+			payloadEdit["custom_fields"].(map[string]interface{})["Phone Number - Adonara"] = payload.PhoneNo
 		}
 
 		dataPayloadEdit := map[string]interface{}{
@@ -219,9 +280,9 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		defer respGetData.Body.Close()
 
-		// END GET DATA
+		// END GET DATA =================
 
-		// LEADS CONVERSION
+		// LEADS CONVERSION =============
 		url := "https://api.getbase.com/v2/lead_conversions"
 
 		// fmt.Println("url", url)
@@ -314,7 +375,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		// // Make the HTTP POST request
+		// Make the HTTP POST request
 		reqWon, err := http.NewRequest("PUT", urlWon+strconv.Itoa(respons.Data.DealId), bytes.NewBuffer(jsonDataWon))
 
 		if err != nil {
@@ -348,7 +409,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			"meta":   jsonBodyWon,
 		})
 
-		// response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
+		// // response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 		helper.WriteJSONResponse(w, response, http.StatusCreated)
 	}
 
