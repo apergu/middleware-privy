@@ -200,7 +200,13 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		responseDetail.FirstName = newResp["first_name"].(string)
 		responseDetail.LastName = newResp["last_name"].(string)
 		responseDetail.Email = newResp["email"].(string)
-		responseDetail.PhoneNumber = newResp["phone"].(string)
+		if newResp["phone"] != nil {
+			responseDetail.PhoneNumber = responsDetailData.Data.(map[string]interface{})["phone"].(string)
+		}
+
+		if newResp["mobile"] != nil {
+			responseDetail.PhoneNumber = responsDetailData.Data.(map[string]interface{})["mobile"].(string)
+		}
 		// err = json.Unmarshal([]byte(newResp), &responseDetail)
 		fmt.Println("response Body Detail", responseDetail)
 
