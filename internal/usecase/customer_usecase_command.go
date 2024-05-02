@@ -162,7 +162,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		CRMLeadID:                      cust.CRMLeadID,
 		BankAccount:                    "103",
 		AddressBook: credential.AddressBook{
-			Addr1: cust.Address1,
+			Addr1: cust.Address,
 			State: cust.State,
 			City:  cust.City,
 			Zip:   cust.ZipCode,

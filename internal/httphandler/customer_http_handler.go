@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"middleware/internal/constants"
 	"middleware/internal/helper"
@@ -160,9 +162,190 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// START GET DATA
+
+		urlGetData := "https://api.getbase.com/v2/leads/"
+
+		// Make the HTTP POST request
+		payloadEdit := map[string]interface{}{
+			"organization_name": payload.CustomerName,
+			"first_name":        payload.FirstName,
+			"last_name":         payload.LastName,
+			"email":             payload.Email,
+			"mobile":            payload.PhoneNo,
+			"address": map[string]interface{}{
+				"line1":       payload.Address,
+				"city":        payload.City,
+				"postal_code": payload.ZipCode,
+				"country":     "ID",
+			},
+			"custom_fields": map[string]interface{}{
+				"Sub Industry":  payload.SubIndustry,
+				"NPWP":          payload.NPWP,
+				"Enterprise ID": payload.EnterprisePrivyID,
+			},
+		}
+
+		dataPayloadEdit := map[string]interface{}{
+			"data": payloadEdit,
+		}
+
+		// Convert data to JSON
+		jsonDataEdit, err := json.Marshal(dataPayloadEdit)
+
+		reqGetData, err := http.NewRequest("PUT", urlGetData+payload.CRMLeadID, bytes.NewBuffer(jsonDataEdit))
+
+		if err != nil {
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+		}
+
+		reqGetData.Header.Add("Content-Type", "application/json")
+		reqGetData.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+
+		clientGetData := &http.Client{}
+		respGetData, err := clientGetData.Do(reqGetData)
+		fmt.Println("response", respGetData.Body)
+
+		if err != nil {
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+			return
+		}
+
+		fmt.Println("respGetData", respGetData)
+
+		defer respGetData.Body.Close()
+
+		// END GET DATA
+
+		// LEADS CONVERSION
+		url := "https://api.getbase.com/v2/lead_conversions"
+
+		// fmt.Println("url", url)
+
+		// // Replace the following map with your actual data
+		leadID, _ := strconv.Atoi(payload.CRMLeadID)
+		data := map[string]interface{}{
+			"lead_id": leadID,
+		}
+
+		payloadData := map[string]interface{}{
+			"data": data,
+		}
+
+		// // Convert data to JSON
+		jsonData, err := json.Marshal(payloadData)
+		if err != nil {
+			panic(err)
+		}
+
+		// // Make the HTTP POST request
+		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+
+		if err != nil {
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+			return
+		}
+
+		req.Header.Add("Content-Type", "application/json")
+		req.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+		// req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		fmt.Println("response", err)
+
+		if err != nil {
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+			return
+		}
+
+		defer resp.Body.Close()
+
+		type Data struct {
+			DealId int `json:"deal_id"`
+		}
+
+		body, err := ioutil.ReadAll(resp.Body)
+		// jsonBody := json.RawMessage(body)
+		fmt.Println("TEST", string(body))
+		if err != nil {
+			fmt.Println("Error reading body:", err)
+			return
+		}
+
+		var respons struct {
+			Data Data `json:"data"`
+		}
+
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+
+		err = json.Unmarshal(body, &respons)
+		fmt.Println("response Body", respons)
+
+		// DEALS UPDATE WON ============
+		urlWon := "https://api.getbase.com/v2/deals/"
+		fmt.Println("urlWon", urlWon+strconv.Itoa(respons.Data.DealId))
+
+		// fmt.Println("url", url)
+
+		// // Replace the following map with your actual data
+		dataWon := map[string]interface{}{
+			"stage_id": 34108700,
+		}
+
+		payloadDataWon := map[string]interface{}{
+			"data": dataWon,
+		}
+
+		// // Convert data to JSON
+		jsonDataWon, err := json.Marshal(payloadDataWon)
+		if err != nil {
+			panic(err)
+		}
+
+		// // Make the HTTP POST request
+		reqWon, err := http.NewRequest("PUT", urlWon+strconv.Itoa(respons.Data.DealId), bytes.NewBuffer(jsonDataWon))
+
+		if err != nil {
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+			return
+		}
+
+		reqWon.Header.Add("Content-Type", "application/json")
+		reqWon.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+		// req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
+
+		clientWon := &http.Client{}
+		respWon, err := clientWon.Do(reqWon)
+		fmt.Println("response", err)
+
+		if err != nil {
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+			return
+		}
+
+		defer respWon.Body.Close()
+
+		bodyWon, err := ioutil.ReadAll(respWon.Body)
+		jsonBodyWon := json.RawMessage(bodyWon)
 		response, _ := helper.GenerateJSONResponse(http.StatusCreated, true, "Customer successfully created", map[string]interface{}{
-			"roleId": roleId,
-			"meta":   meta,
+			"roleId": 1,
+			"meta":   jsonBodyWon,
 		})
 
 		// response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
@@ -234,13 +417,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// if resp.StatusCode != 200 {
-		// 	fmt.Println("response status code", resp.StatusCode)
-		// 	response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-		// 	// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		// 	helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-		// 	return
-		// }
 		defer resp.Body.Close()
 
 		response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer successfully created", map[string]interface{}{})
