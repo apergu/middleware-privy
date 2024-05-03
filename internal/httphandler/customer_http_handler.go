@@ -230,6 +230,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 					"line1":       payload.Address,
 					"city":        payload.City,
 					"postal_code": payload.ZipCode,
+					"state":       payload.State,
 					"country":     "ID",
 				},
 				"custom_fields": map[string]interface{}{
