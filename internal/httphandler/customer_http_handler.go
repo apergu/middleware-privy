@@ -192,11 +192,14 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("response Body", responsDetailData)
 
 			var responseDetail struct {
-				FirstName   string `json:"first_name"`
-				LastName    string `json:"last_name"`
-				Email       string `json:"email"`
-				PhoneNumber string `json:"phone"`
+				FirstName    string                 `json:"first_name"`
+				LastName     string                 `json:"last_name"`
+				Email        string                 `json:"email"`
+				PhoneNumber  string                 `json:"phone"`
+				CustomFields map[string]interface{} `json:"custom_fields"`
 			}
+
+			customFieldsData := responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{})
 
 			newResp := responsDetailData.Data.(map[string]interface{})
 			responseDetail.FirstName = newResp["first_name"].(string)
@@ -285,7 +288,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			fmt.Println("respGetData", respGetData)
+			fmt.Println("respGetData", customFieldsData["ActiveCampaign Contact ID"].(string))
 
 			defer respGetData.Body.Close()
 
@@ -362,6 +365,70 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 			err = json.Unmarshal(body, &respons)
 			fmt.Println("response Body", respons)
+
+			// ACTIVE CAMPAIGN UPDATE
+
+			urlAC := "https://privy1706071639.api-us1.com/api/3/contacts/" + customFieldsData["ActiveCampaign Contact ID"].(string)
+
+			fmt.Println("url", urlAC)
+
+			payloadAc := map[string]interface{}{
+				"contact": map[string]interface{}{
+					"lastName": responseDetail.LastName,
+					"email":    responseDetail.Email,
+					"phone":    responseDetail.PhoneNumber,
+					"fieldValues": []map[string]interface{}{
+						{
+							"field": 1,
+							"value": payload.CustomerName,
+						}, {
+							"field": 2,
+							"value": payload.SubIndustry,
+						}, {
+							"field": 4,
+							"value": "Won - Contract Signed / Award Letter Issued",
+						}, {
+							"field": 5,
+							"value": payload.EnterprisePrivyID,
+						}, {
+							"field": 7,
+							"value": strconv.Itoa(respons.Data.DealId),
+						},
+					},
+				},
+			}
+
+			// Convert data to JSON
+			jsonDataAc, err := json.Marshal(payloadAc)
+			if err != nil {
+				panic(err)
+			}
+
+			// Make the HTTP POST request
+			reqAc, err := http.NewRequest("PUT", urlAC, bytes.NewBuffer(jsonDataAc))
+
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
+			reqAc.Header.Add("Content-Type", "application/json")
+			reqAc.Header.Add("Api-Token", "83098f1b9181f163ee582823ba5bdcde7a02db14d75b8fc3dc2eea91738a49a47e100e68")
+
+			clientAc := &http.Client{}
+			respAc, err := clientAc.Do(reqAc)
+			fmt.Println("response", err)
+
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
+			defer respAc.Body.Close()
 
 			// DEALS UPDATE WON ============
 			urlWon := "https://api.getbase.com/v2/deals/"
