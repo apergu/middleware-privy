@@ -288,7 +288,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			fmt.Println("respGetData", customFieldsData["ActiveCampaign Contact ID"].(string))
+			// fmt.Println("respGetData", customFieldsData["ActiveCampaign Contact ID"].(string))
 
 			defer respGetData.Body.Close()
 
@@ -374,7 +374,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 			payloadAc := map[string]interface{}{
 				"contact": map[string]interface{}{
-					"lastName": responseDetail.LastName,
+					"lastName": payload.LastName,
 					"email":    responseDetail.Email,
 					"phone":    responseDetail.PhoneNumber,
 					"fieldValues": []map[string]interface{}{
@@ -385,6 +385,10 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 							"field": 2,
 							"value": payload.SubIndustry,
 						}, {
+							"field": 3,
+							"value": "New Client - Inbound",
+						},
+						{
 							"field": 4,
 							"value": "Won - Contract Signed / Award Letter Issued",
 						}, {
