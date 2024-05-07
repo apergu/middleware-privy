@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -75,6 +76,8 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 	}
 	customers, _ := r.custRepo.Find(ctx, customer_filter, 1, 0, nil)
 
+	fmt.Println("CUSTOMER ", merchant.EnterpriseID, customers)
+
 	var customer entity.Customer
 	if len(customers) > 0 {
 		customer = customers[0]
@@ -89,7 +92,7 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 	privyParam := credential.MerchantParam{
 		RecordType:                  "customrecord_customer_hierarchy",
 		CustRecordCustomerName:      customer.CustomerInternalID,
-		CustRecordEnterpriseID:      customer.EnterprisePrivyID,
+		CustRecordEnterpriseID:      merchant.EnterpriseID,
 		CustRecordMerchantID:        merchant.MerchantID,
 		CustRecordPrivyCodeMerchant: merchant.MerchantCode,
 		CustRecordMerchantName:      merchant.MerchantName,
