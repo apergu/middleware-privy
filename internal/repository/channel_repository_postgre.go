@@ -378,7 +378,7 @@ func (c *ChannelRepositoryPostgre) Create(ctx context.Context, channel entity.Ch
 		,$11, $12, $13, $14, $15, $16, $17
 	) RETURNING id`
 
-	err = cmd.
+	err := cmd.
 		QueryRow(
 			ctx,
 			query,
