@@ -140,7 +140,7 @@ func (h MerchantHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer successfully created", map[string]interface{}{
+	response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Merchant successfully created", map[string]interface{}{
 		"roleId": roleId,
 		"meta":   meta,
 	})
