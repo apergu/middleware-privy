@@ -37,6 +37,30 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 
 	tmNow := time.Now().UnixNano() / 1000000
 
+	fmt.Println("respCust FIND NAME")
+	respCust, _ := r.merchantRepo.FindByName(ctx, merchant.MerchantName, tx)
+
+	if respCust.MerchantName != "" {
+		return 0, nil, rapperror.ErrConflict(
+			"",
+			"Merchant with name "+merchant.MerchantName+" already exist",
+			"MerchantCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
+
+	fmt.Println("respCust FIND NAME")
+	respCust2, _ := r.merchantRepo.FindByMerchantID(ctx, merchant.MerchantID, tx)
+
+	if respCust2.MerchantID != "" {
+		return 0, nil, rapperror.ErrConflict(
+			"",
+			"Merchant with Merchant ID "+merchant.MerchantID+" already exist",
+			"MerchantCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
+
 	insertMerchant := entity.Merchant{
 		CustomerID:   merchant.CustomerID,
 		EnterpriseID: merchant.EnterpriseID,
