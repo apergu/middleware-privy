@@ -22,3 +22,9 @@ type Channel struct {
 	UpdatedAt          int64  `json:"updatedAt"`
 	Method             string `json:"method"`
 }
+
+type ChannelFind struct {
+	ID          int64  `json:"id"`
+	ChannelID   string `json:"channelId"`
+	ChannelName string `json:"channelName"`
+}
