@@ -111,7 +111,7 @@ func (c *CredentialPrivy) CreateChannel(ctx context.Context, param ChannelParam)
 	if len(custResp.SuccessTransaction) == 0 {
 		return ChannelResponse{}, rapperror.ErrNotFound(
 			"",
-			"Channel is not found",
+			"Merchant is not found",
 			"",
 			nil,
 		)
