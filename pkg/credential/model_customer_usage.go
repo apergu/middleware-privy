@@ -36,3 +36,9 @@ type CustomerUsageResponseDetail struct {
 type CustomerUsageFailedResponse struct {
 	Error string `json:"error"`
 }
+
+type GetCustUsageParam struct {
+	CustomerID string `json:"customer_id"`
+	MerchantID string `json:"merchant_id"`
+	ChannelID  string `json:"channel_id"`
+}

@@ -17,6 +17,7 @@ type TopUp interface {
 }
 
 type CustomerUsage interface {
+	GetDataRelateCustomerUsage(ctx context.Context, param GetCustUsageParam) (string, error)
 	CreateCustomerUsage(ctx context.Context, param CustomerUsageParam) (CustomerUsageResponse, error)
 }
 
@@ -27,6 +28,7 @@ type SalesOrder interface {
 type Merchant interface {
 	CreateMerchant(ctx context.Context, param MerchantParam) (MerchantResponse, error)
 }
+
 type TransferBalance interface {
 	CreateTransferBalance(ctx context.Context, param TransferBalanceParam) (TransferBalanceResponse, error)
 }

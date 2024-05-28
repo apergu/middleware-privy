@@ -4,13 +4,13 @@ import (
 	"context"
 	"time"
 
+	"github.com/sirupsen/logrus"
+	"gitlab.com/rteja-library3/rapperror"
+
 	"middleware/internal/entity"
 	"middleware/internal/model"
 	"middleware/internal/repository"
 	"middleware/pkg/credential"
-
-	"github.com/sirupsen/logrus"
-	"gitlab.com/rteja-library3/rapperror"
 )
 
 type CustomerUsageCommandUsecaseGeneral struct {
@@ -88,6 +88,10 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		customer = customers[0]
 	}
 
+	paramGet := credential.GetCustUsageParam{
+		CustomerID: cust.CustomerID,
+	}
+	_, err = r.customerUsagePrivy.GetDataRelateCustomerUsage(ctx, paramGet)
 	merchant_filter := repository.MerchantFilter{
 		MerchantID: &cust.MerchantName,
 	}
