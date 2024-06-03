@@ -272,6 +272,7 @@ func (c *CredentialPrivy) CreateLead(ctx context.Context, param LeadParam) (Cust
 
 	return custResp.SuccessTransaction[0], nil
 }
+
 func (c *CredentialPrivy) UpdateLead(ctx context.Context, param CustomerParam) (CustomerResponse, error) {
 	// get jwt
 	isNode := true
