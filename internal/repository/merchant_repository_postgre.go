@@ -139,6 +139,74 @@ func (c *MerchantRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand
 	return data, nil
 }
 
+func (c *MerchantRepositoryPostgre) queryOneFind(ctx context.Context, cmd sqlcommand.Command, query string, args ...interface{}) (entity.MerchantFind, error) {
+	data := entity.MerchantFind{}
+
+	err := cmd.
+		QueryRow(ctx, query, args...).
+		Scan(
+			&data.ID,
+			&data.MerchantID,
+			&data.MerchantName,
+		)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "MerchantRepositoryPostgre.queryOneFind",
+				"src":   "rows.Scan",
+				"query": query,
+				"args":  args,
+			}).
+			Error(err)
+
+		return entity.MerchantFind{}, pgxerror.FromPgxError(
+			err,
+			"Something went wrong when scan",
+			"MerchantRepositoryPostgre.queryOneFind.Scan",
+		)
+	}
+
+	return data, nil
+}
+
+func (c *MerchantRepositoryPostgre) FindByMerchantID(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.MerchantFind, error) {
+	var cmd sqlcommand.Command = c.pool
+	if tx != nil {
+		cmd = tx
+	}
+
+	query := `select
+	merchants.id,
+	merchants.merchant_id,
+	merchants.merchant_name
+	from
+		merchants
+	where
+		merchants.merchant_id = $1
+	limit 1`
+
+	return c.queryOneFind(ctx, cmd, query, enterprisePrivyID)
+}
+
+func (c *MerchantRepositoryPostgre) FindByName(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.MerchantFind, error) {
+	var cmd sqlcommand.Command = c.pool
+	if tx != nil {
+		cmd = tx
+	}
+
+	query := `select
+	merchants.id,
+	merchants.merchant_id,
+	merchants.merchant_name
+	from
+		merchants
+	where
+		merchants.merchant_name = $1
+	limit 1`
+
+	return c.queryOneFind(ctx, cmd, query, enterprisePrivyID)
+}
+
 func (c *MerchantRepositoryPostgre) buildFilter(filter MerchantFilter) (string, []interface{}) {
 	condBuilder := &strings.Builder{}
 	conds := make([]string, 0, 4) // set for 2 capacity is posible max filter

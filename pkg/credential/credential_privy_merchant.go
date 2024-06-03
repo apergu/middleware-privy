@@ -108,7 +108,7 @@ func (c *CredentialPrivy) CreateMerchant(ctx context.Context, param MerchantPara
 	if len(custResp.SuccessTransaction) == 0 {
 		return MerchantResponse{}, rapperror.ErrNotFound(
 			"",
-			"Merchant is not found",
+			"Enterprise ID is not found",
 			"",
 			nil,
 		)
