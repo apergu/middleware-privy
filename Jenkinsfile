@@ -25,6 +25,8 @@ pipeline {
         sh label: 'Build Middleware Script', script:
         """
         docker build -t apergudev/privy-middleware:latest -f ./Dockerfile .
+        docker build -t apergudev/privy-middleware:dev -f ./Dockerfile .
+        docker build -t apergudev/privy-middleware:staging -f ./Dockerfile .
         """
         // go build -v -o privy .
         // docker build -t apergudev/privy-middleware:latest -f ./go-app/Dockerfile .
@@ -40,6 +42,8 @@ pipeline {
         sh label: 'Build NodeJS-jwt Script', script:
         """
         docker build -t apergudev/privy-nodejs-jwt:latest -f ./node-app/Dockerfile .
+        docker build -t apergudev/privy-nodejs-jwt:dev -f ./node-app/Dockerfile .
+        docker build -t apergudev/privy-nodejs-jwt:staging -f ./node-app/Dockerfile .
         """
       }
     }
@@ -55,7 +59,11 @@ pipeline {
         """
           echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
           docker push apergudev/privy-middleware:latest
+          docker push apergudev/privy-middleware:dev
+          docker push apergudev/privy-middleware:staging
           docker push apergudev/privy-nodejs-jwt:latest
+          docker push apergudev/privy-nodejs-jwt:dev
+          docker push apergudev/privy-nodejs-jwt:staging
         """
       }
     }

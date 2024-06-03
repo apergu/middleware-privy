@@ -139,6 +139,36 @@ func (c *ChannelRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand.
 	return data, nil
 }
 
+func (c *ChannelRepositoryPostgre) queryOneFind(ctx context.Context, cmd sqlcommand.Command, query string, args ...interface{}) (entity.ChannelFind, error) {
+	data := entity.ChannelFind{}
+
+	err := cmd.
+		QueryRow(ctx, query, args...).
+		Scan(
+			&data.ID,
+			&data.ChannelID,
+			&data.ChannelName,
+		)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "ChannelRepositoryPostgre.queryOne",
+				"src":   "rows.Scan",
+				"query": query,
+				"args":  args,
+			}).
+			Error(err)
+
+		return entity.ChannelFind{}, pgxerror.FromPgxError(
+			err,
+			"Something went wrong when scan",
+			"ChannelRepositoryPostgre.queryOne.Scan",
+		)
+	}
+
+	return data, nil
+}
+
 func (c *ChannelRepositoryPostgre) buildFilter(filter ChannelFilter) (string, []interface{}) {
 	condBuilder := &strings.Builder{}
 	conds := make([]string, 0, 4) // set for 2 capacity is posible max filter
@@ -216,6 +246,44 @@ func (c *ChannelRepositoryPostgre) Find(ctx context.Context, filter ChannelFilte
 	}
 
 	return c.query(ctx, cmd, fmt.Sprintf(query, cond, order, limits, skips), args...)
+}
+
+func (c *ChannelRepositoryPostgre) FindByChannelID(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.ChannelFind, error) {
+	var cmd sqlcommand.Command = c.pool
+	if tx != nil {
+		cmd = tx
+	}
+
+	query := `select
+	channels.id,
+	channels.channel_id,
+	channels.channel_name
+	from
+		channels
+	where
+		channels.channel_id = $1
+	limit 1`
+
+	return c.queryOneFind(ctx, cmd, query, enterprisePrivyID)
+}
+
+func (c *ChannelRepositoryPostgre) FindByName(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.ChannelFind, error) {
+	var cmd sqlcommand.Command = c.pool
+	if tx != nil {
+		cmd = tx
+	}
+
+	query := `select
+	channels.id,
+	channels.channel_id,
+	channels.channel_name
+	from
+		channels
+	where
+		channels.channel_name = $1
+	limit 1`
+
+	return c.queryOneFind(ctx, cmd, query, enterprisePrivyID)
 }
 
 func (c *ChannelRepositoryPostgre) Count(ctx context.Context, filter ChannelFilter, tx pgx.Tx) (int64, error) {

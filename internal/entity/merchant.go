@@ -20,3 +20,9 @@ type Merchant struct {
 	UpdatedBy          int64  `json:"-"`
 	UpdatedAt          int64  `json:"updatedAt"`
 }
+
+type MerchantFind struct {
+	ID           int64  `json:"id"`
+	MerchantID   string `json:"merchantId"`
+	MerchantName string `json:"merchantName"`
+}

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -35,6 +36,30 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 	}
 
 	tmNow := time.Now().UnixNano() / 1000000
+
+	fmt.Println("respCust FIND NAME")
+	respCust, _ := r.merchantRepo.FindByName(ctx, merchant.MerchantName, tx)
+
+	if respCust.MerchantName != "" {
+		return 0, nil, rapperror.ErrConflict(
+			"",
+			"Merchant with name "+merchant.MerchantName+" already exist",
+			"MerchantCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
+
+	fmt.Println("respCust FIND NAME")
+	respCust2, _ := r.merchantRepo.FindByMerchantID(ctx, merchant.MerchantID, tx)
+
+	if respCust2.MerchantID != "" {
+		return 0, nil, rapperror.ErrConflict(
+			"",
+			"Merchant with Merchant ID "+merchant.MerchantID+" already exist",
+			"MerchantCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
 
 	insertMerchant := entity.Merchant{
 		CustomerID:   merchant.CustomerID,
@@ -75,6 +100,8 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 	}
 	customers, _ := r.custRepo.Find(ctx, customer_filter, 1, 0, nil)
 
+	fmt.Println("CUSTOMER ", merchant.EnterpriseID, customers)
+
 	var customer entity.Customer
 	if len(customers) > 0 {
 		customer = customers[0]
@@ -89,7 +116,7 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 	privyParam := credential.MerchantParam{
 		RecordType:                  "customrecord_customer_hierarchy",
 		CustRecordCustomerName:      customer.CustomerInternalID,
-		CustRecordEnterpriseID:      customer.EnterprisePrivyID,
+		CustRecordEnterpriseID:      merchant.EnterpriseID,
 		CustRecordMerchantID:        merchant.MerchantID,
 		CustRecordPrivyCodeMerchant: merchant.MerchantCode,
 		CustRecordMerchantName:      merchant.MerchantName,

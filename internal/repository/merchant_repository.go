@@ -23,6 +23,8 @@ type MerchantQueryRepository interface {
 type MerchantCommandRepository interface {
 	Command
 	FindOneByIdForUpdate(ctx context.Context, id int64, tx pgx.Tx) (entity.Merchant, error)
+	FindByMerchantID(ctx context.Context, merchantID string, tx pgx.Tx) (entity.MerchantFind, error)
+	FindByName(ctx context.Context, customerName string, tx pgx.Tx) (entity.MerchantFind, error)
 	Create(ctx context.Context, Merchant entity.Merchant, tx pgx.Tx) (int64, error)
 	Update(ctx context.Context, id int64, Merchant entity.Merchant, tx pgx.Tx) error
 	Delete(ctx context.Context, id int64, tx pgx.Tx) error

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -36,6 +37,30 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 	}
 
 	tmNow := time.Now().UnixNano() / 1000000
+
+	fmt.Println("respCust FIND NAME")
+	respCust, _ := r.channelRepo.FindByName(ctx, channelParam.ChannelName, tx)
+
+	if respCust.ChannelName != "" {
+		return 0, nil, rapperror.ErrConflict(
+			"",
+			"Channel with name "+channelParam.ChannelName+" already exist",
+			"ChannelCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
+
+	fmt.Println("respCust FIND NAME")
+	respCust2, _ := r.channelRepo.FindByChannelID(ctx, channelParam.ChannelID, tx)
+
+	if respCust2.ChannelID != "" {
+		return 0, nil, rapperror.ErrConflict(
+			"",
+			"Channel with ID "+channelParam.ChannelID+" already exist",
+			"ChannelCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
 
 	// find merchant by merchant.EnterpriseID
 	merchant_filter := repository.MerchantFilter{
