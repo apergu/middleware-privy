@@ -87,6 +87,8 @@ func GetErrorStatusCode(err error) int {
 		return http.StatusUnauthorized
 	case "[err_forbidden]":
 		return http.StatusForbidden
+	case "[err_unprocessable_entity]":
+		return http.StatusUnprocessableEntity
 	default:
 		return http.StatusInternalServerError
 	}

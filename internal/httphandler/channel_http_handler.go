@@ -4,12 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
-	"middleware/internal/constants"
-	"middleware/internal/helper"
-	"middleware/internal/model"
-	"middleware/internal/repository"
-	"middleware/internal/usecase"
+	"regexp"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
@@ -17,6 +12,12 @@ import (
 	"gitlab.com/rteja-library3/rdecoder"
 	"gitlab.com/rteja-library3/rhelper"
 	"gitlab.com/rteja-library3/rresponser"
+
+	"middleware/internal/constants"
+	"middleware/internal/helper"
+	"middleware/internal/model"
+	"middleware/internal/repository"
+	"middleware/internal/usecase"
 )
 
 type ChannelHttpHandler struct {
@@ -60,9 +61,34 @@ func (h ChannelHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 
 	if err != nil {
-		response, _ := helper.GenerateJSONResponse(http.StatusBadRequest, false, err.Error(), map[string]interface{}{})
+
+		msg := err.Error()
+		re := regexp.MustCompile(`Channel\.(\w+)`)
+		custm := re.FindStringSubmatch(msg)
+		re = regexp.MustCompile(`([a-z])([A-Z])`)
+		spaced := re.ReplaceAllString(custm[1], `$1 $2`)
+		re = regexp.MustCompile(`type ([^\]]+)`)
+		format := re.FindStringSubmatch(msg)
+		message := fmt.Sprintf("Unprocessable entity - %s value must in %s format", spaced, format[1])
+
+		logrus.
+			WithFields(logrus.Fields{
+				"action": "try to decode data",
+				"at":     "MerchantHttpHandler.Create",
+				"src":    "rdecoder.DecodeRest",
+			}).
+			Error(err)
+
+		err = rapperror.ErrUnprocessableEntity(
+			"",
+			message,
+			"CustomerHttpHandler.Create",
+			nil,
+		)
+
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		helper.WriteJSONResponse(w, response, http.StatusBadRequest)
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}
 

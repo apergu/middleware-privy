@@ -8,13 +8,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
-
-	"middleware/internal/constants"
-	"middleware/internal/helper"
-	"middleware/internal/model"
-	"middleware/internal/repository"
-	"middleware/internal/usecase"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
@@ -22,6 +17,12 @@ import (
 	"gitlab.com/rteja-library3/rdecoder"
 	"gitlab.com/rteja-library3/rhelper"
 	"gitlab.com/rteja-library3/rresponser"
+
+	"middleware/internal/constants"
+	"middleware/internal/helper"
+	"middleware/internal/model"
+	"middleware/internal/repository"
+	"middleware/internal/usecase"
 )
 
 type CustomerHttpHandler struct {
@@ -65,7 +66,16 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	//var payloadLead model.Lead
 
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
+	fmt.Println("err =>", err)
 	if err != nil {
+		msg := err.Error()
+		re := regexp.MustCompile(`Customer\.(\w+)`)
+		custm := re.FindStringSubmatch(msg)
+		re = regexp.MustCompile(`([a-z])([A-Z])`)
+		spaced := re.ReplaceAllString(custm[1], `$1 $2`)
+		re = regexp.MustCompile(`type ([^\]]+)`)
+		format := re.FindStringSubmatch(msg)
+		message := fmt.Sprintf("Unprocessable entity - %s value must in %s format", spaced, format[1])
 		logrus.
 			WithFields(logrus.Fields{
 				"action": "try to decode data",
@@ -74,14 +84,14 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}).
 			Error(err)
 
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
+		err = rapperror.ErrUnprocessableEntity(
+			"",
+			message,
 			"CustomerHttpHandler.Create",
 			nil,
 		)
 
-		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
