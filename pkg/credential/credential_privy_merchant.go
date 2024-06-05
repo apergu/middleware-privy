@@ -106,9 +106,9 @@ func (c *CredentialPrivy) CreateMerchant(ctx context.Context, param MerchantPara
 	}
 
 	if len(custResp.SuccessTransaction) == 0 {
-		return MerchantResponse{}, rapperror.ErrNotFound(
+		return MerchantResponse{}, rapperror.ErrUnprocessableEntity(
 			"",
-			"Enterprise ID is not found",
+			"Unprocessable Entity - enterprise ID is not found",
 			"",
 			nil,
 		)

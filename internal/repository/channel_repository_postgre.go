@@ -6,14 +6,14 @@ import (
 	"strconv"
 	"strings"
 
-	"middleware/internal/entity"
-	"middleware/pkg/pgxerror"
-	"middleware/pkg/sqlcommand"
-
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/rteja-library3/rapperror"
+
+	"middleware/internal/entity"
+	"middleware/pkg/pgxerror"
+	"middleware/pkg/sqlcommand"
 )
 
 type ChannelRepositoryPostgre struct {
@@ -410,20 +410,21 @@ func (c *ChannelRepositoryPostgre) Create(ctx context.Context, channel entity.Ch
 	}
 
 	// Check for duplicate channel_id
-	duplicateQuery := "SELECT id FROM channels WHERE channel_id = $1 LIMIT 1;"
-	fmt.Println("duplicateQuery", duplicateQuery)
+	// duplicateQuery := "SELECT id FROM channels WHERE channel_id = $1 LIMIT 1;"
+	// fmt.Println("duplicateQuery", duplicateQuery)
+	//
+	// var existingID int64
+	// err := cmd.QueryRow(ctx, duplicateQuery, channel.ChannelID).Scan(&existingID)
+	//
+	// if err == nil {
+	// 	// Duplicate entry found
+	// 	return 0, fmt.Errorf("duplicate entry with channel_id %s", channel.ChannelID)
+	// } else if err != pgx.ErrNoRows {
+	// 	// An error occurred while checking for duplicates
+	// 	return 0, pgxerror.FromPgxError(err, "", "ChannelRepositoryPostgre.Create")
+	// }
 
-	var existingID int64
-	err := cmd.QueryRow(ctx, duplicateQuery, channel.ChannelID).Scan(&existingID)
-
-	if err == nil {
-		// Duplicate entry found
-		return 0, fmt.Errorf("duplicate entry with channel_id %s", channel.ChannelID)
-	} else if err != pgx.ErrNoRows {
-		// An error occurred while checking for duplicates
-		return 0, pgxerror.FromPgxError(err, "", "ChannelRepositoryPostgre.Create")
-	}
-
+	// 1 merchan now can have multi channel code above is not necessary
 	var id int64
 	query := `insert into channels (
 		merchant_id,
@@ -445,7 +446,7 @@ func (c *ChannelRepositoryPostgre) Create(ctx context.Context, channel entity.Ch
 		,$11, $12, $13, $14, $15, $16, $17
 	) RETURNING id`
 
-	err = cmd.
+	err := cmd.
 		QueryRow(
 			ctx,
 			query,

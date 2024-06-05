@@ -2,17 +2,15 @@ package usecase
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"time"
+
+	"github.com/sirupsen/logrus"
+	"gitlab.com/rteja-library3/rapperror"
 
 	"middleware/internal/entity"
 	"middleware/internal/model"
 	"middleware/internal/repository"
 	"middleware/pkg/credential"
-
-	"github.com/sirupsen/logrus"
-	"gitlab.com/rteja-library3/rapperror"
 )
 
 type MerchantCommandUsecaseGeneral struct {
@@ -37,7 +35,6 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 
 	tmNow := time.Now().UnixNano() / 1000000
 
-	fmt.Println("respCust FIND NAME")
 	respCust, _ := r.merchantRepo.FindByName(ctx, merchant.MerchantName, tx)
 
 	if respCust.MerchantName != "" {
@@ -49,7 +46,6 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 		)
 	}
 
-	fmt.Println("respCust FIND NAME")
 	respCust2, _ := r.merchantRepo.FindByMerchantID(ctx, merchant.MerchantID, tx)
 
 	if respCust2.MerchantID != "" {
@@ -100,8 +96,6 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 	}
 	customers, _ := r.custRepo.Find(ctx, customer_filter, 1, 0, nil)
 
-	fmt.Println("CUSTOMER ", merchant.EnterpriseID, customers)
-
 	var customer entity.Customer
 	if len(customers) > 0 {
 		customer = customers[0]
@@ -129,10 +123,7 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 		Method:                      "POST",
 	}
 
-	log.Println("PRIVY PARAM ", privyParam)
-	log.Println("PRIVY PARAM 2", r.merchantPrivy)
 	resp, err := r.merchantPrivy.CreateMerchant(ctx, privyParam)
-	log.Println("RESP ", err)
 	if err != nil {
 		r.merchantRepo.RollbackTx(ctx, tx)
 

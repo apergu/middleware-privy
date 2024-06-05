@@ -8,7 +8,7 @@ type Customer struct {
 	CustomerID        string  `json:"customerId" validate:"max=255"`
 	CustomerType      string  `json:"customerType" `
 	CustomerName      string  `json:"customerName" validate:"required,max=255"`
-	FirstName         string  `json:"firstName"`
+	FirstName         string  `json:"firstName" validate:"max=255"`
 	LastName          string  `json:"lastName"  validate:"required,max=255"`
 	Email             string  `json:"email" validate:"required,max=255"`
 	PhoneNo           string  `json:"phoneNo" validate:"required,max=255"`
@@ -25,14 +25,14 @@ type Customer struct {
 	Address1          string  `json:"address1"`
 	NPWP              string  `json:"npwp" validate:"max=255"`
 	State             string  `json:"state" validate:"max=255"`
-	City              string  `json:"city"`
+	City              string  `json:"city"validate:"max=255"`
 	ZipCode           string  `json:"zip" validate:"max=255"`
 	CreatedBy         int64   `json:"-"`
 	SubIndustry       string  `json:"subIndustry" validate:"max=255"`
 }
 
 type Lead struct {
-	CustomerID        string  `json:"customerId" validate:"max=255"`
+	CustomerID        string  `json:"customerId" Validate:"max=255"`
 	CustomerType      string  `json:"customerType" `
 	CustomerName      string  `json:"customerName" validate:"required,max=255"`
 	FirstName         string  `json:"firstName"`
