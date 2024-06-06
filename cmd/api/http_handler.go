@@ -7,7 +7,6 @@ import (
 
 	"middleware/internal/config"
 	"middleware/internal/httphandler"
-	"middleware/pkg/appmiddleware"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -78,7 +77,7 @@ func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.
 				// r.Use(appmiddleware.JWTAuthenticatorMiddleware(prop.DefaultToken, prop.DefaultDecoder))
 				// r.Use(appmiddleware.Session(prop.DefaultToken, prop.DefaultCache, prop.DefaultDecoder))
 
-				r.Use(appmiddleware.BasicAuth(basicAuth.Username, basicAuth.Password, prop.DefaultDecoder))
+				// r.Use(appmiddleware.BasicAuth(basicAuth.Username, basicAuth.Password, prop.DefaultDecoder))
 
 				r.Get("/healthcheck/logged", func(w http.ResponseWriter, r *http.Request) {
 					w.Write([]byte("SUCCESS Logged"))
@@ -92,6 +91,7 @@ func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.
 				r.Mount("/channel", httphandler.NewChannelHttpHandler(prop))
 				r.Mount("/divission", httphandler.NewDivissionHttpHandler(prop))
 				r.Mount("/top-up-data", httphandler.NewTopUpDataHttpHandler(prop))
+				r.Mount("/usage", httphandler.NewUsageUsecaseHttpHandler(prop))
 			})
 
 			r.Group(func(r chi.Router) {
