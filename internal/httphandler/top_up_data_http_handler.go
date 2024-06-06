@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"middleware/internal/constants"
 	"middleware/internal/model"
 	"middleware/internal/repository"
 	"middleware/internal/usecase"
@@ -82,10 +81,10 @@ func (h TopUpDataHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get user from context
-	user := ctx.Value(constants.SessionUserId).(int64)
+	// user := ctx.Value(constants.SessionUserId).(int64)
 
 	// set created by value
-	payload.CreatedBy = user
+	payload.CreatedBy = 0
 
 	errors := payload.Validate()
 	if len(errors) > 0 {
@@ -182,10 +181,10 @@ func (h TopUpDataHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get user from context
-	user := ctx.Value(constants.SessionUserId).(int64)
+	// user := ctx.Value(constants.SessionUserId).(int64)
 
 	// set created by value
-	payload.CreatedBy = user
+	payload.CreatedBy = 0
 
 	err = payload.Validate()
 	if err != nil {

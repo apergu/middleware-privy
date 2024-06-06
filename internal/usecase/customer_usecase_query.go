@@ -88,3 +88,19 @@ func (r *CustomerQueryUsecaseGeneral) FindById(ctx context.Context, id int64) (e
 
 	return cust, nil, nil
 }
+
+func (r *CustomerQueryUsecaseGeneral) FindSubindustry(ctx context.Context, subindustry string) (entity.Subindustry, interface{}, error) {
+	subindustries, err := r.custRepo.FindSubindustry(ctx, subindustry, nil)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "CustomerQueryUsecaseGeneral.FindSubindustry",
+				"src": "custRepo.FindSubindustry",
+			}).
+			Error(err)
+
+		return entity.Subindustry{}, nil, err
+	}
+
+	return subindustries, nil, nil
+}

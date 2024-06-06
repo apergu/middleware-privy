@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 
-	"middleware/internal/constants"
 	"middleware/internal/model"
 	"middleware/internal/repository"
 	"middleware/internal/usecase"
@@ -80,10 +79,10 @@ func (h TransferBalanceHttpHandler) Create(w http.ResponseWriter, r *http.Reques
 	}
 
 	// get user from context
-	user := ctx.Value(constants.SessionUserId).(int64)
+	// user := ctx.Value(constants.SessionUserId).(int64)
 
 	// set created by value
-	payload.CreatedBy = user
+	payload.CreatedBy = 0
 
 	errors := payload.Validate()
 	if len(errors) > 0 {
@@ -183,10 +182,10 @@ func (h TransferBalanceHttpHandler) Update(w http.ResponseWriter, r *http.Reques
 	}
 
 	// get user from context
-	user := ctx.Value(constants.SessionUserId).(int64)
+	// user := ctx.Value(constants.SessionUserId).(int64)
 
 	// set created by value
-	payload.CreatedBy = user
+	payload.CreatedBy = 0
 
 	errors := payload.Validate()
 	if len(errors) > 0 {

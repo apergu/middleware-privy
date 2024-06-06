@@ -23,3 +23,8 @@ type Customer struct {
 	UpdatedBy          int64  `json:"-"`
 	UpdatedAt          int64  `json:"updatedAt"`
 }
+
+type Subindustry struct {
+	ID              int64  `json:"id"`
+	SubindustryName string `json:"subindustry_name"`
+}

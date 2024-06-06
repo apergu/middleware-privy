@@ -13,7 +13,6 @@ import (
 	"gitlab.com/rteja-library3/rhelper"
 	"gitlab.com/rteja-library3/rresponser"
 
-	"middleware/internal/constants"
 	"middleware/internal/helper"
 	"middleware/internal/model"
 	"middleware/internal/repository"
@@ -118,10 +117,10 @@ func (h MerchantHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	// get user from context
-	user := ctx.Value(constants.SessionUserId).(int64)
+	// user := ctx.Value(constants.SessionUserId).(int64)
 
 	// set created by value
-	payload.CreatedBy = user
+	payload.CreatedBy = 0
 
 	errors := payload.Validate()
 	if len(errors) > 0 {
@@ -223,10 +222,10 @@ func (h MerchantHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get user from context
-	user := ctx.Value(constants.SessionUserId).(int64)
+	// user := ctx.Value(constants.SessionUserId).(int64)
 
 	// set created by value
-	payload.CreatedBy = user
+	payload.CreatedBy = 0
 
 	errors := payload.Validate()
 	if len(errors) > 0 {

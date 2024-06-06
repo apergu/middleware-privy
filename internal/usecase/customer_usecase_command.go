@@ -60,6 +60,21 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		)
 	}
 
+	if cust.SubIndustry != "" {
+		respSubInd, _ := r.custRepo.FindSubindustry(ctx, cust.SubIndustry, tx)
+		println("respSubInd", respSubInd.SubindustryName)
+
+		if respSubInd.SubindustryName != "" {
+			return 0, nil, rapperror.ErrConflict(
+				"",
+				"Subindustry with name "+cust.SubIndustry+" already exist",
+				"CustomerCommandUsecaseGeneral.Create",
+				nil,
+			)
+		}
+
+	}
+
 	// var lastId int64
 
 	// idLast, err := r.custRepo.GetLast(ctx, tx)
