@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"middleware/internal/entity"
@@ -37,12 +38,14 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		return 0, nil, err
 	}
 
+	custUsage := strings.Split(cust.TrxId, "/")
+
 	tmNow := time.Now().UnixNano() / 1000000
 	transAt := cust.TransactionAt.UnixNano() / 1000000
 
 	insertCustomerUsage := entity.CustomerUsage{
 		CustomerID:     cust.CustomerID,
-		CustomerName:   cust.CustomerName,
+		CustomerName:   custUsage[0],
 		ProductID:      cust.ProductID,
 		ProductName:    cust.ProductName,
 		TransactionAt:  transAt,
@@ -50,9 +53,9 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		BalanceAmount:  cust.BalanceAmount,
 		Usage:          cust.Usage,
 		UsageAmount:    cust.UsageAmount,
-		EnterpriseID:   cust.EnterpriseID,
+		EnterpriseID:   custUsage[0],
 		EnterpriseName: cust.EnterpriseName,
-		ChannelName:    cust.ChannelName,
+		ChannelName:    custUsage[2],
 		TrxId:          cust.TrxId,
 		ServiceID:      cust.ServiceID,
 		UnitPrice:      cust.UnitPrice,
@@ -79,7 +82,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 	println("custId", &cust.EnterpriseID)
 
 	customer_filter := repository.CustomerFilter{
-		EnterprisePrivyID: &cust.EnterpriseID,
+		EnterprisePrivyID: &custUsage[0],
 	}
 	customers, _ := r.custRepo.Find(ctx, customer_filter, 1, 0, nil)
 
@@ -89,7 +92,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 	}
 
 	merchant_filter := repository.MerchantFilter{
-		MerchantID: &cust.MerchantName,
+		MerchantID: &custUsage[1],
 	}
 	merchants, _ := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
 
@@ -99,7 +102,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 	}
 
 	channel_filter := repository.ChannelFilter{
-		ChannelID: &cust.ChannelName,
+		ChannelID: &custUsage[2],
 	}
 
 	channels, _ := r.channelRepo.Find(ctx, channel_filter, 1, 0, nil)
@@ -108,6 +111,10 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 	if len(channels) > 0 {
 		channel = channels[0]
 	}
+
+	println("customer", customer.CustomerName)
+	println("merchant", merchant.MerchantName)
+	println("channel", channel.ChannelName)
 
 	// custPrivyUsgProdId, _ := strconv.Atoi(cust.ProductID)
 

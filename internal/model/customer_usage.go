@@ -18,10 +18,10 @@ type CustomerUsage struct {
 	Usage               int64     `json:"qty" validate:"required,max=100"`
 	UsageAmount         float64   `json:"usageAmount"`
 	SalesOrderReference int64     `json:"salesOrderReference"`
-	MerchantName        string    `json:"merchantID" validate:"required"`
-	EnterpriseID        string    `json:"enterpriseId" validate:"required,max=255"`
+	MerchantName        string    `json:"merchantID" validate:""`
+	EnterpriseID        string    `json:"enterpriseId" validate:"max=255"`
 	EnterpriseName      string    `json:"enterpriseName" validate:"max=255"`
-	ChannelName         string    `json:"channelID" validate:"required,max=255"`
+	ChannelName         string    `json:"channelID" validate:"max=255"`
 	TrxId               string    `json:"transactionID" validate:"required,max=255"`
 	ServiceID           string    `json:"serviceId" validate:"required,max=255"`
 	UnitPrice           string    `json:"unitPrice"`

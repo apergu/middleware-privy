@@ -9,7 +9,6 @@ type CustomerUsageParam struct {
 	// CustrecordPrivyTransactionUsage string `json:"custrecord_privy_transaction_usage"` // 18/01/2023
 	// CustrecordPrivyQuantityUsage    int64  `json:"custrecord_privy_quantity_usage"`
 	// CustrecordPrivyAmount           int64  `json:"custrecord_privy_amount"`
-
 	CustrecordPrivyUsageDateIntegrasi    string `json:"custrecord_privy_usagedate_integrasi"`    // CustrecordPrivyTransactionUsage
 	CustrecordPrivyCustomerNameIntegrasi string `json:"custrecord_privy_customername_integrasi"` // CustrecordPrivyCustomerName
 	CustrecordPrivyMerchantNameIntgrasi  string `json:"custrecord_privy_merchantname_intgrasi"`
