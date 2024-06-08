@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"middleware/infrastructure"
 	"middleware/internal/config"
 	"middleware/internal/httphandler"
 
@@ -19,7 +20,7 @@ import (
 	"gitlab.com/rteja-library3/rresponser"
 )
 
-func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.HTTPHandlerProperty, jwtAuth *jwtauth.JWTAuth, basicAuth config.BasicAuth) http.Handler {
+func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.HTTPHandlerProperty, jwtAuth *jwtauth.JWTAuth, basicAuth config.BasicAuth, inf *infrastructure.Infrastructure) http.Handler {
 	logrus.Info("[HttpHandler] Start")
 	defer logrus.Info("[HttpHandler] End")
 	defer logrus.Info("[HttpHandler] Ready")
@@ -92,6 +93,7 @@ func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.
 				r.Mount("/divission", httphandler.NewDivissionHttpHandler(prop))
 				r.Mount("/top-up-data", httphandler.NewTopUpDataHttpHandler(prop))
 				r.Mount("/usage", httphandler.NewUsageUsecaseHttpHandler(prop))
+				r.Mount("/top-up-payment", httphandler.NewTopUpPaymentUsecaseHttpHandler(prop, inf))
 			})
 
 			r.Group(func(r chi.Router) {
