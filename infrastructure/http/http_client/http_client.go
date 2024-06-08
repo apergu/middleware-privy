@@ -13,6 +13,7 @@ import (
 	// "middleware/config"
 	// "middleware/helper/utils"
 	"middleware/infrastructure/http/exceptions"
+	request "middleware/infrastructure/http/request"
 	response "middleware/infrastructure/http/response"
 	"middleware/infrastructure/logger"
 	"middleware/infrastructure/logger/logrus"
@@ -60,47 +61,47 @@ func (hc *HttpClient) CreateHTTPClient() *http.Client {
 	return client
 }
 
-func (hc *HttpClient) MakeAPIRequest(url string, method string, params map[string]string, body interface{}, headers map[string]string, script string, otherData ...interface{}) (*HttpResponse, error) {
+func (hc *HttpClient) MakeAPIRequest(request request.RequestToHttpClient) (*HttpResponse, error) {
 
 	var jsonData []byte
 	var err error
 
-	if body != nil {
-		jsonData, err = json.Marshal(body)
+	if request.Body != nil {
+		jsonData, err = json.Marshal(request.Body)
 		if err != nil {
 			return nil, fmt.Errorf("error marshalling body: %v", err)
 		}
 	}
 	log := hc.logger
 
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest(request.Method, request.Url, bytes.NewBuffer(jsonData))
 
 	if err != nil {
 		log.CreateLog(&logger.Log{
 			StatusCode: http.StatusInternalServerError,
-			Method:     method,
-			Request:    body,
-			URL:        url,
+			Method:     request.Method,
+			Request:    request.Body,
+			URL:        request.Url,
 			Message:    err.Error(),
 			Response:   nil,
-			Service:    otherData[0].(string),
+			Service:    request.ServiceName,
 		}, logger.LogError, logger.DefaultLogFileName)
 		return nil, exceptions.ErrInternalServerError
 	}
 
 	q := req.URL.Query()
-	for key, value := range params {
+	for key, value := range request.Params {
 		q.Add(key, value)
 	}
-	if script != "" {
-		q.Add("script", script)
+	if request.Script != "" {
+		q.Add("script", request.Script)
 		q.Add("deploy", "1")
 	}
 
 	req.URL.RawQuery = q.Encode()
 
 	req.Header.Set("Content-Type", "application/json")
-	for key, value := range headers {
+	for key, value := range request.Headers {
 		req.Header.Set(key, value)
 	}
 
@@ -108,12 +109,12 @@ func (hc *HttpClient) MakeAPIRequest(url string, method string, params map[strin
 	if err != nil {
 		log.CreateLog(&logger.Log{
 			StatusCode: http.StatusInternalServerError,
-			Method:     http.MethodPost,
-			Request:    body,
-			URL:        url,
+			Method:     request.Method,
+			Request:    request.Body,
+			URL:        request.Url,
 			Message:    err.Error(),
 			Response:   nil,
-			Service:    otherData[0].(string),
+			Service:    request.ServiceName,
 		}, logger.LogError, logger.DefaultLogFileName)
 		return nil, exceptions.ErrInternalServerError
 	}
@@ -123,11 +124,11 @@ func (hc *HttpClient) MakeAPIRequest(url string, method string, params map[strin
 		log.CreateLog(&logger.Log{
 			StatusCode: http.StatusInternalServerError,
 			Method:     http.MethodPost,
-			Request:    body,
-			URL:        url,
+			Request:    request.Body,
+			URL:        request.Url,
 			Message:    err.Error(),
 			Response:   nil,
-			Service:    otherData[0].(string),
+			Service:    request.ServiceName,
 		}, logger.LogError, logger.DefaultLogFileName)
 		return nil, exceptions.ErrInternalServerError
 	}
@@ -137,11 +138,11 @@ func (hc *HttpClient) MakeAPIRequest(url string, method string, params map[strin
 	log.CreateLog(&logger.Log{
 		StatusCode: respData.StatusCode,
 		Method:     http.MethodPost,
-		Request:    body,
-		URL:        url,
+		Request:    request.Body,
+		URL:        request.Url,
 		Message:    "success hit service",
 		Response:   string(respBody),
-		Service:    otherData[0].(string),
+		Service:    request.ServiceName,
 	}, logger.LogInfo, logger.DefaultLogFileName)
 
 	return &HttpResponse{

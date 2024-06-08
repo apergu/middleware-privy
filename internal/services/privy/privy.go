@@ -3,6 +3,7 @@ package middleware
 import (
 	"encoding/json"
 	"middleware/infrastructure"
+	request "middleware/infrastructure/http/request"
 	response "middleware/infrastructure/http/response"
 	"net/http"
 )
@@ -15,7 +16,7 @@ func NewToNetsuitService(inf *infrastructure.Infrastructure) *ToNetsuitService {
 	return &ToNetsuitService{inf: inf}
 }
 
-func (ds *ToNetsuitService) ToNetsuit(req, responseStruct interface{}, url, script, serviceName string) (interface{}, error) {
+func (ds *ToNetsuitService) ToNetsuit(req request.RequestToNetsuit) (interface{}, error) {
 
 	// get jwt
 	isNode := true
@@ -38,8 +39,15 @@ func (ds *ToNetsuitService) ToNetsuit(req, responseStruct interface{}, url, scri
 	}
 
 	headers := map[string]string{"Authorization": accessToken.TokenType + " " + accessToken.AccessToken}
-
-	result, err := ds.inf.HttpClient.MakeAPIRequest(url, http.MethodPost, nil, req, headers, script, serviceName)
+	reqq := request.RequestToHttpClient{
+		Body:        req.Request,
+		Headers:     headers,
+		Url:         req.Url,
+		Method:      http.MethodPost,
+		Script:      req.Script,
+		ServiceName: req.ServiceName,
+	}
+	result, err := ds.inf.HttpClient.MakeAPIRequest(reqq)
 
 	if err != nil {
 		return nil, err
@@ -47,11 +55,11 @@ func (ds *ToNetsuitService) ToNetsuit(req, responseStruct interface{}, url, scri
 
 	switch result.RespData.StatusCode {
 	case http.StatusCreated:
-		json.Unmarshal(result.RespBody, &responseStruct)
-		return responseStruct, nil
+		json.Unmarshal(result.RespBody, &req.Response)
+		return req.Response, nil
 	case http.StatusOK:
-		json.Unmarshal(result.RespBody, &responseStruct)
-		return responseStruct, nil
+		json.Unmarshal(result.RespBody, &req.Response)
+		return req.Response, nil
 	default:
 		return nil, err
 	}

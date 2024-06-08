@@ -34,3 +34,21 @@ type LineItem struct {
 	CustColPrivyDateLayanan         string `json:"custcol_privy_date_layanan,omitempty"`       // Optional
 	CustColPrivyTrxID               string `json:"custcol_privy_trxid" validate:"required"`
 }
+
+type RequestToNetsuit struct {
+	Request     interface{}
+	Response    interface{}
+	Url         string
+	Script      string
+	ServiceName string
+}
+
+type RequestToHttpClient struct {
+	Body        interface{}
+	Url         string
+	Method      string
+	Params      map[string]string
+	Headers     map[string]string
+	Script      string
+	ServiceName string
+}

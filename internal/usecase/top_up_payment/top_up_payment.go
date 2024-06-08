@@ -31,11 +31,17 @@ func (r *TopUpPaymentUsecaseGeneral) TopUpPayment(payload request.CustomerDetail
 		// CustrecordPrivyMerchantNameIntgrasi: custTopUpPayment[1],
 		// CustrecordPrivyChannelNameIntgrasi:  custTopUpPayment[2],
 	}
-
-	script := "10"
-	resp := credential.EnvelopeCustomerUsage{}
 	url := r.inf.Config.CredentialPrivy.Host + credential.EndpointPostCustomer
-	_, err := r.TopUpPaymentPrivy.ToNetsuit(custPrivyReq, resp, url, script, "TOP_UP_PAYMENT")
+	resp := credential.EnvelopeCustomerUsage{}
+	req := request.RequestToNetsuit{
+		Request:     custPrivyReq,
+		Response:    resp,
+		Script:      "10",
+		Url:         url,
+		ServiceName: "TOP_UP_PAYMENT",
+	}
+
+	_, err := r.TopUpPaymentPrivy.ToNetsuit(req)
 	if err != nil {
 		return nil, err
 	}
