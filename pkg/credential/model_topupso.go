@@ -31,3 +31,31 @@ type TopUpResponse struct {
 type TopUpFailedResponse struct {
 	Error string `json:"error"`
 }
+
+type CheckTopUpStatusResponse struct {
+	Code int `json:"code"`
+	Data struct {
+		Entity int    `json:"entity"`
+		Status string `json:"status"`
+	} `json:"data"`
+	Message string `json:"message"`
+}
+
+type CheckTopUpStatusFailedResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
+type CheckTopUpStatusBadRequestResponse struct {
+	Code   int `json:"code"`
+	Errors []struct {
+		Field       string `json:"field"`
+		Description string `json:"description"`
+	} `json:"errors"`
+	Message string `json:"message"`
+}
+
+type CheckTopUpStatusParam struct {
+	TopUPID string `json:"topup_id"`
+	Event   string `json:"event"`
+}

@@ -14,6 +14,7 @@ type Lead interface {
 
 type TopUp interface {
 	CreateTopUp(ctx context.Context, param TopUpParam) (TopUpResponse, error)
+	CheckTopUpStatus(ctx context.Context, param CheckTopUpStatusParam) (CheckTopUpStatusResponse, error)
 }
 
 type CustomerUsage interface {
