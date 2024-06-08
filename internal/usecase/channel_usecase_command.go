@@ -38,6 +38,21 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 
 	tmNow := time.Now().UnixNano() / 1000000
 
+	merchant_filter := repository.MerchantFilter{
+		MerchantID: &channelParam.MerchantID,
+	}
+	merchants, err := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
+	fmt.Println("merchantsFIND", merchants)
+
+	if len(merchants) == 0 {
+		return 0, nil, rapperror.ErrNotFound(
+			"",
+			"Merchant with ID "+channelParam.MerchantID+" is Not Found",
+			"ChannelCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
+
 	fmt.Println("respCust FIND NAME")
 	respCust, _ := r.channelRepo.FindByName(ctx, channelParam.ChannelName, tx)
 
@@ -52,7 +67,7 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 
 	fmt.Println("respCust FIND NAME")
 	respCust2, _ := r.channelRepo.FindByChannelID(ctx, channelParam.ChannelID, tx)
-
+	fmt.Println("FINDOUT?")
 	if respCust2.ChannelID != "" {
 		return 0, nil, rapperror.ErrConflict(
 			"",
@@ -63,10 +78,6 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 	}
 
 	// find merchant by merchant.EnterpriseID
-	merchant_filter := repository.MerchantFilter{
-		MerchantID: &channelParam.MerchantID,
-	}
-	merchants, _ := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
 
 	var merchant entity.Merchant
 	if len(merchants) > 0 {

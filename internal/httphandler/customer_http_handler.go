@@ -96,12 +96,12 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}
-
+	println("payload", ctx.Value(constants.SessionUserId))
 	// get user from context
-	user := ctx.Value(constants.SessionUserId).(int64)
+	// user := ctx.Value(constants.SessionUserId).(int64)
 
 	// set created by value
-	payload.CreatedBy = user
+	payload.CreatedBy = 0
 
 	// fmt.Println("BEFORE ERRROR ")
 
@@ -114,6 +114,16 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			})
 		}
 	}
+
+	if payload.SubIndustry != "" {
+		_, _, err := h.Query.FindSubindustry(ctx, payload.SubIndustry)
+		if err != nil {
+			payload.SubIndustry = "Others"
+		}
+	}
+
+	println(
+		"payload.CRMLeadID", payload.SubIndustry)
 
 	if len(errors) > 0 {
 		logrus.
@@ -649,10 +659,10 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// get user from context
-	user := ctx.Value(constants.SessionUserId).(int64)
+	// user := ctx.Value(constants.SessionUserId).(int64)
 
 	// set created by value
-	payload.CreatedBy = user
+	payload.CreatedBy = 0
 
 	errors := payload.ValidateLead()
 	if len(errors) > 0 {
@@ -752,10 +762,10 @@ func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// get user from context
-	user := ctx.Value(constants.SessionUserId).(int64)
+	// user := ctx.Value(constants.SessionUserId).(int64)
 
 	// set created by value
-	payload.CreatedBy = user
+	payload.CreatedBy = 0
 
 	errors := payload.ValidateLead()
 	if len(errors) > 0 {
@@ -871,10 +881,10 @@ func (h CustomerHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	// get user from context
-	user := ctx.Value(constants.SessionUserId).(int64)
+	// user := ctx.Value(constants.SessionUserId).(int64)
 
 	// set created by value
-	payload.CreatedBy = user
+	payload.CreatedBy = 0
 
 	errors := payload.Validate()
 	if len(errors) > 0 {

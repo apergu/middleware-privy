@@ -136,6 +136,35 @@ func (c *CustomerRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand
 	return data, nil
 }
 
+func (c *CustomerRepositoryPostgre) querySubindustry(ctx context.Context, cmd sqlcommand.Command, query string, args ...interface{}) (entity.Subindustry, error) {
+	data := entity.Subindustry{}
+
+	err := cmd.
+		QueryRow(ctx, query, args...).
+		Scan(
+			&data.ID,
+			&data.SubindustryName,
+		)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerRepositoryPostgre.querySubindustry",
+				"src":   "rows.Scan",
+				"query": query,
+				"args":  args,
+			}).
+			Error(err)
+
+		return entity.Subindustry{}, pgxerror.FromPgxError(
+			err,
+			"Something went wrong when scan",
+			"CustomerRepositoryPostgre.querySubindustry.Scan",
+		)
+	}
+
+	return data, nil
+}
+
 func (c *CustomerRepositoryPostgre) buildFilter(filter CustomerFilter) (string, []interface{}) {
 	condBuilder := &strings.Builder{}
 	conds := make([]string, 0, 4) // set for 2 capacity is posible max filter
@@ -348,6 +377,25 @@ func (c *CustomerRepositoryPostgre) FindByEnterprisePrivyID(ctx context.Context,
 
 	return c.queryOne(ctx, cmd, query, enterprisePrivyID)
 }
+
+func (c *CustomerRepositoryPostgre) FindSubindustry(ctx context.Context, subindustry string, tx pgx.Tx) (entity.Subindustry, error) {
+	var cmd sqlcommand.Command = c.pool
+	if tx != nil {
+		cmd = tx
+	}
+
+	query := `select
+		subindustries.id,
+		subindustries.subindustry_name
+	from
+		subindustries
+	where
+		subindustries.subindustry_name = $1
+	limit 1`
+
+	return c.querySubindustry(ctx, cmd, query, subindustry)
+}
+
 func (c *CustomerRepositoryPostgre) FindByName(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.Customer, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
