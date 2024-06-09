@@ -64,7 +64,7 @@ func (c CheckTopUpStatus) Validate() []map[string]interface{} {
 			validationErrors = append(validationErrors,
 				map[string]interface{}{
 					"field":       err.Field(),
-					"Description": err.Tag(),
+					"description": err.Tag(),
 				})
 		}
 	}

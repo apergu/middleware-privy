@@ -43,6 +43,28 @@ func (h TopUpHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Reques
 
 	var payload model.CheckTopUpStatus
 
+	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"action": "try to decode data",
+				"at":     "TopUpHttpHandler.Create",
+				"src":    "rdecoder.DecodeRest",
+			}).
+			Error(err)
+
+		err = rapperror.ErrBadRequest(
+			rapperror.AppErrorCodeBadRequest,
+			"Invalid body",
+			"TopUpHttpHandler.Create",
+			nil,
+		)
+
+		response = rresponser.NewResponserError(err)
+		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		return
+	}
+
 	errors := payload.Validate()
 	if len(errors) > 0 {
 		logrus.
@@ -82,30 +104,6 @@ func (h TopUpHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Reques
 
 		return
 	}
-
-	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
-	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to decode data",
-				"at":     "TopUpHttpHandler.Create",
-				"src":    "rdecoder.DecodeRest",
-			}).
-			Error(err)
-
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"TopUpHttpHandler.Create",
-			nil,
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
-	}
-
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 
 	res, err := h.Command.CheckTopUpStatus(r.Context(), payload)
 	if err != nil {
