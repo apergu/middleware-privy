@@ -6,4 +6,5 @@ const (
 	EndpointMerchant         = "/app/site/hosting/restlet.nl"
 	EndpointChannel          = "/app/site/hosting/restlet.nl"
 	EndpointCheckTopUpStatus = "/v1/orchestrator-erp-goldengate/manage/balance/status"
+	EndpointVoidBalance      = "/v1/orchestrator-erp-goldengate/manage/balance/void"
 )
