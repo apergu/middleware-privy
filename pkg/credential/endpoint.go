@@ -1,10 +1,8 @@
 package credential
 
 const (
-	EndpointPostCustomer     = "/app/site/hosting/restlet.nl"
-	EndpointGetAccessToken   = "/services/rest/auth/oauth2/v1/token"
-	EndpointMerchant         = "/app/site/hosting/restlet.nl"
-	EndpointChannel          = "/app/site/hosting/restlet.nl"
-	EndpointCheckTopUpStatus = "/v1/orchestrator-erp-goldengate/manage/balance/status"
-	EndpointVoidBalance      = "/v1/orchestrator-erp-goldengate/manage/balance/void"
+	EndpointPostCustomer   = "/app/site/hosting/restlet.nl"
+	EndpointGetAccessToken = "/services/rest/auth/oauth2/v1/token"
+	EndpointMerchant       = "/app/site/hosting/restlet.nl"
+	EndpointChannel        = "/app/site/hosting/restlet.nl"
 )
