@@ -3,13 +3,11 @@ package usecase
 import (
 	"context"
 	"middleware/internal/model"
-	"middleware/pkg/credential"
-	"middleware/pkg/privy"
+	"middleware/pkg/erpprivy"
 )
 
 type ErpPrivyUsecaseProperty struct {
-	ErpPrivyDataPrivy privy.Privy
-	ErpPrivyPrivy     credential.Credential
+	ErpPrivy erpprivy.ErpPrivy
 }
 
 type ErpPrivyCommandUsecase interface {

@@ -1,4 +1,4 @@
-package credential
+package erpprivy
 
 type CheckTopUpStatusResponse struct {
 	Code int `json:"code"`

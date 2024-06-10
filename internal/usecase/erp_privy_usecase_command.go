@@ -2,29 +2,26 @@ package usecase
 
 import (
 	"context"
-	"middleware/pkg/credential"
+	"middleware/pkg/erpprivy"
 
 	"middleware/internal/model"
-	"middleware/pkg/privy"
 
 	"github.com/sirupsen/logrus"
 	"gitlab.com/rteja-library3/rapperror"
 )
 
 type ErpPrivyCommandUsecaseGeneral struct {
-	ErpPrivy     privy.TopupData
-	ErpPrivyCred credential.ErpPrivy
+	ErpPrivyCred erpprivy.ErpPrivy
 }
 
 func NewErpPrivyCommandUsecaseGeneral(prop ErpPrivyUsecaseProperty) *ErpPrivyCommandUsecaseGeneral {
 	return &ErpPrivyCommandUsecaseGeneral{
-		ErpPrivy:     prop.ErpPrivyDataPrivy,
-		ErpPrivyCred: prop.ErpPrivyPrivy,
+		ErpPrivyCred: prop.ErpPrivy,
 	}
 }
 
 func (r *ErpPrivyCommandUsecaseGeneral) CheckTopUpStatus(ctx context.Context, param model.CheckTopUpStatus) (interface{}, error) {
-	input := credential.CheckTopUpStatusParam{
+	input := erpprivy.CheckTopUpStatusParam{
 		TopUPID: param.TopUPID,
 		Event:   param.Event,
 	}
@@ -51,7 +48,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) CheckTopUpStatus(ctx context.Context, pa
 }
 
 func (r *ErpPrivyCommandUsecaseGeneral) VoidBalance(ctx context.Context, param model.VoidBalance) (interface{}, error) {
-	input := credential.VoidBalanceParam{
+	input := erpprivy.VoidBalanceParam{
 		TopUPID: param.TopUPID,
 	}
 

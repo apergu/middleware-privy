@@ -16,11 +16,6 @@ type TopUp interface {
 	CreateTopUp(ctx context.Context, param TopUpParam) (TopUpResponse, error)
 }
 
-type ErpPrivy interface {
-	CheckTopUpStatus(ctx context.Context, param CheckTopUpStatusParam) (CheckTopUpStatusResponse, error)
-	VoidBalance(ctx context.Context, param VoidBalanceParam) (VoidBalanceResponse, error)
-}
-
 type CustomerUsage interface {
 	CreateCustomerUsage(ctx context.Context, param CustomerUsageParam) (CustomerUsageResponse, error)
 }
@@ -49,5 +44,4 @@ type Credential interface {
 	Merchant
 	Channel
 	TransferBalance
-	ErpPrivy
 }

@@ -61,9 +61,3 @@ type EnvelopeTopUp struct {
 	SuccessTransaction []TopUpResponse       `json:"success_transaction"`
 	FailedTransaction  []TopUpFailedResponse `json:"failed_transaction"`
 }
-
-type EnvelopeCheckTopUpStatus struct {
-	MainEnvelope
-	SuccessTransaction []CheckTopUpStatusResponse       `json:"success_transaction"`
-	FailedTransaction  []CheckTopUpStatusFailedResponse `json:"failed_transaction"`
-}

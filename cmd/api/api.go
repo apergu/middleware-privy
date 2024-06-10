@@ -13,6 +13,7 @@ import (
 	"middleware/internal/httphandler"
 	"middleware/pkg/appemail"
 	"middleware/pkg/credential"
+	"middleware/pkg/erpprivy"
 	"middleware/pkg/pgxdb"
 	"middleware/pkg/privy"
 
@@ -75,6 +76,14 @@ func Execute() {
 		Password: cfg.CredentialPrivy.Password,
 	})
 
+	credErpPrivy := erpprivy.NewCredentialERPPrivy(erpprivy.ErpPrivyProperty{
+		Host:           cfg.ErpPrivy.Host,
+		Username:       cfg.ErpPrivy.Username,
+		Password:       cfg.ErpPrivy.Password,
+		ApplicationKey: cfg.ErpPrivy.ApplicationKey,
+		RequestId:      cfg.ErpPrivy.RequestId,
+	})
+
 	defaultPrivy := privy.NewPrivyGeneral(privy.PrivyProperty{
 		Host:     cfg.Privy.Host,
 		Client:   http.DefaultClient,
@@ -92,6 +101,7 @@ func Execute() {
 		DefaultRefreshToken: defaultRefreshToken,
 		DefaultCredential:   credPrivy,
 		DefaultPrivy:        defaultPrivy,
+		DefaultERPPrivy:     credErpPrivy,
 	}
 
 	handler := InitHttpHandler(pool, cfg.Cors, httpProperty, jwtAuth, cfg.BasicAuth)

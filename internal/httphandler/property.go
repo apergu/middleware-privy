@@ -2,6 +2,7 @@ package httphandler
 
 import (
 	"middleware/pkg/credential"
+	"middleware/pkg/erpprivy"
 	"middleware/pkg/privy"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -22,4 +23,5 @@ type HTTPHandlerProperty struct {
 	DefaultRefreshToken rtoken.Token
 	DefaultCredential   credential.Credential
 	DefaultPrivy        privy.Privy
+	DefaultERPPrivy     erpprivy.ErpPrivy
 }

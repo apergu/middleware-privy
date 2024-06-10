@@ -18,6 +18,7 @@ type Config struct {
 	BasicAuth       BasicAuth
 	CredentialPrivy CredentialPrivy
 	Privy           Privy
+	ErpPrivy        ERPPrivy
 }
 
 func Init() *Config {
@@ -35,6 +36,7 @@ func Init() *Config {
 	appConfig.BasicAuth = ReadBasicAuthConfig(os.Getenv)
 	appConfig.CredentialPrivy = ReadCredentialPrivyConfig(os.Getenv)
 	appConfig.Privy = ReadPrivyConfig(os.Getenv)
+	appConfig.ErpPrivy = ReadERPPrivyConfig(os.Getenv)
 
 	return appConfig
 }

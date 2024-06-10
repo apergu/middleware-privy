@@ -14,18 +14,17 @@ import (
 	"gitlab.com/rteja-library3/rresponser"
 )
 
-type TopUpHttpHandler struct {
+type ErpPrivyHttpHandler struct {
 	Command  *usecase.ErpPrivyCommandUsecaseGeneral
 	Decorder rdecoder.Decoder
 }
 
-func NewTopUpHttpHandler(prop HTTPHandlerProperty) http.Handler {
+func NewErpPrivyHttpHandler(prop HTTPHandlerProperty) http.Handler {
 	ucProp := usecase.ErpPrivyUsecaseProperty{
-		ErpPrivyDataPrivy: prop.DefaultPrivy,
-		ErpPrivyPrivy:     prop.DefaultCredential,
+		ErpPrivy: prop.DefaultERPPrivy,
 	}
 
-	handler := TopUpHttpHandler{
+	handler := ErpPrivyHttpHandler{
 		Command:  usecase.NewErpPrivyCommandUsecaseGeneral(ucProp),
 		Decorder: prop.DefaultDecoder,
 	}
@@ -38,7 +37,7 @@ func NewTopUpHttpHandler(prop HTTPHandlerProperty) http.Handler {
 	return r
 }
 
-func (h TopUpHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Request) {
+func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Request) {
 	var response rresponser.Responser
 	var err error
 
@@ -107,8 +106,9 @@ func (h TopUpHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Reques
 
 		return
 	}
-
+	fmt.Println("Payload: ", payload)
 	res, err := h.Command.CheckTopUpStatus(ctx, payload)
+	fmt.Println("Res: ", res)
 	if err != nil {
 		logrus.
 			WithFields(logrus.Fields{
@@ -134,7 +134,7 @@ func (h TopUpHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Reques
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 }
 
-func (h TopUpHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request) {
+func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request) {
 	var response rresponser.Responser
 	var err error
 
