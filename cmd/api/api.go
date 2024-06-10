@@ -9,6 +9,9 @@ import (
 	"syscall"
 
 	"middleware/cmd/migration"
+	"middleware/infrastructure"
+	http_client_infratructure "middleware/infrastructure/http/http_client"
+	log "middleware/infrastructure/logger/logrus"
 	"middleware/internal/config"
 	"middleware/internal/httphandler"
 	"middleware/pkg/appemail"
@@ -20,6 +23,7 @@ import (
 	"github.com/go-chi/jwtauth"
 	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
+
 	"gitlab.com/rteja-library3/rcache"
 	"gitlab.com/rteja-library3/rdecoder"
 	"gitlab.com/rteja-library3/remailer"
@@ -104,7 +108,17 @@ func Execute() {
 		DefaultERPPrivy:     credErpPrivy,
 	}
 
-	handler := InitHttpHandler(pool, cfg.Cors, httpProperty, jwtAuth, cfg.BasicAuth)
+	logger := log.NewLoggerLogrus(cfg)
+
+	httpClient := http_client_infratructure.NewHttpClient(cfg, logger)
+
+	infra := infrastructure.Infrastructure{
+		Config:     cfg,
+		Logger:     logger,
+		HttpClient: httpClient,
+	}
+
+	handler := InitHttpHandler(pool, cfg.Cors, httpProperty, jwtAuth, cfg.BasicAuth, &infra)
 
 	// migrate
 	err := migration.MigrateUpWithDBName(cfg.Database.Dsn, cfg.Database.DBName)
