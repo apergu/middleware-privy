@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"middleware/pkg/erpprivy"
+	"time"
 
 	"middleware/internal/model"
 
@@ -75,7 +76,10 @@ func (r *ErpPrivyCommandUsecaseGeneral) VoidBalance(ctx context.Context, param m
 
 func (r *ErpPrivyCommandUsecaseGeneral) Adendum(ctx context.Context, param model.Adendum) (interface{}, error) {
 	input := erpprivy.AdendumParam{
-		TopUPID: param.TopUPID,
+		TopUPID:         param.TopUPID,
+		StartPeriodDate: param.StartPeriodDate.Format(time.RFC3339),
+		EndPeriodDate:   param.EndPeriodDate.Format(time.RFC3339),
+		Price:           param.Price,
 	}
 
 	res, err := r.ErpPrivyCred.Adendum(ctx, input)

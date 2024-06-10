@@ -131,7 +131,7 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "CheckTopUpStatus successfully created", nil, res)
+	response = rresponser.NewResponserSuccessOK("", "CheckTopUpStatus successfully", nil, res)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 }
 
@@ -227,7 +227,7 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "VoidBalance successfully created", nil, res)
+	response = rresponser.NewResponserSuccessOK("", "VoidBalance successfully", nil, res)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 }
 
@@ -253,7 +253,7 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 			rapperror.AppErrorCodeBadRequest,
 			"Invalid body",
 			"ErpPrivyHttpHandler.Adendum",
-			nil,
+			err.Error(),
 		)
 
 		response = rresponser.NewResponserError(err)
@@ -323,6 +323,6 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "Adendum successfully created", nil, res)
+	response = rresponser.NewResponserSuccessOK("", "Adendum successfully", nil, res)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 }

@@ -1,6 +1,10 @@
 package model
 
-import "github.com/go-playground/validator/v10"
+import (
+	"time"
+
+	"github.com/go-playground/validator/v10"
+)
 
 type CheckTopUpStatus struct {
 	TopUPID string `json:"topup_id" validate:"required"`
@@ -58,7 +62,10 @@ func (c VoidBalance) Validate() []map[string]interface{} {
 }
 
 type Adendum struct {
-	TopUPID string `json:"topup_id" validate:"required"`
+	TopUPID         string    `json:"topup_id" validate:"required"`
+	StartPeriodDate time.Time `json:"start_period_date" validate:"required"`
+	EndPeriodDate   time.Time `json:"end_period_date" validate:"required"`
+	Price           int       `json:"price" validate:"required"`
 }
 
 func (c Adendum) Validate() []map[string]interface{} {
@@ -71,14 +78,22 @@ func (c Adendum) Validate() []map[string]interface{} {
 	if err != nil {
 		// Validation failed, print the error messages
 		for _, err := range err.(validator.ValidationErrors) {
-			//fmt.Println(err)
-			//return err
 			validationErrors = append(validationErrors,
 				map[string]interface{}{
 					"field":       err.Field(),
 					"description": err.Tag(),
 				})
 		}
+
+		return validationErrors
+	}
+
+	if c.StartPeriodDate.After(c.EndPeriodDate) && err == nil {
+		validationErrors = append(validationErrors,
+			map[string]interface{}{
+				"field":       "StartPeriodDate and EndPeriodDate",
+				"description": "StartPeriodDate must be before EndPeriodDate",
+			})
 	}
 
 	return validationErrors
