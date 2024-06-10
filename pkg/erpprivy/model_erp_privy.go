@@ -33,17 +33,44 @@ type VoidBalanceParam struct {
 }
 
 type VoidBalanceResponse struct {
-	Code    string      `json:"code"`
+	Code    int         `json:"code"`
 	Data    interface{} `json:"data"`
 	Message string      `json:"message"`
 }
 
 type VoidBalanceFailedResponse struct {
-	Code    string `json:"code"`
+	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 
 type VoidBalanceBadRequestResponse struct {
+	Code   int `json:"code"`
+	Errors []struct {
+		Field       string `json:"field"`
+		Description string `json:"description"`
+	} `json:"errors"`
+	Message string `json:"message"`
+}
+
+type AdendumParam struct {
+	TopUPID         string `json:"topup_id"`
+	StartPeriodDate string `json:"start_period_date"`
+	EndPeriodDate   string `json:"end_period_date"`
+	Price           int    `json:"price"`
+}
+
+type AdendumResponse struct {
+	Code    int    `json:"code"`
+	Data    int    `json:"data"`
+	Message string `json:"message"`
+}
+
+type AdendumFailedResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
+type AdendumBadRequestResponse struct {
 	Code   int `json:"code"`
 	Errors []struct {
 		Field       string `json:"field"`

@@ -13,4 +13,5 @@ type ErpPrivyUsecaseProperty struct {
 type ErpPrivyCommandUsecase interface {
 	CheckTopUpStatus(ctx context.Context, topUp model.CheckTopUpStatus) (int64, interface{}, error)
 	VoidBalance(ctx context.Context, topUp model.VoidBalance) (int64, interface{}, error)
+	Adendum(ctx context.Context, topUp model.Adendum) (int64, interface{}, error)
 }

@@ -209,3 +209,103 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 
 	return resp, nil
 }
+
+func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (AdendumResponse, error) {
+	AdendumURL := c.host + EndpointAdendum
+
+	body := new(bytes.Buffer)
+	_ = json.NewEncoder(body).Encode(param)
+
+	logrus.
+		WithFields(logrus.Fields{
+			"at":   "ERPPrivy.Adendum",
+			"src":  "Adendum{}.beforeDo",
+			"host": AdendumURL,
+		}).
+		Info(body.String())
+
+	req, _ := http.NewRequest(http.MethodPost, AdendumURL, body)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Lang", "en")
+	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("Application-Key", c.applicationkey)
+	req.SetBasicAuth(c.username, c.password)
+
+	resp := AdendumResponse{}
+	http := &http.Client{}
+	res, err := http.Do(req)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ERPPrivy.Adendum",
+				"src": "Adendum{}",
+			}).
+			Error(err)
+
+		return AdendumResponse{}, err
+	}
+
+	if res.StatusCode != 200 {
+		var strErr string
+		switch res.StatusCode {
+		case 401:
+			logrus.
+				WithFields(logrus.Fields{
+					"at":  "ERPPrivy.Adendum",
+					"src": "AdendumFailedResponse{}",
+				}).
+				Error(err)
+
+			return AdendumResponse{}, errors.New("request erp privy unauthorized")
+		case 422:
+			var resp AdendumBadRequestResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"at":  "ERPPrivy.Adendum",
+						"src": "AdendumBadRequestResponse{}",
+					}).
+					Error(err)
+			}
+
+			if resp.Errors == nil {
+				return AdendumResponse{}, errors.New(resp.Message)
+			}
+
+			for _, v := range resp.Errors {
+				strErr += v.Field + " " + v.Description + " "
+			}
+
+			return AdendumResponse{}, errors.New(strErr)
+		default:
+			var resp AdendumFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"at":  "ERPPrivy.Adendum",
+						"src": "AdendumBadRequestResponse{}",
+					}).
+					Error(err)
+				return AdendumResponse{}, err
+			}
+
+			return AdendumResponse{}, errors.New("something went wrong")
+		}
+	}
+
+	err = json.NewDecoder(res.Body).Decode(&resp)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ERPPrivy.Adendum",
+				"src": "AdendumResponse{}",
+			}).
+			Error(err)
+
+		return AdendumResponse{}, err
+	}
+
+	return resp, nil
+}

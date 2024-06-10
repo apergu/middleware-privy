@@ -72,3 +72,29 @@ func (r *ErpPrivyCommandUsecaseGeneral) VoidBalance(ctx context.Context, param m
 
 	return res, nil
 }
+
+func (r *ErpPrivyCommandUsecaseGeneral) Adendum(ctx context.Context, param model.Adendum) (interface{}, error) {
+	input := erpprivy.AdendumParam{
+		TopUPID: param.TopUPID,
+	}
+
+	res, err := r.ErpPrivyCred.Adendum(ctx, input)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "ErpPrivyCommandUsecaseGeneral.Adendedum",
+				"src":   "ErpPrivyCred.Adendedum",
+				"param": param,
+			}).
+			Error(err)
+
+		return nil, rapperror.ErrInternalServerError(
+			"",
+			"Something went wrong when Adendedum",
+			"AdendedumCommandUsecaseGeneral.Adendedum",
+			"konz",
+		)
+	}
+
+	return res, nil
+}

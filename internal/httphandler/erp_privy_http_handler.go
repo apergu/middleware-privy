@@ -33,6 +33,7 @@ func NewErpPrivyHttpHandler(prop HTTPHandlerProperty) http.Handler {
 
 	r.Post("/check-status", handler.CheckTopUpStatus)
 	r.Post("/void-balance", handler.VoidBalance)
+	r.Post("/topup-adendum", handler.Adendum)
 
 	return r
 }
@@ -50,7 +51,7 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 		logrus.
 			WithFields(logrus.Fields{
 				"action": "try to decode data",
-				"at":     "TopUpHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.Create",
 				"src":    "rdecoder.DecodeRest",
 			}).
 			Error(err)
@@ -58,7 +59,7 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 		err = rapperror.ErrBadRequest(
 			rapperror.AppErrorCodeBadRequest,
 			"Invalid body",
-			"TopUpHttpHandler.Create",
+			"ErpPrivyHttpHandler.Create",
 			nil,
 		)
 
@@ -71,7 +72,7 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "CustomerUsageHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.Create",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
@@ -106,14 +107,14 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 
 		return
 	}
-	fmt.Println("Payload: ", payload)
+
 	res, err := h.Command.CheckTopUpStatus(ctx, payload)
-	fmt.Println("Res: ", res)
+
 	if err != nil {
 		logrus.
 			WithFields(logrus.Fields{
 				"action": "try to check top up status",
-				"at":     "TopUpHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.Create",
 				"src":    "h.Command.CheckTopUpStatus",
 			}).
 			Error(err)
@@ -121,7 +122,7 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 		err = rapperror.ErrInternalServerError(
 			rapperror.AppErrorCodeInternalServerError,
 			"Internal server error",
-			"TopUpHttpHandler.Create",
+			"ErpPrivyHttpHandler.Create",
 			nil,
 		)
 
@@ -147,7 +148,7 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 		logrus.
 			WithFields(logrus.Fields{
 				"action": "try to decode data",
-				"at":     "TopUpHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.Create",
 				"src":    "rdecoder.DecodeRest",
 			}).
 			Error(err)
@@ -155,7 +156,7 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 		err = rapperror.ErrBadRequest(
 			rapperror.AppErrorCodeBadRequest,
 			"Invalid body",
-			"TopUpHttpHandler.Create",
+			"ErpPrivyHttpHandler.Create",
 			nil,
 		)
 
@@ -168,7 +169,7 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "CustomerUsageHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.VoidBalance",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
@@ -209,7 +210,7 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 		logrus.
 			WithFields(logrus.Fields{
 				"action": "try to check top up status",
-				"at":     "TopUpHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.VoidBalance",
 				"src":    "h.Command.CheckTopUpStatus",
 			}).
 			Error(err)
@@ -217,7 +218,7 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 		err = rapperror.ErrInternalServerError(
 			rapperror.AppErrorCodeInternalServerError,
 			"Internal server error",
-			"TopUpHttpHandler.Create",
+			"ErpPrivyHttpHandler.VoidBalance",
 			nil,
 		)
 
@@ -226,6 +227,102 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "CheckTopUpStatus successfully created", nil, res)
+	response = rresponser.NewResponserSuccessOK("", "VoidBalance successfully created", nil, res)
+	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+}
+
+func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
+	var response rresponser.Responser
+	var err error
+
+	var ctx = r.Context()
+
+	var payload model.Adendum
+
+	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"action": "try to decode data",
+				"at":     "ErpPrivyHttpHandler.Adendum",
+				"src":    "rdecoder.DecodeRest",
+			}).
+			Error(err)
+
+		err = rapperror.ErrBadRequest(
+			rapperror.AppErrorCodeBadRequest,
+			"Invalid body",
+			"ErpPrivyHttpHandler.Adendum",
+			nil,
+		)
+
+		response = rresponser.NewResponserError(err)
+		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		return
+	}
+
+	errors := payload.Validate()
+	if len(errors) > 0 {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":     "ErpPrivyHttpHandler.Adendum",
+				"src":    "payload.Validate",
+				"params": payload,
+			}).
+			Error(err)
+
+		errorResponse := map[string]interface{}{
+			"code":    422,
+			"success": false,
+			"message": "Validation failed",
+			"errors":  errors,
+		}
+
+		// Convert error response to JSON
+		responseJSON, marshalErr := json.Marshal(errorResponse)
+		if marshalErr != nil {
+			// Handle JSON marshaling error
+			fmt.Println("Error encoding JSON:", marshalErr)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		// Set the response headers
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnprocessableEntity) // Set the appropriate HTTP status code
+
+		// Write the JSON response to the client
+		_, writeErr := w.Write(responseJSON)
+		if writeErr != nil {
+			// Handle write error
+			fmt.Println("Error writing response:", writeErr)
+		}
+
+		return
+	}
+
+	res, err := h.Command.Adendum(ctx, payload)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"action": "try to check top up status",
+				"at":     "ErpPrivyHttpHandler.Adendum",
+				"src":    "h.Command.CheckTopUpStatus",
+			}).
+			Error(err)
+
+		err = rapperror.ErrInternalServerError(
+			rapperror.AppErrorCodeInternalServerError,
+			"Internal server error",
+			"ErpPrivyHttpHandler.Adendum",
+			err.Error(),
+		)
+
+		response = rresponser.NewResponserError(err)
+		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		return
+	}
+
+	response = rresponser.NewResponserSuccessOK("", "Adendum successfully created", nil, res)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 }
