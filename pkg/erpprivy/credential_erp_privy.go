@@ -10,6 +10,106 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanceParam) (TopUpBalanceResponse, error) {
+	TopUpBalanceURL := c.host + EndpointTopUpBalance
+
+	body := new(bytes.Buffer)
+	_ = json.NewEncoder(body).Encode(param)
+
+	logrus.
+		WithFields(logrus.Fields{
+			"at":   "ERPPrivy.TopUpBalance",
+			"src":  "TopUpBalance{}.beforeDo",
+			"host": TopUpBalanceURL,
+		}).
+		Info(body.String())
+
+	req, _ := http.NewRequest(http.MethodPost, TopUpBalanceURL, body)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Lang", "en")
+	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("Application-Key", c.applicationkey)
+	req.SetBasicAuth(c.username, c.password)
+
+	resp := TopUpBalanceResponse{}
+	http := &http.Client{}
+	res, err := http.Do(req)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ERPPrivy.TopUpBalance",
+				"src": "TopUpBalance{}",
+			}).
+			Error(err)
+
+		return TopUpBalanceResponse{}, err
+	}
+
+	if res.StatusCode != 200 {
+		var strErr string
+		switch res.StatusCode {
+		case 401:
+			logrus.
+				WithFields(logrus.Fields{
+					"at":  "ERPPrivy.TopUpBalance",
+					"src": "TopUpBalanceFailedResponse{}",
+				}).
+				Error(err)
+
+			return TopUpBalanceResponse{}, errors.New("request erp privy unauthorized")
+		case 422:
+			var resp TopUpBalanceBadRequestResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"at":  "ERPPrivy.TopUpBalance",
+						"src": "TopUpBalanceBadRequestResponse{}",
+					}).
+					Error(err)
+			}
+
+			if resp.Errors == nil {
+				return TopUpBalanceResponse{}, errors.New(resp.Message)
+			}
+
+			for _, v := range resp.Errors {
+				strErr += v.Field + " " + v.Description + " "
+			}
+
+			return TopUpBalanceResponse{}, errors.New(strErr)
+		default:
+			var resp TopUpBalanceFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"at":  "ERPPrivy.TopUpBalance",
+						"src": "TopUpBalanceBadRequestResponse{}",
+					}).
+					Error(err)
+				return TopUpBalanceResponse{}, err
+			}
+
+			return TopUpBalanceResponse{}, errors.New("something went wrong")
+		}
+	}
+
+	err = json.NewDecoder(res.Body).Decode(&resp)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ERPPrivy.TopUpBalance",
+				"src": "TopUpBalance{}",
+			}).
+			Error(err)
+
+		return TopUpBalanceResponse{}, err
+	}
+
+	return resp, nil
+}
+
 func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTopUpStatusParam) (CheckTopUpStatusResponse, error) {
 	checkTopUpStatusURL := c.host + EndpointCheckTopUpStatus
 
@@ -224,7 +324,7 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (A
 		}).
 		Info(body.String())
 
-	req, _ := http.NewRequest(http.MethodPost, AdendumURL, body)
+	req, _ := http.NewRequest(http.MethodPatch, AdendumURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Lang", "en")
 	req.Header.Set("X-Request-Id", c.requestid)
@@ -305,6 +405,106 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (A
 			Error(err)
 
 		return AdendumResponse{}, err
+	}
+
+	return resp, nil
+}
+
+func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam) (ReconcileResponse, error) {
+	ReconcileURL := c.host + EndpointReconcile
+
+	body := new(bytes.Buffer)
+	_ = json.NewEncoder(body).Encode(param)
+
+	logrus.
+		WithFields(logrus.Fields{
+			"at":   "ERPPrivy.Reconcile",
+			"src":  "Reconcile{}.beforeDo",
+			"host": ReconcileURL,
+		}).
+		Info(body.String())
+
+	req, _ := http.NewRequest(http.MethodPatch, ReconcileURL, body)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Lang", "en")
+	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("Application-Key", c.applicationkey)
+	req.SetBasicAuth(c.username, c.password)
+
+	resp := ReconcileResponse{}
+	http := &http.Client{}
+	res, err := http.Do(req)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ERPPrivy.Reconcile",
+				"src": "Reconcile{}",
+			}).
+			Error(err)
+
+		return ReconcileResponse{}, err
+	}
+
+	if res.StatusCode != 200 {
+		var strErr string
+		switch res.StatusCode {
+		case 401:
+			logrus.
+				WithFields(logrus.Fields{
+					"at":  "ERPPrivy.Reconcile",
+					"src": "ReconcileFailedResponse{}",
+				}).
+				Error(err)
+
+			return ReconcileResponse{}, errors.New("request erp privy unauthorized")
+		case 422:
+			var resp ReconcileBadRequestResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"at":  "ERPPrivy.Reconcile",
+						"src": "ReconcileBadRequestResponse{}",
+					}).
+					Error(err)
+			}
+
+			if resp.Errors == nil {
+				return ReconcileResponse{}, errors.New(resp.Message)
+			}
+
+			for _, v := range resp.Errors {
+				strErr += v.Field + " " + v.Description + " "
+			}
+
+			return ReconcileResponse{}, errors.New(strErr)
+		default:
+			var resp ReconcileFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"at":  "ERPPrivy.Reconcile",
+						"src": "ReconcileBadRequestResponse{}",
+					}).
+					Error(err)
+				return ReconcileResponse{}, err
+			}
+
+			return ReconcileResponse{}, errors.New("something went wrong")
+		}
+	}
+
+	err = json.NewDecoder(res.Body).Decode(&resp)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ERPPrivy.Reconcile",
+				"src": "ReconcileResponse{}",
+			}).
+			Error(err)
+
+		return ReconcileResponse{}, err
 	}
 
 	return resp, nil

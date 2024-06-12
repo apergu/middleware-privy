@@ -21,6 +21,42 @@ func NewErpPrivyCommandUsecaseGeneral(prop ErpPrivyUsecaseProperty) *ErpPrivyCom
 	}
 }
 
+func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param model.TopUpBalance) (interface{}, error) {
+	input := erpprivy.TopUpBalanceParam{
+		TopUPID:         param.TopUPID,
+		EnterpriseId:    param.EnterpriseId,
+		MerchantId:      param.MerchantId,
+		ChannelId:       param.ChannelId,
+		ServiceId:       param.ServiceId,
+		PostPaid:        param.PostPaid,
+		Qty:             param.Qty,
+		UnitPrice:       param.UnitPrice,
+		StartPeriodDate: param.StartPeriodDate.Format(time.RFC3339),
+		EndPeriodDate:   param.EndPeriodDate.Format(time.RFC3339),
+		TransactionDate: param.TransactionDate,
+	}
+
+	res, err := r.ErpPrivyCred.TopUpBalance(ctx, input)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "ErpPrivyCommandUsecaseGeneral.Create",
+				"src":   "topupCred.CreateTopup",
+				"param": param,
+			}).
+			Error(err)
+
+		return nil, rapperror.ErrInternalServerError(
+			"",
+			"Something went wrong when TopUpBalance",
+			"TopUpBalanceCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
+
+	return res, nil
+}
+
 func (r *ErpPrivyCommandUsecaseGeneral) CheckTopUpStatus(ctx context.Context, param model.CheckTopUpStatus) (interface{}, error) {
 	input := erpprivy.CheckTopUpStatusParam{
 		TopUPID: param.TopUPID,
@@ -96,6 +132,36 @@ func (r *ErpPrivyCommandUsecaseGeneral) Adendum(ctx context.Context, param model
 			"",
 			"Something went wrong when Adendedum",
 			"AdendedumCommandUsecaseGeneral.Adendedum",
+			"konz",
+		)
+	}
+
+	return res, nil
+}
+
+func (r *ErpPrivyCommandUsecaseGeneral) Reconcile(ctx context.Context, param model.Reconcile) (interface{}, error) {
+	input := erpprivy.ReconcileParam{
+		TopUPID:         param.TopUPID,
+		StartPeriodDate: param.StartPeriodDate.Format(time.RFC3339),
+		EndPeriodDate:   param.EndPeriodDate.Format(time.RFC3339),
+		Price:           param.Price,
+		Qty:             param.Qty,
+	}
+
+	res, err := r.ErpPrivyCred.Reconcile(ctx, input)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "ErpPrivyCommandUsecaseGeneral.Reconcile",
+				"src":   "ErpPrivyCred.Reconcile",
+				"param": param,
+			}).
+			Error(err)
+
+		return nil, rapperror.ErrInternalServerError(
+			"",
+			"Something went wrong when Reconcile",
+			"ReconcileCommandUsecaseGeneral.Reconcile",
 			"konz",
 		)
 	}
