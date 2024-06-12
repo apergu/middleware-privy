@@ -84,12 +84,21 @@ func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanc
 			if err != nil {
 				logrus.
 					WithFields(logrus.Fields{
-						"at":  "ERPPrivy.TopUpBalance",
-						"src": "TopUpBalanceBadRequestResponse{}",
+						"action": "DecodeTopUpBalanceFailedResponse",
+						"at":     "ERPPrivy.TopUpBalance",
+						"src":    "TopUpBalanceBadRequestResponse{}",
 					}).
 					Error(err)
 				return TopUpBalanceResponse{}, err
 			}
+
+			logrus.
+				WithFields(logrus.Fields{
+					"action": "GetResponseNot200Privy",
+					"at":     "ERPPrivy.TopUpBalance",
+					"src":    "TopUpBalanceBadRequestResponse{}",
+				}).
+				Error(resp)
 
 			return TopUpBalanceResponse{}, errors.New("something went wrong")
 		}
@@ -184,12 +193,21 @@ func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTo
 			if err != nil {
 				logrus.
 					WithFields(logrus.Fields{
-						"at":  "ERPPrivy.CheckTopUpStatus",
-						"src": "CheckTopUpStatusBadRequestResponse{}",
+						"action": "DecodeCheckTopUpStatusFailedResponse",
+						"at":     "ERPPrivy.CheckTopUpStatus",
+						"src":    "CheckTopUpStatusBadRequestResponse{}",
 					}).
 					Error(err)
 				return CheckTopUpStatusResponse{}, err
 			}
+
+			logrus.
+				WithFields(logrus.Fields{
+					"action": "GetResponseNot200Privy",
+					"at":     "ERPPrivy.CheckTopUpStatus",
+					"src":    "CheckTopUpStatusBadRequestResponse{}",
+				}).
+				Error(resp)
 
 			return CheckTopUpStatusResponse{}, errors.New("something went wrong")
 		}
@@ -284,12 +302,21 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 			if err != nil {
 				logrus.
 					WithFields(logrus.Fields{
-						"at":  "ERPPrivy.VoidBalance",
-						"src": "VoidBalanceBadRequestResponse{}",
+						"action": "DecodeVoidBalanceFailedResponse",
+						"at":     "ERPPrivy.VoidBalance",
+						"src":    "VoidBalanceBadRequestResponse{}",
 					}).
 					Error(err)
 				return VoidBalanceResponse{}, err
 			}
+
+			logrus.
+				WithFields(logrus.Fields{
+					"action": "GetResponseNot200Privy",
+					"at":     "ERPPrivy.VoidBalance",
+					"src":    "VoidBalanceBadRequestResponse{}",
+				}).
+				Error(resp)
 
 			return VoidBalanceResponse{}, errors.New("something went wrong")
 		}
@@ -384,12 +411,21 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (A
 			if err != nil {
 				logrus.
 					WithFields(logrus.Fields{
-						"at":  "ERPPrivy.Adendum",
-						"src": "AdendumBadRequestResponse{}",
+						"action": "DecodeAdendumFailedResponse",
+						"at":     "ERPPrivy.Adendum",
+						"src":    "AdendumBadRequestResponse{}",
 					}).
 					Error(err)
 				return AdendumResponse{}, err
 			}
+
+			logrus.
+				WithFields(logrus.Fields{
+					"action": "GetResponseNot200Privy",
+					"at":     "ERPPrivy.Adendum",
+					"src":    "AdendumBadRequestResponse{}",
+				}).
+				Error(resp)
 
 			return AdendumResponse{}, errors.New("something went wrong")
 		}
@@ -484,12 +520,21 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 			if err != nil {
 				logrus.
 					WithFields(logrus.Fields{
-						"at":  "ERPPrivy.Reconcile",
-						"src": "ReconcileBadRequestResponse{}",
+						"action": "DecodeReconcileFailedResponse",
+						"at":     "ERPPrivy.Reconcile",
+						"src":    "ReconcileBadRequestResponse{}",
 					}).
 					Error(err)
 				return ReconcileResponse{}, err
 			}
+
+			logrus.
+				WithFields(logrus.Fields{
+					"action": "GetResponseNot200Privy",
+					"at":     "ERPPrivy.Reconcile",
+					"src":    "ReconcileBadRequestResponse{}",
+				}).
+				Error(resp)
 
 			return ReconcileResponse{}, errors.New("something went wrong")
 		}
