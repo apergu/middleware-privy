@@ -68,6 +68,21 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 		)
 	}
 
+	defer func() {
+		if p := recover(); p != nil {
+			r.channelRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.channelRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.channelRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
+
 	fmt.Println("respCust FIND NAME")
 	respCust, _ := r.channelRepo.FindByName(ctx, channelParam.ChannelName, tx)
 
@@ -79,6 +94,21 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 			nil,
 		)
 	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			r.channelRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.channelRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.channelRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
 
 	fmt.Println("respCust FIND NAME")
 	respCust2, _ := r.channelRepo.FindByChannelID(ctx, channelParam.ChannelID, tx)
