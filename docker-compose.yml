@@ -68,6 +68,10 @@ services:
       PRIVY_USERNAME: f8b4fb43614c756a168b1d1367607569ae547e8ffb6001b0ec7526641627c112
       PRIVY_PASSWORD: 7e068bf2d6a20f9fd949efee8eca6927b440181b2bfa8d2dbbbe4af05a285aae
       ACZD_BASE: http://apergu.tech:9002/
+       ERP_PRIVY_USERNAME: apergu
+      ERP_PRIVY_PASSWORD: "2dp$m48k#ut9"
+      ERP_PRIVY_APPLICATION_KEY: VUNSAT9GP6e5Rc7qv8ZDnh
+      ERP_PRIVY_REQUEST_ID: 7c7bab49266d3529254f2532fe7cff8e
     links:
       - db
   # apache2:
