@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -37,6 +38,21 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 
 	respCust, _ := r.merchantRepo.FindByName(ctx, merchant.MerchantName, tx)
 
+	defer func() {
+		if p := recover(); p != nil {
+			r.merchantRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.merchantRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.merchantRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
+
 	if respCust.MerchantName != "" {
 		return 0, nil, rapperror.ErrConflict(
 			"",
@@ -46,7 +62,37 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 		)
 	}
 
+	defer func() {
+		if p := recover(); p != nil {
+			r.merchantRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.merchantRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.merchantRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
+
 	respCust2, _ := r.merchantRepo.FindByMerchantID(ctx, merchant.MerchantID, tx)
+
+	defer func() {
+		if p := recover(); p != nil {
+			r.merchantRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.merchantRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.merchantRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
 
 	if respCust2.MerchantID != "" {
 		return 0, nil, rapperror.ErrConflict(
