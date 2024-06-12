@@ -39,6 +39,21 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 	fmt.Println("respCust FIND NAME")
 	respCust, _ := r.custRepo.FindByName(ctx, cust.CustomerName, tx)
 
+	defer func() {
+		if p := recover(); p != nil {
+			r.custRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.custRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.custRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
+
 	if respCust.CustomerName != "" {
 		return 0, nil, rapperror.ErrConflict(
 			"",
@@ -51,6 +66,20 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 	fmt.Println("respCust FIND NAME")
 	respCust2, _ := r.custRepo.FindByEnterprisePrivyID(ctx, cust.EnterprisePrivyID, tx)
 
+	defer func() {
+		if p := recover(); p != nil {
+			r.custRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.custRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.custRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
 	if respCust2.EnterprisePrivyID != "" {
 		return 0, nil, rapperror.ErrConflict(
 			"",
@@ -99,9 +128,39 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		UpdatedAt:         tmNow,
 	}
 
+	defer func() {
+		if p := recover(); p != nil {
+			r.custRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.custRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.custRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
+
 	custId, err := r.custRepo.Create(ctx, insertCustomer, tx)
 	log.Println("response", err)
 	log.Println("BEFORE ERRROR ")
+
+	defer func() {
+		if p := recover(); p != nil {
+			r.custRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.custRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.custRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
 
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)
