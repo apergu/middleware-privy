@@ -404,7 +404,7 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.
 			WithFields(logrus.Fields{
-				"action": "try to check top up status",
+				"action": "try to check adendum",
 				"at":     "ErpPrivyHttpHandler.Adendum",
 				"src":    "h.Command.CheckTopUpStatus",
 			}).
@@ -500,7 +500,7 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.
 			WithFields(logrus.Fields{
-				"action": "try to check top up status",
+				"action": "try to check reconcile",
 				"at":     "ErpPrivyHttpHandler.Reconcile",
 				"src":    "h.Command.CheckTopUpStatus",
 			}).

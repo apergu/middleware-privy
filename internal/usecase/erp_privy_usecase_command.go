@@ -48,7 +48,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param 
 
 		return nil, rapperror.ErrInternalServerError(
 			"",
-			"Something went wrong when TopUpBalance",
+			"Something went wrong when TopUpBalance"+err.Error(),
 			"TopUpBalanceCommandUsecaseGeneral.Create",
 			nil,
 		)
@@ -75,7 +75,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) CheckTopUpStatus(ctx context.Context, pa
 
 		return nil, rapperror.ErrInternalServerError(
 			"",
-			"Something went wrong when CheckTopUpStatus",
+			"Something went wrong when CheckTopUpStatus"+err.Error(),
 			"CheckTopUpStatusCommandUsecaseGeneral.Create",
 			nil,
 		)
@@ -93,7 +93,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) VoidBalance(ctx context.Context, param m
 	if err != nil {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":    "ErpPrivyCommandUsecaseGeneral.VoidBalance",
+				"at":    "ErpPrivyCommandUsecaseGeneral.VoidBalance" + err.Error(),
 				"src":   "ErpPrivyCred.VoidBalance",
 				"param": param,
 			}).
@@ -101,7 +101,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) VoidBalance(ctx context.Context, param m
 
 		return nil, rapperror.ErrInternalServerError(
 			"",
-			"Something went wrong when VoidBalance",
+			"Something went wrong when VoidBalance"+err.Error(),
 			"VoidBalanceCommandUsecaseGeneral.VoidBalance",
 			nil,
 		)
@@ -130,7 +130,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) Adendum(ctx context.Context, param model
 
 		return nil, rapperror.ErrInternalServerError(
 			"",
-			"Something went wrong when Adendedum",
+			"Something went wrong when Adendedum"+err.Error(),
 			"AdendedumCommandUsecaseGeneral.Adendedum",
 			"konz",
 		)
@@ -160,7 +160,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) Reconcile(ctx context.Context, param mod
 
 		return nil, rapperror.ErrInternalServerError(
 			"",
-			"Something went wrong when Reconcile",
+			"Something went wrong when Reconcile"+err.Error(),
 			"ReconcileCommandUsecaseGeneral.Reconcile",
 			"konz",
 		)
