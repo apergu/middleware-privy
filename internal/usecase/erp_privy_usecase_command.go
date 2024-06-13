@@ -31,9 +31,21 @@ func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param 
 		PostPaid:        param.PostPaid,
 		Qty:             param.Qty,
 		UnitPrice:       param.UnitPrice,
-		StartPeriodDate: param.StartPeriodDate.Format(time.RFC3339),
-		EndPeriodDate:   param.EndPeriodDate.Format(time.RFC3339),
+		StartPeriodDate: param.StartPeriodDate,
+		EndPeriodDate:   param.EndPeriodDate,
 		TransactionDate: param.TransactionDate,
+	}
+
+	startPeriodDate, _ := time.Parse(time.RFC3339, param.StartPeriodDate)
+	endPeriodDate, _ := time.Parse(time.RFC3339, param.EndPeriodDate)
+
+	if startPeriodDate.After(endPeriodDate) {
+		return nil, rapperror.ErrBadRequest(
+			"",
+			"Start Period Date must be before End Period Date",
+			"TopUpBalanceCommandUsecaseGeneral.TopUpBalance",
+			nil,
+		)
 	}
 
 	res, err := r.ErpPrivyCred.TopUpBalance(ctx, input)
@@ -41,7 +53,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param 
 		logrus.
 			WithFields(logrus.Fields{
 				"at":    "ErpPrivyCommandUsecaseGeneral.Create",
-				"src":   "topupCred.CreateTopup",
+				"src":   "topupCred.TopUpBalance",
 				"param": param,
 			}).
 			Error(err)
@@ -49,7 +61,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param 
 		return nil, rapperror.ErrInternalServerError(
 			"",
 			"Something went wrong when TopUpBalance"+err.Error(),
-			"TopUpBalanceCommandUsecaseGeneral.Create",
+			"TopUpBalanceCommandUsecaseGeneral.TopUpBalance",
 			nil,
 		)
 	}
@@ -76,7 +88,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) CheckTopUpStatus(ctx context.Context, pa
 		return nil, rapperror.ErrInternalServerError(
 			"",
 			"Something went wrong when CheckTopUpStatus"+err.Error(),
-			"CheckTopUpStatusCommandUsecaseGeneral.Create",
+			"CheckTopUpStatusCommandUsecaseGeneral.CheckTopUpStatus",
 			nil,
 		)
 	}
@@ -113,9 +125,21 @@ func (r *ErpPrivyCommandUsecaseGeneral) VoidBalance(ctx context.Context, param m
 func (r *ErpPrivyCommandUsecaseGeneral) Adendum(ctx context.Context, param model.Adendum) (interface{}, error) {
 	input := erpprivy.AdendumParam{
 		TopUPID:         param.TopUPID,
-		StartPeriodDate: param.StartPeriodDate.Format(time.RFC3339),
-		EndPeriodDate:   param.EndPeriodDate.Format(time.RFC3339),
+		StartPeriodDate: param.StartPeriodDate,
+		EndPeriodDate:   param.EndPeriodDate,
 		Price:           param.Price,
+	}
+
+	startPeriodDate, _ := time.Parse(time.RFC3339, param.StartPeriodDate)
+	endPeriodDate, _ := time.Parse(time.RFC3339, param.EndPeriodDate)
+
+	if startPeriodDate.After(endPeriodDate) {
+		return nil, rapperror.ErrBadRequest(
+			"",
+			"Start Period Date must be before End Period Date",
+			"AdendumCommandUsecaseGeneral.Adendum",
+			nil,
+		)
 	}
 
 	res, err := r.ErpPrivyCred.Adendum(ctx, input)

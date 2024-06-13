@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"middleware/internal/model"
 	"middleware/internal/usecase"
+	"middleware/pkg/pkgvalidator"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -53,28 +54,50 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 		logrus.
 			WithFields(logrus.Fields{
 				"action": "try to decode data",
-				"at":     "ErpPrivyHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.TopUpBalance",
 				"src":    "rdecoder.DecodeRest",
 			}).
 			Error(err)
+		switch jsonerr := err.(type) {
+		case *json.UnmarshalTypeError:
+			if jsonerr.Field == "" {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					"Invalid body",
+					"ErpPrivyHttpHandler.TopUpBalance",
+					nil,
+				)
+			} else {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					fmt.Sprintf(jsonerr.Field+" must be a "+jsonerr.Type.String()),
+					"ErpPrivyHttpHandler.TopUpBalance",
+					nil,
+				)
+			}
 
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"ErpPrivyHttpHandler.Create",
-			nil,
-		)
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		default:
+			err = rapperror.ErrUnprocessableEntity(
+				rapperror.AppErrorCodeUnprocessableEntity,
+				"invalid body",
+				"ErpPrivyHttpHandler.TopUpBalance",
+				nil,
+			)
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		}
 	}
 
-	errors := payload.Validate()
+	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "ErpPrivyHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.TopUpBalance",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
@@ -116,24 +139,17 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 		logrus.
 			WithFields(logrus.Fields{
 				"action": "try to check top up balance",
-				"at":     "ErpPrivyHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.TopUpBalance",
 				"src":    "h.Command.TopUpBalance",
 			}).
 			Error(err)
-
-		err = rapperror.ErrInternalServerError(
-			rapperror.AppErrorCodeInternalServerError,
-			"Internal server error",
-			"ErpPrivyHttpHandler.Create",
-			nil,
-		)
 
 		response = rresponser.NewResponserError(err)
 		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "CheckTopUpStatus successfully created", nil, res)
+	response = rresponser.NewResponserSuccessOK("", "CheckTopUpStatus successfully", nil, res)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 }
 
@@ -150,28 +166,50 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 		logrus.
 			WithFields(logrus.Fields{
 				"action": "try to decode data",
-				"at":     "ErpPrivyHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.CheckTopUpStatus",
 				"src":    "rdecoder.DecodeRest",
 			}).
 			Error(err)
+		switch jsonerr := err.(type) {
+		case *json.UnmarshalTypeError:
+			if jsonerr.Field == "" {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					"Invalid body",
+					"ErpPrivyHttpHandler.CheckTopUpStatus",
+					nil,
+				)
+			} else {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					fmt.Sprintf(jsonerr.Field+" must be a "+jsonerr.Type.String()),
+					"ErpPrivyHttpHandler.CheckTopUpStatus",
+					nil,
+				)
+			}
 
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"ErpPrivyHttpHandler.Create",
-			nil,
-		)
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		default:
+			err = rapperror.ErrUnprocessableEntity(
+				rapperror.AppErrorCodeUnprocessableEntity,
+				"invalid body",
+				"ErpPrivyHttpHandler.CheckTopUpStatus",
+				nil,
+			)
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		}
 	}
 
-	errors := payload.Validate()
+	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "ErpPrivyHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.CheckTopUpStatus",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
@@ -213,7 +251,7 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 		logrus.
 			WithFields(logrus.Fields{
 				"action": "try to check top up status",
-				"at":     "ErpPrivyHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.CheckTopUpStatus",
 				"src":    "h.Command.CheckTopUpStatus",
 			}).
 			Error(err)
@@ -221,7 +259,7 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 		err = rapperror.ErrInternalServerError(
 			rapperror.AppErrorCodeInternalServerError,
 			"Internal server error",
-			"ErpPrivyHttpHandler.Create",
+			"ErpPrivyHttpHandler.CheckTopUpStatus",
 			nil,
 		)
 
@@ -247,24 +285,46 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 		logrus.
 			WithFields(logrus.Fields{
 				"action": "try to decode data",
-				"at":     "ErpPrivyHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.VoidBalance",
 				"src":    "rdecoder.DecodeRest",
 			}).
 			Error(err)
+		switch jsonerr := err.(type) {
+		case *json.UnmarshalTypeError:
+			if jsonerr.Field == "" {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					"Invalid body",
+					"ErpPrivyHttpHandler.VoidBalance",
+					nil,
+				)
+			} else {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					fmt.Sprintf(jsonerr.Field+" must be a "+jsonerr.Type.String()),
+					"ErpPrivyHttpHandler.VoidBalance",
+					nil,
+				)
+			}
 
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"ErpPrivyHttpHandler.Create",
-			nil,
-		)
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		default:
+			err = rapperror.ErrUnprocessableEntity(
+				rapperror.AppErrorCodeUnprocessableEntity,
+				"invalid body",
+				"ErpPrivyHttpHandler.VoidBalance",
+				nil,
+			)
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		}
 	}
 
-	errors := payload.Validate()
+	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
@@ -347,20 +407,42 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 				"src":    "rdecoder.DecodeRest",
 			}).
 			Error(err)
+		switch jsonerr := err.(type) {
+		case *json.UnmarshalTypeError:
+			if jsonerr.Field == "" {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					"Invalid body",
+					"ErpPrivyHttpHandler.Adendum",
+					nil,
+				)
+			} else {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					fmt.Sprintf(jsonerr.Field+" must be a "+jsonerr.Type.String()),
+					"ErpPrivyHttpHandler.Adendum",
+					nil,
+				)
+			}
 
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"ErpPrivyHttpHandler.Adendum",
-			err.Error(),
-		)
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		default:
+			err = rapperror.ErrUnprocessableEntity(
+				rapperror.AppErrorCodeUnprocessableEntity,
+				"invalid body",
+				"ErpPrivyHttpHandler.Adendum",
+				nil,
+			)
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		}
 	}
 
-	errors := payload.Validate()
+	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
@@ -443,20 +525,42 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 				"src":    "rdecoder.DecodeRest",
 			}).
 			Error(err)
+		switch jsonerr := err.(type) {
+		case *json.UnmarshalTypeError:
+			if jsonerr.Field == "" {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					"Invalid body",
+					"ErpPrivyHttpHandler.Reconcile",
+					nil,
+				)
+			} else {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					fmt.Sprintf(jsonerr.Field+" must be a "+jsonerr.Type.String()),
+					"ErpPrivyHttpHandler.Reconcile",
+					nil,
+				)
+			}
 
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"ErpPrivyHttpHandler.Reconcile",
-			err.Error(),
-		)
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		default:
+			err = rapperror.ErrUnprocessableEntity(
+				rapperror.AppErrorCodeUnprocessableEntity,
+				"invalid body",
+				"ErpPrivyHttpHandler.Reconcile",
+				nil,
+			)
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		return
+			response = rresponser.NewResponserError(err)
+			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			return
+		}
 	}
 
-	errors := payload.Validate()
+	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
