@@ -26,6 +26,8 @@ type CustomerCommandRepository interface {
 	Command
 	FindOneByIdForUpdate(ctx context.Context, id int64, tx pgx.Tx) (entity.Customer, error)
 	FindByEnterprisePrivyID(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.Customer, error)
+	FindByCRMLeadId(ctx context.Context, crmLeadId string, tx pgx.Tx) (entity.Customer, error)
+
 	FindSubindustry(ctx context.Context, subindustry string, tx pgx.Tx) (entity.Subindustry, error)
 	FindByName(ctx context.Context, customerName string, tx pgx.Tx) (entity.Customer, error)
 	Create(ctx context.Context, Customer entity.Customer, tx pgx.Tx) (int64, error)

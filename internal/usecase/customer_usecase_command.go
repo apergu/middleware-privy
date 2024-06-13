@@ -36,6 +36,32 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 
 	tmNow := time.Now().UnixNano() / 1000000
 
+	respCRMLead, _ := r.custRepo.FindByCRMLeadId(ctx, cust.CRMLeadID, tx)
+
+	defer func() {
+		if p := recover(); p != nil {
+			r.custRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.custRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.custRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
+
+	if respCRMLead.CRMLeadID != "" {
+		return 0, nil, rapperror.ErrConflict(
+			"",
+			"Customer with CRM Lead ID "+cust.CRMLeadID+" already Won",
+			"CustomerCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
+
 	fmt.Println("respCust FIND NAME")
 	respCust, _ := r.custRepo.FindByName(ctx, cust.CustomerName, tx)
 
