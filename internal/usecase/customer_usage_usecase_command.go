@@ -112,10 +112,6 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		channel = channels[0]
 	}
 
-	println("customer", customer.CustomerName)
-	println("merchant", merchant.MerchantName)
-	println("channel", channel.ChannelName)
-
 	// custPrivyUsgProdId, _ := strconv.Atoi(cust.ProductID)
 
 	custPrivyUsgParam := credential.CustomerUsageParam{

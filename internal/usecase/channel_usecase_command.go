@@ -36,13 +36,28 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 		return 0, nil, err
 	}
 
+	defer func() {
+		if p := recover(); p != nil {
+			r.channelRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.channelRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.channelRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
+
+	fmt.Println("merchantsFIND2")
 	tmNow := time.Now().UnixNano() / 1000000
 
 	merchant_filter := repository.MerchantFilter{
 		MerchantID: &channelParam.MerchantID,
 	}
 	merchants, err := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
-	fmt.Println("merchantsFIND", merchants)
 
 	if len(merchants) == 0 {
 		return 0, nil, rapperror.ErrNotFound(
@@ -52,6 +67,21 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 			nil,
 		)
 	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			r.channelRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.channelRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.channelRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
 
 	fmt.Println("respCust FIND NAME")
 	respCust, _ := r.channelRepo.FindByName(ctx, channelParam.ChannelName, tx)
@@ -64,6 +94,21 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 			nil,
 		)
 	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			r.channelRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.channelRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.channelRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
 
 	fmt.Println("respCust FIND NAME")
 	respCust2, _ := r.channelRepo.FindByChannelID(ctx, channelParam.ChannelID, tx)

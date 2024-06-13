@@ -59,6 +59,7 @@ func (h MerchantHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 	fmt.Println("err =>", err)
+	defer r.Body.Close()
 	if err != nil {
 		msg := err.Error()
 		re := regexp.MustCompile(`Merchant\.(\w+)`)
@@ -161,13 +162,16 @@ func (h MerchantHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
+	println("payload =>", payload.Address)
 	roleId, meta, err := h.Command.Create(ctx, payload)
+
 	if err != nil {
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}
+
+	defer r.Body.Close()
 
 	response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Merchant successfully created", map[string]interface{}{
 		"roleId": roleId,

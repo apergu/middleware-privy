@@ -165,6 +165,7 @@ func (c *MerchantRepositoryPostgre) queryOneFind(ctx context.Context, cmd sqlcom
 			"MerchantRepositoryPostgre.queryOneFind.Scan",
 		)
 	}
+	defer fmt.Println("data", data)
 
 	return data, nil
 }
