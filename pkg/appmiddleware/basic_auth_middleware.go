@@ -28,7 +28,7 @@ func basicAuthHandler(next http.Handler, basicUsername, basicPassword string, de
 		if !ok {
 			err := rapperror.ErrUnauthorized(
 				"",
-				"Invalid basic auth",
+				"Authorization is required",
 				"",
 				nil,
 			)
