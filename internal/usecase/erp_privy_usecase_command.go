@@ -186,7 +186,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) Reconcile(ctx context.Context, param mod
 			"",
 			"Something went wrong when Reconcile"+err.Error(),
 			"ReconcileCommandUsecaseGeneral.Reconcile",
-			"konz",
+			res,
 		)
 	}
 

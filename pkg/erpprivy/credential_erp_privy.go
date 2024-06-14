@@ -10,7 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanceParam) (TopUpBalanceResponse, error) {
+func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanceParam) (interface{}, error) {
 	TopUpBalanceURL := c.host + EndpointTopUpBalance
 
 	body := new(bytes.Buffer)
@@ -45,7 +45,7 @@ func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanc
 		return TopUpBalanceResponse{}, err
 	}
 
-	if res.StatusCode != 200 {
+	if res.StatusCode != 200 && res.StatusCode != 208 {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -119,7 +119,7 @@ func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanc
 	return resp, nil
 }
 
-func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTopUpStatusParam) (CheckTopUpStatusResponse, error) {
+func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTopUpStatusParam) (interface{}, error) {
 	checkTopUpStatusURL := c.host + EndpointCheckTopUpStatus
 
 	body := new(bytes.Buffer)
@@ -154,7 +154,7 @@ func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTo
 		return CheckTopUpStatusResponse{}, err
 	}
 
-	if res.StatusCode != 200 {
+	if res.StatusCode != 200 && res.StatusCode != 208 {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -228,7 +228,7 @@ func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTo
 	return resp, nil
 }
 
-func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceParam) (VoidBalanceResponse, error) {
+func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceParam) (interface{}, error) {
 	VoidBalanceURL := c.host + EndpointVoidBalance
 
 	body := new(bytes.Buffer)
@@ -263,7 +263,7 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 		return VoidBalanceResponse{}, err
 	}
 
-	if res.StatusCode != 200 {
+	if res.StatusCode != 200 && res.StatusCode != 208 {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -337,7 +337,7 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 	return resp, nil
 }
 
-func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (AdendumResponse, error) {
+func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (interface{}, error) {
 	AdendumURL := c.host + EndpointAdendum
 
 	body := new(bytes.Buffer)
@@ -372,7 +372,7 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (A
 		return AdendumResponse{}, err
 	}
 
-	if res.StatusCode != 200 {
+	if res.StatusCode != 200 && res.StatusCode != 208 {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -446,7 +446,7 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (A
 	return resp, nil
 }
 
-func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam) (ReconcileResponse, error) {
+func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam) (interface{}, error) {
 	ReconcileURL := c.host + EndpointReconcile
 
 	body := new(bytes.Buffer)
@@ -481,7 +481,7 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 		return ReconcileResponse{}, err
 	}
 
-	if res.StatusCode != 200 {
+	if res.StatusCode != 200 && res.StatusCode != 208 {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -492,7 +492,7 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 				}).
 				Error(err)
 
-			return ReconcileResponse{}, errors.New("request erp privy unauthorized")
+			return resp, errors.New("request erp privy unauthorized")
 		case 422:
 			var resp ReconcileBadRequestResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
@@ -506,14 +506,14 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 			}
 
 			if resp.Errors == nil {
-				return ReconcileResponse{}, errors.New(resp.Message)
+				return resp, errors.New(resp.Message)
 			}
 
 			for _, v := range resp.Errors {
 				strErr += v.Field + " " + v.Description + " "
 			}
 
-			return ReconcileResponse{}, errors.New(strErr)
+			return resp, errors.New(strErr)
 		default:
 			var resp ReconcileFailedResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
@@ -536,7 +536,7 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 				}).
 				Error(resp)
 
-			return ReconcileResponse{}, errors.New("something went wrong")
+			return resp, errors.New("something went wrong")
 		}
 	}
 
