@@ -8,7 +8,6 @@ import (
 	"middleware/internal/helper"
 	"middleware/internal/model"
 
-	"github.com/sirupsen/logrus"
 	"gitlab.com/rteja-library3/rapperror"
 )
 
@@ -22,7 +21,7 @@ func NewErpPrivyCommandUsecaseGeneral(prop ErpPrivyUsecaseProperty) *ErpPrivyCom
 	}
 }
 
-func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param model.TopUpBalance) (interface{}, error) {
+func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param model.TopUpBalance) (map[string]interface{}, interface{}, error) {
 	input := erpprivy.TopUpBalanceParam{
 		TopUPID:         param.TopUPID,
 		EnterpriseId:    param.EnterpriseId,
@@ -41,36 +40,32 @@ func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param 
 	endPeriodDate, _ := time.Parse(time.RFC3339, param.EndPeriodDate)
 
 	if startPeriodDate.After(endPeriodDate) {
-		return nil, rapperror.ErrBadRequest(
+		err := rapperror.ErrUnprocessableEntity(
 			"",
 			"Start Period Date must be before End Period Date",
 			"TopUpBalanceCommandUsecaseGeneral.TopUpBalance",
 			nil,
 		)
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), nil)
+		return response, nil, err
 	}
 
 	res, err := r.ErpPrivyCred.TopUpBalance(ctx, input)
 	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "ErpPrivyCommandUsecaseGeneral.Create",
-				"src":   "topupCred.TopUpBalance",
-				"param": param,
-			}).
-			Error(err)
-
-		return nil, rapperror.ErrInternalServerError(
+		err := rapperror.ErrUnprocessableEntity(
 			"",
-			"Something went wrong when TopUpBalance"+err.Error(),
-			"TopUpBalanceCommandUsecaseGeneral.TopUpBalance",
+			"Start Period Date must be before End Period Date",
+			"CheckTopUpStatusCommandUsecaseGeneral.CheckTopUpStatus",
 			nil,
 		)
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), nil)
+		return response, nil, err
 	}
 
-	return res, nil
+	return map[string]interface{}{}, res, nil
 }
 
-func (r *ErpPrivyCommandUsecaseGeneral) CheckTopUpStatus(ctx context.Context, param model.CheckTopUpStatus) (interface{}, error) {
+func (r *ErpPrivyCommandUsecaseGeneral) CheckTopUpStatus(ctx context.Context, param model.CheckTopUpStatus) (map[string]interface{}, interface{}, error) {
 	input := erpprivy.CheckTopUpStatusParam{
 		TopUPID: param.TopUPID,
 		Event:   param.Event,
@@ -78,23 +73,17 @@ func (r *ErpPrivyCommandUsecaseGeneral) CheckTopUpStatus(ctx context.Context, pa
 
 	res, err := r.ErpPrivyCred.CheckTopUpStatus(ctx, input)
 	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "ErpPrivyCommandUsecaseGeneral.Create",
-				"src":   "topupCred.CreateTopup",
-				"param": param,
-			}).
-			Error(err)
-
-		return nil, rapperror.ErrInternalServerError(
+		err := rapperror.ErrUnprocessableEntity(
 			"",
-			"Something went wrong when CheckTopUpStatus"+err.Error(),
+			"Start Period Date must be before End Period Date",
 			"CheckTopUpStatusCommandUsecaseGeneral.CheckTopUpStatus",
 			nil,
 		)
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), nil)
+		return response, nil, err
 	}
 
-	return res, nil
+	return map[string]interface{}{}, res, nil
 }
 
 func (r *ErpPrivyCommandUsecaseGeneral) VoidBalance(ctx context.Context, param model.VoidBalance) (map[string]interface{}, interface{}, error) {

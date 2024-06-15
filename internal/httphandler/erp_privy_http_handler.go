@@ -13,7 +13,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"gitlab.com/rteja-library3/rapperror"
 	"gitlab.com/rteja-library3/rdecoder"
-	"gitlab.com/rteja-library3/rresponser"
 )
 
 type ErpPrivyHttpHandler struct {
@@ -43,7 +42,6 @@ func NewErpPrivyHttpHandler(prop HTTPHandlerProperty) http.Handler {
 }
 
 func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
 	var err error
 
 	var ctx = r.Context()
@@ -132,24 +130,14 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	res, err := h.Command.TopUpBalance(ctx, payload)
-
+	res, resPrivy, err := h.Command.TopUpBalance(ctx, payload)
 	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to check top up balance",
-				"at":     "ErpPrivyHttpHandler.TopUpBalance",
-				"src":    "h.Command.TopUpBalance",
-			}).
-			Error(err)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "CheckTopUpStatus successfully", nil, res)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "Reconcile successfully created", resPrivy)
+	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
 }
 
 func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Request) {
@@ -241,20 +229,14 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	res, err := h.Command.CheckTopUpStatus(ctx, payload)
+	res, resPrivy, err := h.Command.CheckTopUpStatus(ctx, payload)
 	if err != nil {
-		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}
 
-	responseOk, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Channel successfully created", map[string]interface{}{
-		"code":    200,
-		"data":    res,
-		"message": "CheckTopUpStatus successfully",
-		"success": true,
-	})
-	helper.WriteJSONResponse(w, responseOk, http.StatusCreated)
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "Reconcile successfully created", resPrivy)
+	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
 }
 
 func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request) {
