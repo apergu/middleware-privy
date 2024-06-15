@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/sirupsen/logrus"
+	"gitlab.com/rteja-library3/rapperror"
 )
 
 func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanceParam) (interface{}, error) {
@@ -260,7 +261,14 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 			}).
 			Error(err)
 
-		return VoidBalanceResponse{}, err
+		errs := rapperror.ErrInternalServerError(
+			"",
+			"failed to request erp privy void balance",
+			"CredentialERPPrivy.VoidBalance",
+			err.Error(),
+		)
+
+		return err.Error(), errs
 	}
 
 	if res.StatusCode != 200 && res.StatusCode != 208 {
@@ -274,7 +282,27 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 				}).
 				Error(err)
 
-			return VoidBalanceResponse{}, errors.New("request erp privy unauthorized")
+			var resp VoidBalanceFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"action": "DecodeVoidBalanceFailedResponse401",
+						"at":     "ERPPrivy.VoidBalance",
+						"src":    "VoidBalanceBadRequestResponse{}",
+					}).
+					Error(err)
+				return VoidBalanceResponse{}, err
+			}
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy unauthorized",
+				"CredentialERPPrivy.Adendum",
+				"Unauthorized",
+			)
+
+			return resp, err
 		case 422:
 			var resp VoidBalanceBadRequestResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
@@ -295,7 +323,14 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 				strErr += v.Field + " " + v.Description + " "
 			}
 
-			return VoidBalanceResponse{}, errors.New(strErr)
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy validation failed",
+				"CredentialERPPrivy.VoidBalance",
+				strErr,
+			)
+
+			return resp, err
 		default:
 			var resp VoidBalanceFailedResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
@@ -369,7 +404,14 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (i
 			}).
 			Error(err)
 
-		return AdendumResponse{}, err
+		errs := rapperror.ErrInternalServerError(
+			"",
+			"failed to request erp privy adendum",
+			"CredentialERPPrivy.Adendum",
+			err.Error(),
+		)
+
+		return err.Error(), errs
 	}
 
 	if res.StatusCode != 200 && res.StatusCode != 208 {
@@ -383,7 +425,27 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (i
 				}).
 				Error(err)
 
-			return AdendumResponse{}, errors.New("request erp privy unauthorized")
+			var resp AdendumFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"action": "DecodeAdendumFailedResponse401",
+						"at":     "ERPPrivy.Adendum",
+						"src":    "AdendumBadRequestResponse{}",
+					}).
+					Error(err)
+				return AdendumResponse{}, err
+			}
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy unauthorized",
+				"CredentialERPPrivy.Adendum",
+				"Unauthorized",
+			)
+
+			return resp, err
 		case 422:
 			var resp AdendumBadRequestResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
@@ -404,7 +466,14 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (i
 				strErr += v.Field + " " + v.Description + " "
 			}
 
-			return AdendumResponse{}, errors.New(strErr)
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy validation failed",
+				"CredentialERPPrivy.Adendum",
+				strErr,
+			)
+
+			return resp, err
 		default:
 			var resp AdendumFailedResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
@@ -478,7 +547,14 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 			}).
 			Error(err)
 
-		return ReconcileResponse{}, err
+		errs := rapperror.ErrInternalServerError(
+			"",
+			"failed to request erp privy reconcile",
+			"CredentialERPPrivy.Reconcile",
+			err.Error(),
+		)
+
+		return err.Error(), errs
 	}
 
 	if res.StatusCode != 200 && res.StatusCode != 208 {
@@ -491,8 +567,27 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 					"src": "ReconcileFailedResponse{}",
 				}).
 				Error(err)
+			var resp ReconcileFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"action": "DecodeReconcileFailedResponse",
+						"at":     "ERPPrivy.Reconcile",
+						"src":    "ReconcileBadRequestResponse{}",
+					}).
+					Error(err)
+				return ReconcileResponse{}, err
+			}
 
-			return resp, errors.New("request erp privy unauthorized")
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy unauthorized",
+				"CredentialERPPrivy.Reconcile",
+				"Unauthorized",
+			)
+
+			return resp, err
 		case 422:
 			var resp ReconcileBadRequestResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
@@ -513,7 +608,14 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 				strErr += v.Field + " " + v.Description + " "
 			}
 
-			return resp, errors.New(strErr)
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy validation failed",
+				"CredentialERPPrivy.Reconcile",
+				strErr,
+			)
+
+			return resp, err
 		default:
 			var resp ReconcileFailedResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
@@ -536,7 +638,14 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 				}).
 				Error(resp)
 
-			return resp, errors.New("something went wrong")
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy unauthorized",
+				"CredentialERPPrivy.Reconcile",
+				resp,
+			)
+
+			return resp, err
 		}
 	}
 

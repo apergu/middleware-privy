@@ -3,6 +3,7 @@ package httphandler
 import (
 	"encoding/json"
 	"fmt"
+	"middleware/internal/helper"
 	"middleware/internal/model"
 	"middleware/internal/usecase"
 	"middleware/pkg/pkgvalidator"
@@ -75,10 +76,6 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 					nil,
 				)
 			}
-
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			return
 		default:
 			err = rapperror.ErrUnprocessableEntity(
 				rapperror.AppErrorCodeUnprocessableEntity,
@@ -87,10 +84,12 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 				nil,
 			)
 
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			return
 		}
+
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+
+		return
 	}
 
 	errors := pkgvalidator.Validate(payload)
@@ -154,7 +153,6 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 }
 
 func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
 	var err error
 
 	var ctx = r.Context()
@@ -188,9 +186,6 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 				)
 			}
 
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			return
 		default:
 			err = rapperror.ErrUnprocessableEntity(
 				rapperror.AppErrorCodeUnprocessableEntity,
@@ -198,11 +193,12 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 				"ErpPrivyHttpHandler.CheckTopUpStatus",
 				nil,
 			)
-
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			return
 		}
+
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+
+		return
 	}
 
 	errors := pkgvalidator.Validate(payload)
@@ -246,34 +242,22 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 	}
 
 	res, err := h.Command.CheckTopUpStatus(ctx, payload)
-
 	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to check top up status",
-				"at":     "ErpPrivyHttpHandler.CheckTopUpStatus",
-				"src":    "h.Command.CheckTopUpStatus",
-			}).
-			Error(err)
-
-		err = rapperror.ErrInternalServerError(
-			rapperror.AppErrorCodeInternalServerError,
-			"Internal server error",
-			"ErpPrivyHttpHandler.CheckTopUpStatus",
-			nil,
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "CheckTopUpStatus successfully", nil, res)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Channel successfully created", map[string]interface{}{
+		"code":    200,
+		"data":    res,
+		"message": "CheckTopUpStatus successfully",
+		"success": true,
+	})
+	helper.WriteJSONResponse(w, responseOk, http.StatusCreated)
 }
 
 func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
 	var err error
 
 	var ctx = r.Context()
@@ -307,9 +291,6 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 				)
 			}
 
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			return
 		default:
 			err = rapperror.ErrUnprocessableEntity(
 				rapperror.AppErrorCodeUnprocessableEntity,
@@ -318,10 +299,12 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 				nil,
 			)
 
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			return
 		}
+
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+
+		return
 	}
 
 	errors := pkgvalidator.Validate(payload)
@@ -364,34 +347,23 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	res, err := h.Command.VoidBalance(ctx, payload)
+	res, resPrivy, err := h.Command.VoidBalance(ctx, payload)
 	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to check top up status",
-				"at":     "ErpPrivyHttpHandler.VoidBalance",
-				"src":    "h.Command.CheckTopUpStatus",
-			}).
-			Error(err)
-
-		err = rapperror.ErrInternalServerError(
-			rapperror.AppErrorCodeInternalServerError,
-			"Internal server error",
-			"ErpPrivyHttpHandler.VoidBalance",
-			nil,
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "VoidBalance successfully", nil, res)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	if err != nil {
+		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
+		return
+	}
+
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "VoidBalance successfully", resPrivy)
+	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
 }
 
 func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
 	var err error
 
 	var ctx = r.Context()
@@ -425,9 +397,6 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 				)
 			}
 
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			return
 		default:
 			err = rapperror.ErrUnprocessableEntity(
 				rapperror.AppErrorCodeUnprocessableEntity,
@@ -436,10 +405,12 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 				nil,
 			)
 
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			return
 		}
+
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+
+		return
 	}
 
 	errors := pkgvalidator.Validate(payload)
@@ -482,34 +453,23 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.Command.Adendum(ctx, payload)
+	res, resPrivy, err := h.Command.Adendum(ctx, payload)
 	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to check adendum",
-				"at":     "ErpPrivyHttpHandler.Adendum",
-				"src":    "h.Command.CheckTopUpStatus",
-			}).
-			Error(err)
-
-		err = rapperror.ErrInternalServerError(
-			rapperror.AppErrorCodeInternalServerError,
-			"Internal server error",
-			"ErpPrivyHttpHandler.Adendum",
-			err.Error(),
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "Adendum successfully", nil, res)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	if err != nil {
+		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
+		return
+	}
+
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "Adendum successfully created", resPrivy)
+	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
 }
 
 func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
 	var err error
 
 	var ctx = r.Context()
@@ -543,9 +503,6 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 				)
 			}
 
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			return
 		default:
 			err = rapperror.ErrUnprocessableEntity(
 				rapperror.AppErrorCodeUnprocessableEntity,
@@ -554,10 +511,12 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 				nil,
 			)
 
-			response = rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			return
 		}
+
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+
+		return
 	}
 
 	errors := pkgvalidator.Validate(payload)
@@ -600,28 +559,12 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.Command.Reconcile(ctx, payload)
+	res, respPrivy, err := h.Command.Reconcile(ctx, payload)
 	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to check reconcile",
-				"at":     "ErpPrivyHttpHandler.Reconcile",
-				"src":    "h.Command.CheckTopUpStatus",
-			}).
-			Error(err)
-
-		err = rapperror.ErrInternalServerError(
-			rapperror.AppErrorCodeInternalServerError,
-			"Internal server error",
-			"ErpPrivyHttpHandler.Reconcile",
-			err.Error(),
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "Reconcile successfully", nil, res)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "Reconcile successfully created", respPrivy)
+	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
 }
