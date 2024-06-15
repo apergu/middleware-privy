@@ -532,9 +532,9 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 	req, _ := http.NewRequest(http.MethodPatch, ReconcileURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Lang", "en")
-	req.Header.Set("X-Request-Id", c.requestid)
-	req.Header.Set("Application-Key", c.applicationkey)
-	req.SetBasicAuth(c.username, c.password)
+	// req.Header.Set("X-Request-Id", c.requestid)
+	// req.Header.Set("Application-Key", c.applicationkey)
+	// req.SetBasicAuth(c.username, c.password)
 
 	resp := ReconcileResponse{}
 	http := &http.Client{}
