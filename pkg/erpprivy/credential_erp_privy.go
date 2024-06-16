@@ -9,7 +9,12 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"gitlab.com/rteja-library3/rapperror"
+	"golang.org/x/exp/slices"
 )
+
+func defaultSuccessCode() []int {
+	return []int{200, 208, 201}
+}
 
 func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanceParam) (interface{}, error) {
 	TopUpBalanceURL := c.host + EndpointTopUpBalance
@@ -755,6 +760,155 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 			Error(err)
 
 		return ReconcileResponse{}, err
+	}
+
+	return resp, nil
+}
+
+func (c *CredentialERPPrivy) TransferBalanceERP(ctx context.Context, param TransferBalanceERPParam) (interface{}, error) {
+	TransferBalanceURL := c.host + EndpointTransferBalance
+
+	body := new(bytes.Buffer)
+	_ = json.NewEncoder(body).Encode(param)
+
+	logrus.
+		WithFields(logrus.Fields{
+			"at":   "ERPPrivy.TransferBalance",
+			"src":  "TransferBalance{}.beforeDo",
+			"host": TransferBalanceURL,
+		}).
+		Info(body.String())
+
+	req, _ := http.NewRequest(http.MethodPost, TransferBalanceURL, body)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Lang", "en")
+	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("Application-Key", c.applicationkey)
+	req.SetBasicAuth(c.username, c.password)
+
+	resp := TransferBalanceERPResponse{}
+	http := &http.Client{}
+	res, err := http.Do(req)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ERPPrivy.TransferBalanceERP",
+				"src": "TransferBalanceERP{}",
+			}).
+			Error(err)
+
+		errs := rapperror.ErrInternalServerError(
+			"",
+			"failed to request erp privy TransferBalanceERP",
+			"CredentialERPPrivy.TransferBalanceERP",
+			err.Error(),
+		)
+
+		return err.Error(), errs
+	}
+
+	if slices.Contains(defaultSuccessCode(), res.StatusCode) {
+		var strErr string
+		switch res.StatusCode {
+		case 401:
+			logrus.
+				WithFields(logrus.Fields{
+					"at":  "ERPPrivy.TransferBalanceERP",
+					"src": "TransferBalanceERPFailedResponse{}",
+				}).
+				Error(err)
+			var resp TransferBalanceERPFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"action": "DecodeTransferBalanceERPFailedResponse",
+						"at":     "ERPPrivy.TransferBalanceERP",
+						"src":    "TransferBalanceERPBadRequestResponse{}",
+					}).
+					Error(err)
+				return TransferBalanceERPResponse{}, err
+			}
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy unauthorized",
+				"CredentialERPPrivy.TransferBalanceERP",
+				"Unauthorized",
+			)
+
+			return resp, err
+		case 422:
+			var resp TransferBalanceERPBadRequestResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"at":  "ERPPrivy.TransferBalanceERP",
+						"src": "TransferBalanceERPBadRequestResponse{}",
+					}).
+					Error(err)
+			}
+
+			if resp.Errors == nil {
+				return resp, errors.New(resp.Message)
+			}
+
+			for _, v := range resp.Errors {
+				strErr += v.Field + " " + v.Description + " "
+			}
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy validation failed",
+				"CredentialERPPrivy.TransferBalanceERP",
+				strErr,
+			)
+
+			return resp, err
+		default:
+			var resp TransferBalanceERPFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"action": "DecodeTransferBalanceERPFailedResponse",
+						"at":     "ERPPrivy.TransferBalanceERP",
+						"src":    "TransferBalanceERPBadRequestResponse{}",
+					}).
+					Error(err)
+				return TransferBalanceERPResponse{}, err
+			}
+
+			logrus.
+				WithFields(logrus.Fields{
+					"action": "GetResponseNot200Privy",
+					"at":     "ERPPrivy.TransferBalanceERP",
+					"src":    "TransferBalanceERPBadRequestResponse{}",
+				}).
+				Error(resp)
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy TransferBalance unknown code",
+				"CredentialERPPrivy.TransferBalanceERP",
+				resp,
+			)
+
+			return resp, err
+		}
+	}
+
+	err = json.NewDecoder(res.Body).Decode(&resp)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ERPPrivy.TransferBalanceERP",
+				"src": "TransferBalanceERPResponse{}",
+			}).
+			Error(err)
+
+		return TransferBalanceERPResponse{}, err
 	}
 
 	return resp, nil

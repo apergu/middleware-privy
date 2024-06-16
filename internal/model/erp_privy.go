@@ -36,3 +36,17 @@ type Reconcile struct {
 	Price           int    `json:"price"`
 	Qty             int    `json:"qty"`
 }
+
+type TransferBalanceERP struct {
+	Origin struct {
+		TopUPID   string `json:"topup_id" validate:"required,formatTopUpID"`
+		ServiceID string `json:"service_id" validate:"required"`
+	} `json:"origin"`
+	Destinations []struct {
+		TopUPID      string `json:"topup_id" validate:"required,formatTopUpID"`
+		EnterpriseId string `json:"enterprise_id" validate:"required"`
+		MerchantId   string `json:"merchant_id"`
+		ChannelId    string `json:"channel_id"`
+		Qty          int    `json:"qty" validate:"required,min=1,max=2147483647"`
+	} `json:"destinations" validate:"required,dive"`
+}

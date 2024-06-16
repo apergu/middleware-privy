@@ -37,6 +37,7 @@ func NewErpPrivyHttpHandler(prop HTTPHandlerProperty) http.Handler {
 	r.Post("/void-balance", handler.VoidBalance)
 	r.Post("/topup-adendum", handler.Adendum)
 	r.Post("/topup-reconcile", handler.Reconcile)
+	r.Post("/transfer-balance", handler.TransferBalance)
 
 	return r
 }
@@ -548,5 +549,105 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "Reconcile successfully created", respPrivy)
+	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
+}
+
+func (h ErpPrivyHttpHandler) TransferBalance(w http.ResponseWriter, r *http.Request) {
+	var err error
+
+	var ctx = r.Context()
+
+	var payload model.TransferBalanceERP
+
+	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"action": "try to decode data",
+				"at":     "ErpPrivyHttpHandler.TransferBalance",
+				"src":    "rdecoder.DecodeRest",
+			}).
+			Error(err)
+		switch jsonerr := err.(type) {
+		case *json.UnmarshalTypeError:
+			if jsonerr.Field == "" {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					"Invalid body",
+					"ErpPrivyHttpHandler.TransferBalance",
+					nil,
+				)
+			} else {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					fmt.Sprintf(jsonerr.Field+" must be a "+jsonerr.Type.String()),
+					"ErpPrivyHttpHandler.TransferBalance",
+					nil,
+				)
+			}
+
+		default:
+			err = rapperror.ErrUnprocessableEntity(
+				rapperror.AppErrorCodeUnprocessableEntity,
+				"invalid body",
+				"ErpPrivyHttpHandler.TransferBalance",
+				nil,
+			)
+
+		}
+
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+
+		return
+	}
+
+	errors := pkgvalidator.Validate(payload)
+	if len(errors) > 0 {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":     "ErpPrivyHttpHandler.TransferBalance",
+				"src":    "payload.Validate",
+				"params": payload,
+			}).
+			Error(err)
+
+		errorResponse := map[string]interface{}{
+			"code":    422,
+			"success": false,
+			"message": "Validation failed",
+			"errors":  errors,
+		}
+
+		// Convert error response to JSON
+		responseJSON, marshalErr := json.Marshal(errorResponse)
+		if marshalErr != nil {
+			// Handle JSON marshaling error
+			fmt.Println("Error encoding JSON:", marshalErr)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		// Set the response headers
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnprocessableEntity) // Set the appropriate HTTP status code
+
+		// Write the JSON response to the client
+		_, writeErr := w.Write(responseJSON)
+		if writeErr != nil {
+			// Handle write error
+			fmt.Println("Error writing response:", writeErr)
+		}
+
+		return
+	}
+
+	res, respPrivy, err := h.Command.TransferBalance(ctx, payload)
+	if err != nil {
+		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
+		return
+	}
+
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "TransferBalance successfully created", respPrivy)
 	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
 }

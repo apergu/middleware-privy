@@ -162,3 +162,27 @@ func (r *ErpPrivyCommandUsecaseGeneral) Reconcile(ctx context.Context, param mod
 
 	return map[string]interface{}{}, res, nil
 }
+
+func (r *ErpPrivyCommandUsecaseGeneral) TransferBalance(ctx context.Context, param model.TransferBalanceERP) (map[string]interface{}, interface{}, error) {
+	input := erpprivy.TransferBalanceERPParam{
+		Origin: struct {
+			TopUPID   string "json:\"topup_id\""
+			ServiceID string "json:\"service_id\""
+		}(param.Origin),
+		Destinations: []struct {
+			TopUPID      string "json:\"topup_id\""
+			EnterpriseId string "json:\"enterprise_id\""
+			MerchantId   string "json:\"merchant_id\""
+			ChannelId    string "json:\"channel_id\""
+			Qty          int    "json:\"qty\""
+		}(param.Destinations),
+	}
+
+	res, err := r.ErpPrivyCred.TransferBalanceERP(ctx, input)
+	if err != nil {
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), res)
+		return response, nil, err
+	}
+
+	return map[string]interface{}{}, res, nil
+}

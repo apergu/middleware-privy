@@ -143,3 +143,42 @@ type ReconcileBadRequestResponse struct {
 	} `json:"errors"`
 	Message string `json:"message"`
 }
+
+type TransferBalanceERPParam struct {
+	Origin struct {
+		TopUPID   string `json:"topup_id"`
+		ServiceID string `json:"service_id"`
+	} `json:"origin"`
+	Destinations []struct {
+		TopUPID      string `json:"topup_id"`
+		EnterpriseId string `json:"enterprise_id"`
+		MerchantId   string `json:"merchant_id"`
+		ChannelId    string `json:"channel_id"`
+		Qty          int    `json:"qty"`
+	} `json:"destinations"`
+}
+
+type TransferBalanceERPResponse struct {
+	Code    int    `json:"code"`
+	Data    int    `json:"data"`
+	Message string `json:"message"`
+}
+
+type TransferBalanceERPAlreadySuccessResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
+type TransferBalanceERPFailedResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
+type TransferBalanceERPBadRequestResponse struct {
+	Code   int `json:"code"`
+	Errors []struct {
+		Field       string `json:"field"`
+		Description string `json:"description"`
+	} `json:"errors"`
+	Message string `json:"message"`
+}
