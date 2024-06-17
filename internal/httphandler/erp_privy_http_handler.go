@@ -208,7 +208,7 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 	if xRequestId == "" {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":  "ErpPrivyHttpHandler.TopUpBalance",
+				"at":  "ErpPrivyHttpHandler.CheckTopUpStatus",
 				"src": "payload.X-Request-Id",
 			}).Error(errors.New("please provide X-Request-Id in header"))
 
@@ -321,7 +321,7 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 	if xRequestId == "" {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":  "ErpPrivyHttpHandler.TopUpBalance",
+				"at":  "ErpPrivyHttpHandler.VoidBalance",
 				"src": "payload.X-Request-Id",
 			}).Error(errors.New("please provide X-Request-Id in header"))
 
@@ -371,12 +371,6 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 	}
 
 	res, resPrivy, err := h.Command.VoidBalance(ctx, payload, xRequestId)
-	if err != nil {
-		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-		return
-	}
-
 	if err != nil {
 		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
@@ -440,7 +434,7 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 	if xRequestId == "" {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":  "ErpPrivyHttpHandler.TopUpBalance",
+				"at":  "ErpPrivyHttpHandler.Adendum",
 				"src": "payload.X-Request-Id",
 			}).Error(errors.New("please provide X-Request-Id in header"))
 
@@ -491,8 +485,7 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 
 	res, resPrivy, err := h.Command.Adendum(ctx, payload, xRequestId)
 	if err != nil {
-		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}
 
@@ -559,7 +552,7 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 	if xRequestId == "" {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":  "ErpPrivyHttpHandler.TopUpBalance",
+				"at":  "ErpPrivyHttpHandler.Reconcile",
 				"src": "payload.X-Request-Id",
 			}).Error(errors.New("please provide X-Request-Id in header"))
 
@@ -672,7 +665,7 @@ func (h ErpPrivyHttpHandler) TransferBalance(w http.ResponseWriter, r *http.Requ
 	if xRequestId == "" {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":  "ErpPrivyHttpHandler.TopUpBalance",
+				"at":  "ErpPrivyHttpHandler.TransferBalance",
 				"src": "payload.X-Request-Id",
 			}).Error(errors.New("please provide X-Request-Id in header"))
 

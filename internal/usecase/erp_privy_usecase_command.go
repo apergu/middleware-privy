@@ -22,22 +22,11 @@ func NewErpPrivyCommandUsecaseGeneral(prop ErpPrivyUsecaseProperty) *ErpPrivyCom
 }
 
 func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param model.TopUpBalance, xrequestid string) (map[string]interface{}, interface{}, error) {
-	input := erpprivy.TopUpBalanceParam{
-		TopUPID:         param.TopUPID,
-		EnterpriseId:    param.EnterpriseId,
-		MerchantId:      param.MerchantId,
-		ChannelId:       param.ChannelId,
-		ServiceId:       param.ServiceId,
-		PostPaid:        param.PostPaid,
-		Qty:             param.Qty,
-		UnitPrice:       param.UnitPrice,
-		StartPeriodDate: param.StartPeriodDate,
-		EndPeriodDate:   param.EndPeriodDate,
-		TransactionDate: param.TransactionDate,
-	}
+	startPeriodDate, _ := time.Parse("02/01/2006", param.StartPeriodDate)
+	endPeriodDate, _ := time.Parse("02/01/2006", param.EndPeriodDate)
+	transDate, _ := time.Parse("02/01/2006", param.TransactionDate)
 
-	startPeriodDate, _ := time.Parse(time.RFC3339, param.StartPeriodDate)
-	endPeriodDate, _ := time.Parse(time.RFC3339, param.EndPeriodDate)
+	now := time.Now()
 
 	if startPeriodDate.After(endPeriodDate) {
 		err := rapperror.ErrUnprocessableEntity(
@@ -50,15 +39,27 @@ func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param 
 		return response, nil, err
 	}
 
+	startPeriodDate = time.Date(startPeriodDate.Year(), startPeriodDate.Month(), startPeriodDate.Day(), now.Hour(), now.Minute(), now.Second(), 0, time.FixedZone("WIB", 7*60*60))
+	endPeriodDate = time.Date(endPeriodDate.Year(), endPeriodDate.Month(), endPeriodDate.Day(), now.Hour(), now.Minute(), now.Second(), 0, time.FixedZone("WIB", 7*60*60))
+	transDate = time.Date(transDate.Year(), transDate.Month(), transDate.Day(), now.Hour(), now.Minute(), now.Second(), 0, time.FixedZone("WIB", 7*60*60))
+
+	input := erpprivy.TopUpBalanceParam{
+		TopUPID:         param.TopUPID,
+		EnterpriseId:    param.EnterpriseId,
+		MerchantId:      param.MerchantId,
+		ChannelId:       param.ChannelId,
+		ServiceId:       param.ServiceId,
+		PostPaid:        param.PostPaid,
+		Qty:             param.Qty,
+		UnitPrice:       param.UnitPrice,
+		StartPeriodDate: startPeriodDate.Format(time.RFC3339),
+		EndPeriodDate:   endPeriodDate.Format(time.RFC3339),
+		TransactionDate: transDate.Format(time.RFC3339),
+	}
+
 	res, err := r.ErpPrivyCred.TopUpBalance(ctx, input, xrequestid)
 	if err != nil {
-		err := rapperror.ErrUnprocessableEntity(
-			"",
-			"Start Period Date must be before End Period Date",
-			"CheckTopUpStatusCommandUsecaseGeneral.CheckTopUpStatus",
-			nil,
-		)
-		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), nil)
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), res)
 		return response, nil, err
 	}
 
@@ -101,15 +102,10 @@ func (r *ErpPrivyCommandUsecaseGeneral) VoidBalance(ctx context.Context, param m
 }
 
 func (r *ErpPrivyCommandUsecaseGeneral) Adendum(ctx context.Context, param model.Adendum, xrequestid string) (map[string]interface{}, interface{}, error) {
-	input := erpprivy.AdendumParam{
-		TopUPID:         param.TopUPID,
-		StartPeriodDate: param.StartPeriodDate,
-		EndPeriodDate:   param.EndPeriodDate,
-		Price:           param.Price,
-	}
+	startPeriodDate, _ := time.Parse("02/01/2006", param.StartPeriodDate)
+	endPeriodDate, _ := time.Parse("02/01/2006", param.EndPeriodDate)
 
-	startPeriodDate, _ := time.Parse(time.RFC3339, param.StartPeriodDate)
-	endPeriodDate, _ := time.Parse(time.RFC3339, param.EndPeriodDate)
+	now := time.Now()
 
 	if startPeriodDate.After(endPeriodDate) {
 		err := rapperror.ErrUnprocessableEntity(
@@ -120,6 +116,16 @@ func (r *ErpPrivyCommandUsecaseGeneral) Adendum(ctx context.Context, param model
 		)
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), nil)
 		return response, nil, err
+	}
+
+	startPeriodDate = time.Date(startPeriodDate.Year(), startPeriodDate.Month(), startPeriodDate.Day(), now.Hour(), now.Minute(), now.Second(), 0, time.FixedZone("WIB", 7*60*60))
+	endPeriodDate = time.Date(endPeriodDate.Year(), endPeriodDate.Month(), endPeriodDate.Day(), now.Hour(), now.Minute(), now.Second(), 0, time.FixedZone("WIB", 7*60*60))
+
+	input := erpprivy.AdendumParam{
+		TopUPID:         param.TopUPID,
+		StartPeriodDate: startPeriodDate.Format(time.RFC3339),
+		EndPeriodDate:   endPeriodDate.Format(time.RFC3339),
+		Price:           param.Price,
 	}
 
 	res, err := r.ErpPrivyCred.Adendum(ctx, input, xrequestid)
@@ -132,16 +138,10 @@ func (r *ErpPrivyCommandUsecaseGeneral) Adendum(ctx context.Context, param model
 }
 
 func (r *ErpPrivyCommandUsecaseGeneral) Reconcile(ctx context.Context, param model.Reconcile, xrequestid string) (map[string]interface{}, interface{}, error) {
-	input := erpprivy.ReconcileParam{
-		TopUPID:         param.TopUPID,
-		StartPeriodDate: param.StartPeriodDate,
-		EndPeriodDate:   param.EndPeriodDate,
-		Price:           param.Price,
-		Qty:             param.Qty,
-	}
+	startPeriodDate, _ := time.Parse("02/01/2006", param.StartPeriodDate)
+	endPeriodDate, _ := time.Parse("02/01/2006", param.EndPeriodDate)
 
-	startPeriodDate, _ := time.Parse(time.RFC3339, param.StartPeriodDate)
-	endPeriodDate, _ := time.Parse(time.RFC3339, param.EndPeriodDate)
+	now := time.Now()
 
 	if startPeriodDate.After(endPeriodDate) {
 		err := rapperror.ErrUnprocessableEntity(
@@ -152,6 +152,17 @@ func (r *ErpPrivyCommandUsecaseGeneral) Reconcile(ctx context.Context, param mod
 		)
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), nil)
 		return response, nil, err
+	}
+
+	startPeriodDate = time.Date(startPeriodDate.Year(), startPeriodDate.Month(), startPeriodDate.Day(), now.Hour(), now.Minute(), now.Second(), 0, time.FixedZone("WIB", 7*60*60))
+	endPeriodDate = time.Date(endPeriodDate.Year(), endPeriodDate.Month(), endPeriodDate.Day(), now.Hour(), now.Minute(), now.Second(), 0, time.FixedZone("WIB", 7*60*60))
+
+	input := erpprivy.ReconcileParam{
+		TopUPID:         param.TopUPID,
+		StartPeriodDate: startPeriodDate.Format(time.RFC3339),
+		EndPeriodDate:   endPeriodDate.Format(time.RFC3339),
+		Price:           param.Price,
+		Qty:             param.Qty,
 	}
 
 	res, err := r.ErpPrivyCred.Reconcile(ctx, input, xrequestid)
