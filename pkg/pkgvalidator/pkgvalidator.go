@@ -2,6 +2,7 @@ package pkgvalidator
 
 import (
 	"regexp"
+	"strings"
 
 	"github.com/go-playground/locales"
 	"github.com/go-playground/locales/en"
@@ -52,9 +53,15 @@ func Validate(c interface{}) []map[string]interface{} {
 	if err != nil {
 		// Validation failed, print the error messages
 		for _, err := range err.(validator.ValidationErrors) {
+			field := err.Field()
+			if strings.Contains(err.Namespace(), "[") || strings.Contains(err.Namespace(), ".") {
+				str := strings.Split(err.Namespace(), ".")[0]
+				field = strings.Replace(err.Namespace(), str+".", "", 1)
+			}
+
 			validationErrors = append(validationErrors,
 				map[string]interface{}{
-					"field":       err.Field(),
+					"field":       field,
 					"description": err.Translate(trans),
 				})
 		}

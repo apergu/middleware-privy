@@ -57,8 +57,7 @@ func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanc
 
 		return err.Error(), errs
 	}
-
-	if res.StatusCode != 200 && res.StatusCode != 208 {
+	if !slices.Contains(defaultSuccessCode(), res.StatusCode) {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -208,7 +207,7 @@ func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTo
 		return err.Error(), errs
 	}
 
-	if res.StatusCode != 200 && res.StatusCode != 208 {
+	if !slices.Contains(defaultSuccessCode(), res.StatusCode) {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -358,7 +357,7 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 		return err.Error(), errs
 	}
 
-	if res.StatusCode != 200 && res.StatusCode != 208 {
+	if !slices.Contains(defaultSuccessCode(), res.StatusCode) {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -508,7 +507,7 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (i
 		return err.Error(), errs
 	}
 
-	if res.StatusCode != 200 && res.StatusCode != 208 {
+	if !slices.Contains(defaultSuccessCode(), res.StatusCode) {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -658,7 +657,7 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 		return err.Error(), errs
 	}
 
-	if res.StatusCode != 200 && res.StatusCode != 208 {
+	if !slices.Contains(defaultSuccessCode(), res.StatusCode) {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -807,7 +806,7 @@ func (c *CredentialERPPrivy) TransferBalanceERP(ctx context.Context, param Trans
 		return err.Error(), errs
 	}
 
-	if slices.Contains(defaultSuccessCode(), res.StatusCode) {
+	if !slices.Contains(defaultSuccessCode(), res.StatusCode) {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
