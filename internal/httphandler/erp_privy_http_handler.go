@@ -2,6 +2,7 @@ package httphandler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"middleware/internal/helper"
 	"middleware/internal/model"
@@ -91,6 +92,19 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	xRequestId := r.Header.Get("X-Request-Id")
+	if xRequestId == "" {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ErpPrivyHttpHandler.TopUpBalance",
+				"src": "payload.X-Request-Id",
+			}).Error(errors.New("please provide X-Request-Id in header"))
+
+		response, _ := helper.GenerateJSONResponse(422, false, "please provide X-Request-Id in header", map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, 422)
+		return
+	}
+
 	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
@@ -131,13 +145,13 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	res, resPrivy, err := h.Command.TopUpBalance(ctx, payload)
+	res, resPrivy, err := h.Command.TopUpBalance(ctx, payload, xRequestId)
 	if err != nil {
 		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}
 
-	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "Reconcile successfully created", resPrivy)
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "TopUpBalance successfully created", resPrivy)
 	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
 }
 
@@ -190,6 +204,19 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	xRequestId := r.Header.Get("X-Request-Id")
+	if xRequestId == "" {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ErpPrivyHttpHandler.TopUpBalance",
+				"src": "payload.X-Request-Id",
+			}).Error(errors.New("please provide X-Request-Id in header"))
+
+		response, _ := helper.GenerateJSONResponse(422, false, "please provide X-Request-Id in header", map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, 422)
+		return
+	}
+
 	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
@@ -230,7 +257,7 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	res, resPrivy, err := h.Command.CheckTopUpStatus(ctx, payload)
+	res, resPrivy, err := h.Command.CheckTopUpStatus(ctx, payload, xRequestId)
 	if err != nil {
 		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
@@ -290,6 +317,19 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	xRequestId := r.Header.Get("X-Request-Id")
+	if xRequestId == "" {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ErpPrivyHttpHandler.TopUpBalance",
+				"src": "payload.X-Request-Id",
+			}).Error(errors.New("please provide X-Request-Id in header"))
+
+		response, _ := helper.GenerateJSONResponse(422, false, "please provide X-Request-Id in header", map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, 422)
+		return
+	}
+
 	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
@@ -330,7 +370,7 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	res, resPrivy, err := h.Command.VoidBalance(ctx, payload)
+	res, resPrivy, err := h.Command.VoidBalance(ctx, payload, xRequestId)
 	if err != nil {
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
@@ -396,6 +436,19 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	xRequestId := r.Header.Get("X-Request-Id")
+	if xRequestId == "" {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ErpPrivyHttpHandler.TopUpBalance",
+				"src": "payload.X-Request-Id",
+			}).Error(errors.New("please provide X-Request-Id in header"))
+
+		response, _ := helper.GenerateJSONResponse(422, false, "please provide X-Request-Id in header", map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, 422)
+		return
+	}
+
 	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
@@ -436,7 +489,7 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, resPrivy, err := h.Command.Adendum(ctx, payload)
+	res, resPrivy, err := h.Command.Adendum(ctx, payload, xRequestId)
 	if err != nil {
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
@@ -502,6 +555,19 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	xRequestId := r.Header.Get("X-Request-Id")
+	if xRequestId == "" {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ErpPrivyHttpHandler.TopUpBalance",
+				"src": "payload.X-Request-Id",
+			}).Error(errors.New("please provide X-Request-Id in header"))
+
+		response, _ := helper.GenerateJSONResponse(422, false, "please provide X-Request-Id in header", map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, 422)
+		return
+	}
+
 	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
@@ -542,7 +608,7 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, respPrivy, err := h.Command.Reconcile(ctx, payload)
+	res, respPrivy, err := h.Command.Reconcile(ctx, payload, xRequestId)
 	if err != nil {
 		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
@@ -602,6 +668,19 @@ func (h ErpPrivyHttpHandler) TransferBalance(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	xRequestId := r.Header.Get("X-Request-Id")
+	if xRequestId == "" {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ErpPrivyHttpHandler.TopUpBalance",
+				"src": "payload.X-Request-Id",
+			}).Error(errors.New("please provide X-Request-Id in header"))
+
+		response, _ := helper.GenerateJSONResponse(422, false, "please provide X-Request-Id in header", map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, 422)
+		return
+	}
+
 	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
@@ -642,7 +721,7 @@ func (h ErpPrivyHttpHandler) TransferBalance(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	res, respPrivy, err := h.Command.TransferBalance(ctx, payload)
+	res, respPrivy, err := h.Command.TransferBalance(ctx, payload, xRequestId)
 	if err != nil {
 		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return

@@ -21,7 +21,7 @@ func NewErpPrivyCommandUsecaseGeneral(prop ErpPrivyUsecaseProperty) *ErpPrivyCom
 	}
 }
 
-func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param model.TopUpBalance) (map[string]interface{}, interface{}, error) {
+func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param model.TopUpBalance, xrequestid string) (map[string]interface{}, interface{}, error) {
 	input := erpprivy.TopUpBalanceParam{
 		TopUPID:         param.TopUPID,
 		EnterpriseId:    param.EnterpriseId,
@@ -50,7 +50,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param 
 		return response, nil, err
 	}
 
-	res, err := r.ErpPrivyCred.TopUpBalance(ctx, input)
+	res, err := r.ErpPrivyCred.TopUpBalance(ctx, input, xrequestid)
 	if err != nil {
 		err := rapperror.ErrUnprocessableEntity(
 			"",
@@ -65,13 +65,13 @@ func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param 
 	return map[string]interface{}{}, res, nil
 }
 
-func (r *ErpPrivyCommandUsecaseGeneral) CheckTopUpStatus(ctx context.Context, param model.CheckTopUpStatus) (map[string]interface{}, interface{}, error) {
+func (r *ErpPrivyCommandUsecaseGeneral) CheckTopUpStatus(ctx context.Context, param model.CheckTopUpStatus, xrequestid string) (map[string]interface{}, interface{}, error) {
 	input := erpprivy.CheckTopUpStatusParam{
 		TopUPID: param.TopUPID,
 		Event:   param.Event,
 	}
 
-	res, err := r.ErpPrivyCred.CheckTopUpStatus(ctx, input)
+	res, err := r.ErpPrivyCred.CheckTopUpStatus(ctx, input, xrequestid)
 	if err != nil {
 		err := rapperror.ErrUnprocessableEntity(
 			"",
@@ -86,12 +86,12 @@ func (r *ErpPrivyCommandUsecaseGeneral) CheckTopUpStatus(ctx context.Context, pa
 	return map[string]interface{}{}, res, nil
 }
 
-func (r *ErpPrivyCommandUsecaseGeneral) VoidBalance(ctx context.Context, param model.VoidBalance) (map[string]interface{}, interface{}, error) {
+func (r *ErpPrivyCommandUsecaseGeneral) VoidBalance(ctx context.Context, param model.VoidBalance, xrequestid string) (map[string]interface{}, interface{}, error) {
 	input := erpprivy.VoidBalanceParam{
 		TopUPID: param.TopUPID,
 	}
 
-	res, err := r.ErpPrivyCred.VoidBalance(ctx, input)
+	res, err := r.ErpPrivyCred.VoidBalance(ctx, input, xrequestid)
 	if err != nil {
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), res)
 		return response, nil, err
@@ -100,7 +100,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) VoidBalance(ctx context.Context, param m
 	return map[string]interface{}{}, res, nil
 }
 
-func (r *ErpPrivyCommandUsecaseGeneral) Adendum(ctx context.Context, param model.Adendum) (map[string]interface{}, interface{}, error) {
+func (r *ErpPrivyCommandUsecaseGeneral) Adendum(ctx context.Context, param model.Adendum, xrequestid string) (map[string]interface{}, interface{}, error) {
 	input := erpprivy.AdendumParam{
 		TopUPID:         param.TopUPID,
 		StartPeriodDate: param.StartPeriodDate,
@@ -122,7 +122,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) Adendum(ctx context.Context, param model
 		return response, nil, err
 	}
 
-	res, err := r.ErpPrivyCred.Adendum(ctx, input)
+	res, err := r.ErpPrivyCred.Adendum(ctx, input, xrequestid)
 	if err != nil {
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), res)
 		return response, nil, err
@@ -131,7 +131,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) Adendum(ctx context.Context, param model
 	return map[string]interface{}{}, res, nil
 }
 
-func (r *ErpPrivyCommandUsecaseGeneral) Reconcile(ctx context.Context, param model.Reconcile) (map[string]interface{}, interface{}, error) {
+func (r *ErpPrivyCommandUsecaseGeneral) Reconcile(ctx context.Context, param model.Reconcile, xrequestid string) (map[string]interface{}, interface{}, error) {
 	input := erpprivy.ReconcileParam{
 		TopUPID:         param.TopUPID,
 		StartPeriodDate: param.StartPeriodDate,
@@ -154,7 +154,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) Reconcile(ctx context.Context, param mod
 		return response, nil, err
 	}
 
-	res, err := r.ErpPrivyCred.Reconcile(ctx, input)
+	res, err := r.ErpPrivyCred.Reconcile(ctx, input, xrequestid)
 	if err != nil {
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), res)
 		return response, nil, err
@@ -163,7 +163,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) Reconcile(ctx context.Context, param mod
 	return map[string]interface{}{}, res, nil
 }
 
-func (r *ErpPrivyCommandUsecaseGeneral) TransferBalance(ctx context.Context, param model.TransferBalanceERP) (map[string]interface{}, interface{}, error) {
+func (r *ErpPrivyCommandUsecaseGeneral) TransferBalance(ctx context.Context, param model.TransferBalanceERP, xrequestid string) (map[string]interface{}, interface{}, error) {
 	input := erpprivy.TransferBalanceERPParam{
 		Origin: struct {
 			TopUPID   string "json:\"topup_id\""
@@ -178,7 +178,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) TransferBalance(ctx context.Context, par
 		}(param.Destinations),
 	}
 
-	res, err := r.ErpPrivyCred.TransferBalanceERP(ctx, input)
+	res, err := r.ErpPrivyCred.TransferBalanceERP(ctx, input, xrequestid)
 	if err != nil {
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), res)
 		return response, nil, err

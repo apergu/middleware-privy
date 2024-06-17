@@ -16,7 +16,7 @@ func defaultSuccessCode() []int {
 	return []int{200, 208, 201}
 }
 
-func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanceParam) (interface{}, error) {
+func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanceParam, xrequestid string) (interface{}, error) {
 	TopUpBalanceURL := c.host + EndpointTopUpBalance
 
 	body := new(bytes.Buffer)
@@ -33,7 +33,7 @@ func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanc
 	req, _ := http.NewRequest(http.MethodPost, TopUpBalanceURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Lang", "en")
-	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("X-Request-Id", xrequestid)
 	req.Header.Set("Application-Key", c.applicationkey)
 	req.SetBasicAuth(c.username, c.password)
 
@@ -165,7 +165,7 @@ func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanc
 	return resp, nil
 }
 
-func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTopUpStatusParam) (interface{}, error) {
+func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTopUpStatusParam, xrequestid string) (interface{}, error) {
 	checkTopUpStatusURL := c.host + EndpointCheckTopUpStatus
 
 	body := new(bytes.Buffer)
@@ -182,7 +182,7 @@ func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTo
 	req, _ := http.NewRequest(http.MethodPost, checkTopUpStatusURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Lang", "en")
-	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("X-Request-Id", xrequestid)
 	req.Header.Set("Application-Key", c.applicationkey)
 	req.SetBasicAuth(c.username, c.password)
 
@@ -315,7 +315,7 @@ func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTo
 	return resp, nil
 }
 
-func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceParam) (interface{}, error) {
+func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceParam, xrequestid string) (interface{}, error) {
 	VoidBalanceURL := c.host + EndpointVoidBalance
 
 	body := new(bytes.Buffer)
@@ -332,7 +332,7 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 	req, _ := http.NewRequest(http.MethodPost, VoidBalanceURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Lang", "en")
-	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("X-Request-Id", xrequestid)
 	req.Header.Set("Application-Key", c.applicationkey)
 	req.SetBasicAuth(c.username, c.password)
 
@@ -465,7 +465,7 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 	return resp, nil
 }
 
-func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (interface{}, error) {
+func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam, xrequestid string) (interface{}, error) {
 	AdendumURL := c.host + EndpointAdendum
 
 	body := new(bytes.Buffer)
@@ -482,7 +482,7 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (i
 	req, _ := http.NewRequest(http.MethodPatch, AdendumURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Lang", "en")
-	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("X-Request-Id", xrequestid)
 	req.Header.Set("Application-Key", c.applicationkey)
 	req.SetBasicAuth(c.username, c.password)
 
@@ -615,7 +615,7 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (i
 	return resp, nil
 }
 
-func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam) (interface{}, error) {
+func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam, xrequestid string) (interface{}, error) {
 	ReconcileURL := c.host + EndpointReconcile
 
 	body := new(bytes.Buffer)
@@ -632,7 +632,7 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 	req, _ := http.NewRequest(http.MethodPatch, ReconcileURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Lang", "en")
-	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("X-Request-Id", xrequestid)
 	req.Header.Set("Application-Key", c.applicationkey)
 	req.SetBasicAuth(c.username, c.password)
 
@@ -764,7 +764,7 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 	return resp, nil
 }
 
-func (c *CredentialERPPrivy) TransferBalanceERP(ctx context.Context, param TransferBalanceERPParam) (interface{}, error) {
+func (c *CredentialERPPrivy) TransferBalanceERP(ctx context.Context, param TransferBalanceERPParam, xrequestid string) (interface{}, error) {
 	TransferBalanceURL := c.host + EndpointTransferBalance
 
 	body := new(bytes.Buffer)
@@ -781,7 +781,7 @@ func (c *CredentialERPPrivy) TransferBalanceERP(ctx context.Context, param Trans
 	req, _ := http.NewRequest(http.MethodPost, TransferBalanceURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Lang", "en")
-	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("X-Request-Id", xrequestid)
 	req.Header.Set("Application-Key", c.applicationkey)
 	req.SetBasicAuth(c.username, c.password)
 

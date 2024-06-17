@@ -6,7 +6,7 @@ type TopUpBalance struct {
 	MerchantId      string `json:"merchant_id"`
 	ChannelId       string `json:"channel_id"`
 	ServiceId       string `json:"service_id" validate:"required"`
-	PostPaid        bool   `json:"post_paid" validate:"required"`
+	PostPaid        bool   `json:"post_paid"`
 	Qty             int    `json:"qty" validate:"required,min=1,max=2147483647"`
 	UnitPrice       int    `json:"unit_price" validate:"max=2147483647"`
 	EndPeriodDate   string `json:"end_period_date" validate:"required,datetime=2006-01-02T15:04:05Z07:00"`
@@ -40,13 +40,13 @@ type Reconcile struct {
 type TransferBalanceERP struct {
 	Origin struct {
 		TopUPID   string `json:"topup_id" validate:"required,formatTopUpID"`
-		ServiceID string `json:"service_id" validate:"required"`
+		ServiceID string `json:"service_id" validate:"required,min=1,max=20"`
 	} `json:"origin"`
 	Destinations []struct {
 		TopUPID      string `json:"topup_id" validate:"required,formatTopUpID"`
-		EnterpriseId string `json:"enterprise_id" validate:"required"`
-		MerchantId   string `json:"merchant_id"`
-		ChannelId    string `json:"channel_id"`
+		EnterpriseId string `json:"enterprise_id" validate:"required,min=1,max=100"`
+		MerchantId   string `json:"merchant_id" validate:"omitempty,min=1,max=100"`
+		ChannelId    string `json:"channel_id" validate:"omitempty,min=1,max=100"`
 		Qty          int    `json:"qty" validate:"required,min=1,max=2147483647"`
-	} `json:"destinations" validate:"required,dive"`
+	} `json:"destinations" validate:"required,min=1,dive"`
 }
