@@ -18,6 +18,7 @@ import (
 	"middleware/pkg/credential"
 	"middleware/pkg/erpprivy"
 	"middleware/pkg/pgxdb"
+	"middleware/pkg/pkgvalidator"
 	"middleware/pkg/privy"
 
 	"github.com/go-chi/jwtauth"
@@ -109,6 +110,8 @@ func Execute() {
 	}
 
 	logger := log.NewLoggerLogrus(cfg)
+
+	pkgvalidator.InitValidator()
 
 	httpClient := http_client_infratructure.NewHttpClient(cfg, logger)
 

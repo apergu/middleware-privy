@@ -2,16 +2,18 @@ package httphandler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"middleware/internal/helper"
 	"middleware/internal/model"
 	"middleware/internal/usecase"
+	"middleware/pkg/pkgvalidator"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/rteja-library3/rapperror"
 	"gitlab.com/rteja-library3/rdecoder"
-	"gitlab.com/rteja-library3/rresponser"
 )
 
 type ErpPrivyHttpHandler struct {
@@ -36,12 +38,12 @@ func NewErpPrivyHttpHandler(prop HTTPHandlerProperty) http.Handler {
 	r.Post("/void-balance", handler.VoidBalance)
 	r.Post("/topup-adendum", handler.Adendum)
 	r.Post("/topup-reconcile", handler.Reconcile)
+	r.Post("/transfer-balance", handler.TransferBalance)
 
 	return r
 }
 
 func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
 	var err error
 
 	var ctx = r.Context()
@@ -53,28 +55,61 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 		logrus.
 			WithFields(logrus.Fields{
 				"action": "try to decode data",
-				"at":     "ErpPrivyHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.TopUpBalance",
 				"src":    "rdecoder.DecodeRest",
 			}).
 			Error(err)
+		switch jsonerr := err.(type) {
+		case *json.UnmarshalTypeError:
+			if jsonerr.Field == "" {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					"Invalid body",
+					"ErpPrivyHttpHandler.TopUpBalance",
+					nil,
+				)
+			} else {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					fmt.Sprintf(jsonerr.Field+" must be a "+jsonerr.Type.String()),
+					"ErpPrivyHttpHandler.TopUpBalance",
+					nil,
+				)
+			}
+		default:
+			err = rapperror.ErrUnprocessableEntity(
+				rapperror.AppErrorCodeUnprocessableEntity,
+				"invalid body",
+				"ErpPrivyHttpHandler.TopUpBalance",
+				nil,
+			)
 
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"ErpPrivyHttpHandler.Create",
-			nil,
-		)
+		}
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+
 		return
 	}
 
-	errors := payload.Validate()
+	xRequestId := r.Header.Get("X-Request-Id")
+	if xRequestId == "" {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ErpPrivyHttpHandler.TopUpBalance",
+				"src": "payload.X-Request-Id",
+			}).Error(errors.New("please provide X-Request-Id in header"))
+
+		response, _ := helper.GenerateJSONResponse(422, false, "please provide X-Request-Id in header", map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, 422)
+		return
+	}
+
+	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "ErpPrivyHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.TopUpBalance",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
@@ -110,35 +145,17 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	res, err := h.Command.TopUpBalance(ctx, payload)
-
+	res, resPrivy, err := h.Command.TopUpBalance(ctx, payload, xRequestId)
 	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to check top up balance",
-				"at":     "ErpPrivyHttpHandler.Create",
-				"src":    "h.Command.TopUpBalance",
-			}).
-			Error(err)
-
-		err = rapperror.ErrInternalServerError(
-			rapperror.AppErrorCodeInternalServerError,
-			"Internal server error",
-			"ErpPrivyHttpHandler.Create",
-			nil,
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "CheckTopUpStatus successfully created", nil, res)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "TopUpBalance successfully created", resPrivy)
+	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
 }
 
 func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
 	var err error
 
 	var ctx = r.Context()
@@ -150,28 +167,61 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 		logrus.
 			WithFields(logrus.Fields{
 				"action": "try to decode data",
-				"at":     "ErpPrivyHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.CheckTopUpStatus",
 				"src":    "rdecoder.DecodeRest",
 			}).
 			Error(err)
+		switch jsonerr := err.(type) {
+		case *json.UnmarshalTypeError:
+			if jsonerr.Field == "" {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					"Invalid body",
+					"ErpPrivyHttpHandler.CheckTopUpStatus",
+					nil,
+				)
+			} else {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					fmt.Sprintf(jsonerr.Field+" must be a "+jsonerr.Type.String()),
+					"ErpPrivyHttpHandler.CheckTopUpStatus",
+					nil,
+				)
+			}
 
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"ErpPrivyHttpHandler.Create",
-			nil,
-		)
+		default:
+			err = rapperror.ErrUnprocessableEntity(
+				rapperror.AppErrorCodeUnprocessableEntity,
+				"invalid body",
+				"ErpPrivyHttpHandler.CheckTopUpStatus",
+				nil,
+			)
+		}
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+
 		return
 	}
 
-	errors := payload.Validate()
+	xRequestId := r.Header.Get("X-Request-Id")
+	if xRequestId == "" {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ErpPrivyHttpHandler.CheckTopUpStatus",
+				"src": "payload.X-Request-Id",
+			}).Error(errors.New("please provide X-Request-Id in header"))
+
+		response, _ := helper.GenerateJSONResponse(422, false, "please provide X-Request-Id in header", map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, 422)
+		return
+	}
+
+	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "ErpPrivyHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.CheckTopUpStatus",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
@@ -207,35 +257,17 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	res, err := h.Command.CheckTopUpStatus(ctx, payload)
-
+	res, resPrivy, err := h.Command.CheckTopUpStatus(ctx, payload, xRequestId)
 	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to check top up status",
-				"at":     "ErpPrivyHttpHandler.Create",
-				"src":    "h.Command.CheckTopUpStatus",
-			}).
-			Error(err)
-
-		err = rapperror.ErrInternalServerError(
-			rapperror.AppErrorCodeInternalServerError,
-			"Internal server error",
-			"ErpPrivyHttpHandler.Create",
-			nil,
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "CheckTopUpStatus successfully", nil, res)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "Reconcile successfully created", resPrivy)
+	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
 }
 
 func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
 	var err error
 
 	var ctx = r.Context()
@@ -247,24 +279,58 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 		logrus.
 			WithFields(logrus.Fields{
 				"action": "try to decode data",
-				"at":     "ErpPrivyHttpHandler.Create",
+				"at":     "ErpPrivyHttpHandler.VoidBalance",
 				"src":    "rdecoder.DecodeRest",
 			}).
 			Error(err)
+		switch jsonerr := err.(type) {
+		case *json.UnmarshalTypeError:
+			if jsonerr.Field == "" {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					"Invalid body",
+					"ErpPrivyHttpHandler.VoidBalance",
+					nil,
+				)
+			} else {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					fmt.Sprintf(jsonerr.Field+" must be a "+jsonerr.Type.String()),
+					"ErpPrivyHttpHandler.VoidBalance",
+					nil,
+				)
+			}
 
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"ErpPrivyHttpHandler.Create",
-			nil,
-		)
+		default:
+			err = rapperror.ErrUnprocessableEntity(
+				rapperror.AppErrorCodeUnprocessableEntity,
+				"invalid body",
+				"ErpPrivyHttpHandler.VoidBalance",
+				nil,
+			)
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		}
+
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+
 		return
 	}
 
-	errors := payload.Validate()
+	xRequestId := r.Header.Get("X-Request-Id")
+	if xRequestId == "" {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ErpPrivyHttpHandler.VoidBalance",
+				"src": "payload.X-Request-Id",
+			}).Error(errors.New("please provide X-Request-Id in header"))
+
+		response, _ := helper.GenerateJSONResponse(422, false, "please provide X-Request-Id in header", map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, 422)
+		return
+	}
+
+	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
@@ -304,34 +370,17 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	res, err := h.Command.VoidBalance(ctx, payload)
+	res, resPrivy, err := h.Command.VoidBalance(ctx, payload, xRequestId)
 	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to check top up status",
-				"at":     "ErpPrivyHttpHandler.VoidBalance",
-				"src":    "h.Command.CheckTopUpStatus",
-			}).
-			Error(err)
-
-		err = rapperror.ErrInternalServerError(
-			rapperror.AppErrorCodeInternalServerError,
-			"Internal server error",
-			"ErpPrivyHttpHandler.VoidBalance",
-			nil,
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "VoidBalance successfully", nil, res)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "VoidBalance successfully", resPrivy)
+	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
 }
 
 func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
 	var err error
 
 	var ctx = r.Context()
@@ -347,20 +396,54 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 				"src":    "rdecoder.DecodeRest",
 			}).
 			Error(err)
+		switch jsonerr := err.(type) {
+		case *json.UnmarshalTypeError:
+			if jsonerr.Field == "" {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					"Invalid body",
+					"ErpPrivyHttpHandler.Adendum",
+					nil,
+				)
+			} else {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					fmt.Sprintf(jsonerr.Field+" must be a "+jsonerr.Type.String()),
+					"ErpPrivyHttpHandler.Adendum",
+					nil,
+				)
+			}
 
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"ErpPrivyHttpHandler.Adendum",
-			err.Error(),
-		)
+		default:
+			err = rapperror.ErrUnprocessableEntity(
+				rapperror.AppErrorCodeUnprocessableEntity,
+				"invalid body",
+				"ErpPrivyHttpHandler.Adendum",
+				nil,
+			)
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		}
+
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+
 		return
 	}
 
-	errors := payload.Validate()
+	xRequestId := r.Header.Get("X-Request-Id")
+	if xRequestId == "" {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ErpPrivyHttpHandler.Adendum",
+				"src": "payload.X-Request-Id",
+			}).Error(errors.New("please provide X-Request-Id in header"))
+
+		response, _ := helper.GenerateJSONResponse(422, false, "please provide X-Request-Id in header", map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, 422)
+		return
+	}
+
+	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
@@ -400,34 +483,22 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.Command.Adendum(ctx, payload)
+	res, resPrivy, err := h.Command.Adendum(ctx, payload, xRequestId)
 	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to check top up status",
-				"at":     "ErpPrivyHttpHandler.Adendum",
-				"src":    "h.Command.CheckTopUpStatus",
-			}).
-			Error(err)
-
-		err = rapperror.ErrInternalServerError(
-			rapperror.AppErrorCodeInternalServerError,
-			"Internal server error",
-			"ErpPrivyHttpHandler.Adendum",
-			err.Error(),
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "Adendum successfully", nil, res)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	if err != nil {
+		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
+		return
+	}
+
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "Adendum successfully created", resPrivy)
+	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
 }
 
 func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
-	var response rresponser.Responser
 	var err error
 
 	var ctx = r.Context()
@@ -443,20 +514,54 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 				"src":    "rdecoder.DecodeRest",
 			}).
 			Error(err)
+		switch jsonerr := err.(type) {
+		case *json.UnmarshalTypeError:
+			if jsonerr.Field == "" {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					"Invalid body",
+					"ErpPrivyHttpHandler.Reconcile",
+					nil,
+				)
+			} else {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					fmt.Sprintf(jsonerr.Field+" must be a "+jsonerr.Type.String()),
+					"ErpPrivyHttpHandler.Reconcile",
+					nil,
+				)
+			}
 
-		err = rapperror.ErrBadRequest(
-			rapperror.AppErrorCodeBadRequest,
-			"Invalid body",
-			"ErpPrivyHttpHandler.Reconcile",
-			err.Error(),
-		)
+		default:
+			err = rapperror.ErrUnprocessableEntity(
+				rapperror.AppErrorCodeUnprocessableEntity,
+				"invalid body",
+				"ErpPrivyHttpHandler.Reconcile",
+				nil,
+			)
 
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		}
+
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+
 		return
 	}
 
-	errors := payload.Validate()
+	xRequestId := r.Header.Get("X-Request-Id")
+	if xRequestId == "" {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ErpPrivyHttpHandler.Reconcile",
+				"src": "payload.X-Request-Id",
+			}).Error(errors.New("please provide X-Request-Id in header"))
+
+		response, _ := helper.GenerateJSONResponse(422, false, "please provide X-Request-Id in header", map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, 422)
+		return
+	}
+
+	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
 		logrus.
 			WithFields(logrus.Fields{
@@ -496,28 +601,125 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.Command.Reconcile(ctx, payload)
+	res, respPrivy, err := h.Command.Reconcile(ctx, payload, xRequestId)
 	if err != nil {
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to check top up status",
-				"at":     "ErpPrivyHttpHandler.Reconcile",
-				"src":    "h.Command.CheckTopUpStatus",
-			}).
-			Error(err)
-
-		err = rapperror.ErrInternalServerError(
-			rapperror.AppErrorCodeInternalServerError,
-			"Internal server error",
-			"ErpPrivyHttpHandler.Reconcile",
-			err.Error(),
-		)
-
-		response = rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}
 
-	response = rresponser.NewResponserSuccessOK("", "Reconcile successfully", nil, res)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "Reconcile successfully created", respPrivy)
+	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
+}
+
+func (h ErpPrivyHttpHandler) TransferBalance(w http.ResponseWriter, r *http.Request) {
+	var err error
+
+	var ctx = r.Context()
+
+	var payload model.TransferBalanceERP
+
+	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"action": "try to decode data",
+				"at":     "ErpPrivyHttpHandler.TransferBalance",
+				"src":    "rdecoder.DecodeRest",
+			}).
+			Error(err)
+		switch jsonerr := err.(type) {
+		case *json.UnmarshalTypeError:
+			if jsonerr.Field == "" {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					"Invalid body",
+					"ErpPrivyHttpHandler.TransferBalance",
+					nil,
+				)
+			} else {
+				err = rapperror.ErrUnprocessableEntity(
+					rapperror.AppErrorCodeUnprocessableEntity,
+					fmt.Sprintf(jsonerr.Field+" must be a "+jsonerr.Type.String()),
+					"ErpPrivyHttpHandler.TransferBalance",
+					nil,
+				)
+			}
+
+		default:
+			err = rapperror.ErrUnprocessableEntity(
+				rapperror.AppErrorCodeUnprocessableEntity,
+				"invalid body",
+				"ErpPrivyHttpHandler.TransferBalance",
+				nil,
+			)
+
+		}
+
+		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+
+		return
+	}
+
+	xRequestId := r.Header.Get("X-Request-Id")
+	if xRequestId == "" {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ErpPrivyHttpHandler.TransferBalance",
+				"src": "payload.X-Request-Id",
+			}).Error(errors.New("please provide X-Request-Id in header"))
+
+		response, _ := helper.GenerateJSONResponse(422, false, "please provide X-Request-Id in header", map[string]interface{}{})
+		helper.WriteJSONResponse(w, response, 422)
+		return
+	}
+
+	errors := pkgvalidator.Validate(payload)
+	if len(errors) > 0 {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":     "ErpPrivyHttpHandler.TransferBalance",
+				"src":    "payload.Validate",
+				"params": payload,
+			}).
+			Error(err)
+
+		errorResponse := map[string]interface{}{
+			"code":    422,
+			"success": false,
+			"message": "Validation failed",
+			"errors":  errors,
+		}
+
+		// Convert error response to JSON
+		responseJSON, marshalErr := json.Marshal(errorResponse)
+		if marshalErr != nil {
+			// Handle JSON marshaling error
+			fmt.Println("Error encoding JSON:", marshalErr)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		// Set the response headers
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnprocessableEntity) // Set the appropriate HTTP status code
+
+		// Write the JSON response to the client
+		_, writeErr := w.Write(responseJSON)
+		if writeErr != nil {
+			// Handle write error
+			fmt.Println("Error writing response:", writeErr)
+		}
+
+		return
+	}
+
+	res, respPrivy, err := h.Command.TransferBalance(ctx, payload, xRequestId)
+	if err != nil {
+		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
+		return
+	}
+
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "TransferBalance successfully created", respPrivy)
+	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
 }

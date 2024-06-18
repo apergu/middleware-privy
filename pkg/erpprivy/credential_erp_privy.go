@@ -8,9 +8,15 @@ import (
 	"net/http"
 
 	"github.com/sirupsen/logrus"
+	"gitlab.com/rteja-library3/rapperror"
+	"golang.org/x/exp/slices"
 )
 
-func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanceParam) (TopUpBalanceResponse, error) {
+func defaultSuccessCode() []int {
+	return []int{200, 208, 201}
+}
+
+func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanceParam, xrequestid string) (interface{}, error) {
 	TopUpBalanceURL := c.host + EndpointTopUpBalance
 
 	body := new(bytes.Buffer)
@@ -27,7 +33,7 @@ func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanc
 	req, _ := http.NewRequest(http.MethodPost, TopUpBalanceURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Lang", "en")
-	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("X-Request-Id", xrequestid)
 	req.Header.Set("Application-Key", c.applicationkey)
 	req.SetBasicAuth(c.username, c.password)
 
@@ -42,10 +48,16 @@ func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanc
 			}).
 			Error(err)
 
-		return TopUpBalanceResponse{}, err
-	}
+		errs := rapperror.ErrInternalServerError(
+			"",
+			"failed to request erp privy TopUpBalance",
+			"CredentialERPPrivy.TopUpBalance",
+			err.Error(),
+		)
 
-	if res.StatusCode != 200 {
+		return err.Error(), errs
+	}
+	if !slices.Contains(defaultSuccessCode(), res.StatusCode) {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -56,7 +68,27 @@ func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanc
 				}).
 				Error(err)
 
-			return TopUpBalanceResponse{}, errors.New("request erp privy unauthorized")
+			var resp TopUpBalanceFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"action": "DecodeTopUpBalanceFailedResponse401",
+						"at":     "ERPPrivy.TopUpBalance",
+						"src":    "TopUpBalanceBadRequestResponse{}",
+					}).
+					Error(err)
+				return TopUpBalanceResponse{}, err
+			}
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy unauthorized",
+				"CredentialERPPrivy.TopUpBalance",
+				"Unauthorized",
+			)
+
+			return resp, err
 		case 422:
 			var resp TopUpBalanceBadRequestResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
@@ -77,21 +109,44 @@ func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanc
 				strErr += v.Field + " " + v.Description + " "
 			}
 
-			return TopUpBalanceResponse{}, errors.New(strErr)
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy TopUpBalance validation failed",
+				"CredentialERPPrivy.TopUpBalance",
+				strErr,
+			)
+
+			return resp, err
 		default:
 			var resp TopUpBalanceFailedResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
 			if err != nil {
 				logrus.
 					WithFields(logrus.Fields{
-						"at":  "ERPPrivy.TopUpBalance",
-						"src": "TopUpBalanceBadRequestResponse{}",
+						"action": "DecodeTopUpBalanceFailedResponse",
+						"at":     "ERPPrivy.TopUpBalance",
+						"src":    "TopUpBalanceBadRequestResponse{}",
 					}).
 					Error(err)
 				return TopUpBalanceResponse{}, err
 			}
 
-			return TopUpBalanceResponse{}, errors.New("something went wrong")
+			logrus.
+				WithFields(logrus.Fields{
+					"action": "GetResponseNot200Privy",
+					"at":     "ERPPrivy.TopUpBalance",
+					"src":    "TopUpBalanceBadRequestResponse{}",
+				}).
+				Error(resp)
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy top up balance unknown code",
+				"CredentialERPPrivy.TopUpBalance",
+				resp,
+			)
+
+			return resp, err
 		}
 	}
 
@@ -110,7 +165,7 @@ func (c *CredentialERPPrivy) TopUpBalance(ctx context.Context, param TopUpBalanc
 	return resp, nil
 }
 
-func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTopUpStatusParam) (CheckTopUpStatusResponse, error) {
+func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTopUpStatusParam, xrequestid string) (interface{}, error) {
 	checkTopUpStatusURL := c.host + EndpointCheckTopUpStatus
 
 	body := new(bytes.Buffer)
@@ -127,7 +182,7 @@ func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTo
 	req, _ := http.NewRequest(http.MethodPost, checkTopUpStatusURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Lang", "en")
-	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("X-Request-Id", xrequestid)
 	req.Header.Set("Application-Key", c.applicationkey)
 	req.SetBasicAuth(c.username, c.password)
 
@@ -142,10 +197,17 @@ func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTo
 			}).
 			Error(err)
 
-		return CheckTopUpStatusResponse{}, err
+		errs := rapperror.ErrInternalServerError(
+			"",
+			"failed to request erp privy checktopupstatus",
+			"CredentialERPPrivy.CheckTopUpStatus",
+			err.Error(),
+		)
+
+		return err.Error(), errs
 	}
 
-	if res.StatusCode != 200 {
+	if !slices.Contains(defaultSuccessCode(), res.StatusCode) {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -156,7 +218,27 @@ func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTo
 				}).
 				Error(err)
 
-			return CheckTopUpStatusResponse{}, errors.New("request erp privy unauthorized")
+			var resp CheckTopUpStatusFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"action": "DecodeCheckTopUpStatusFailedResponse401",
+						"at":     "ERPPrivy.CheckTopUpStatus",
+						"src":    "CheckTopUpStatusBadRequestResponse{}",
+					}).
+					Error(err)
+				return CheckTopUpStatusResponse{}, err
+			}
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy unauthorized",
+				"CredentialERPPrivy.CheckTopUpStatus",
+				"Unauthorized",
+			)
+
+			return resp, err
 		case 422:
 			var resp CheckTopUpStatusBadRequestResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
@@ -177,21 +259,44 @@ func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTo
 				strErr += v.Field + " " + v.Description + " "
 			}
 
-			return CheckTopUpStatusResponse{}, errors.New(strErr)
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy CheckTopUpStatus validation failed",
+				"CredentialERPPrivy.CheckTopUpStatus",
+				strErr,
+			)
+
+			return resp, err
 		default:
 			var resp CheckTopUpStatusFailedResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
 			if err != nil {
 				logrus.
 					WithFields(logrus.Fields{
-						"at":  "ERPPrivy.CheckTopUpStatus",
-						"src": "CheckTopUpStatusBadRequestResponse{}",
+						"action": "DecodeCheckTopUpStatusFailedResponse",
+						"at":     "ERPPrivy.CheckTopUpStatus",
+						"src":    "CheckTopUpStatusBadRequestResponse{}",
 					}).
 					Error(err)
 				return CheckTopUpStatusResponse{}, err
 			}
 
-			return CheckTopUpStatusResponse{}, errors.New("something went wrong")
+			logrus.
+				WithFields(logrus.Fields{
+					"action": "GetResponseNot200Privy",
+					"at":     "ERPPrivy.CheckTopUpStatus",
+					"src":    "CheckTopUpStatusBadRequestResponse{}",
+				}).
+				Error(resp)
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy void balance unknown code",
+				"CredentialERPPrivy.VoidBalance",
+				resp,
+			)
+
+			return resp, err
 		}
 	}
 
@@ -210,7 +315,7 @@ func (c *CredentialERPPrivy) CheckTopUpStatus(ctx context.Context, param CheckTo
 	return resp, nil
 }
 
-func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceParam) (VoidBalanceResponse, error) {
+func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceParam, xrequestid string) (interface{}, error) {
 	VoidBalanceURL := c.host + EndpointVoidBalance
 
 	body := new(bytes.Buffer)
@@ -227,7 +332,7 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 	req, _ := http.NewRequest(http.MethodPost, VoidBalanceURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Lang", "en")
-	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("X-Request-Id", xrequestid)
 	req.Header.Set("Application-Key", c.applicationkey)
 	req.SetBasicAuth(c.username, c.password)
 
@@ -242,10 +347,17 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 			}).
 			Error(err)
 
-		return VoidBalanceResponse{}, err
+		errs := rapperror.ErrInternalServerError(
+			"",
+			"failed to request erp privy void balance",
+			"CredentialERPPrivy.VoidBalance",
+			err.Error(),
+		)
+
+		return err.Error(), errs
 	}
 
-	if res.StatusCode != 200 {
+	if !slices.Contains(defaultSuccessCode(), res.StatusCode) {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -256,7 +368,27 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 				}).
 				Error(err)
 
-			return VoidBalanceResponse{}, errors.New("request erp privy unauthorized")
+			var resp VoidBalanceFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"action": "DecodeVoidBalanceFailedResponse401",
+						"at":     "ERPPrivy.VoidBalance",
+						"src":    "VoidBalanceBadRequestResponse{}",
+					}).
+					Error(err)
+				return VoidBalanceResponse{}, err
+			}
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy unauthorized",
+				"CredentialERPPrivy.VoidBalance",
+				"Unauthorized",
+			)
+
+			return resp, err
 		case 422:
 			var resp VoidBalanceBadRequestResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
@@ -277,21 +409,44 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 				strErr += v.Field + " " + v.Description + " "
 			}
 
-			return VoidBalanceResponse{}, errors.New(strErr)
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy VoidBalance validation failed",
+				"CredentialERPPrivy.VoidBalance",
+				strErr,
+			)
+
+			return resp, err
 		default:
 			var resp VoidBalanceFailedResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
 			if err != nil {
 				logrus.
 					WithFields(logrus.Fields{
-						"at":  "ERPPrivy.VoidBalance",
-						"src": "VoidBalanceBadRequestResponse{}",
+						"action": "DecodeVoidBalanceFailedResponse",
+						"at":     "ERPPrivy.VoidBalance",
+						"src":    "VoidBalanceBadRequestResponse{}",
 					}).
 					Error(err)
 				return VoidBalanceResponse{}, err
 			}
 
-			return VoidBalanceResponse{}, errors.New("something went wrong")
+			logrus.
+				WithFields(logrus.Fields{
+					"action": "GetResponseNot200Privy",
+					"at":     "ERPPrivy.VoidBalance",
+					"src":    "VoidBalanceBadRequestResponse{}",
+				}).
+				Error(resp)
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy void balance unknown code",
+				"CredentialERPPrivy.VoidBalance",
+				resp,
+			)
+
+			return resp, err
 		}
 	}
 
@@ -310,7 +465,7 @@ func (c *CredentialERPPrivy) VoidBalance(ctx context.Context, param VoidBalanceP
 	return resp, nil
 }
 
-func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (AdendumResponse, error) {
+func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam, xrequestid string) (interface{}, error) {
 	AdendumURL := c.host + EndpointAdendum
 
 	body := new(bytes.Buffer)
@@ -327,7 +482,7 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (A
 	req, _ := http.NewRequest(http.MethodPatch, AdendumURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Lang", "en")
-	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("X-Request-Id", xrequestid)
 	req.Header.Set("Application-Key", c.applicationkey)
 	req.SetBasicAuth(c.username, c.password)
 
@@ -342,10 +497,17 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (A
 			}).
 			Error(err)
 
-		return AdendumResponse{}, err
+		errs := rapperror.ErrInternalServerError(
+			"",
+			"failed to request erp privy adendum",
+			"CredentialERPPrivy.Adendum",
+			err.Error(),
+		)
+
+		return err.Error(), errs
 	}
 
-	if res.StatusCode != 200 {
+	if !slices.Contains(defaultSuccessCode(), res.StatusCode) {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -356,7 +518,27 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (A
 				}).
 				Error(err)
 
-			return AdendumResponse{}, errors.New("request erp privy unauthorized")
+			var resp AdendumFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"action": "DecodeAdendumFailedResponse401",
+						"at":     "ERPPrivy.Adendum",
+						"src":    "AdendumBadRequestResponse{}",
+					}).
+					Error(err)
+				return AdendumResponse{}, err
+			}
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy unauthorized",
+				"CredentialERPPrivy.Adendum",
+				"Unauthorized",
+			)
+
+			return resp, err
 		case 422:
 			var resp AdendumBadRequestResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
@@ -377,21 +559,44 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (A
 				strErr += v.Field + " " + v.Description + " "
 			}
 
-			return AdendumResponse{}, errors.New(strErr)
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy validation failed",
+				"CredentialERPPrivy.Adendum",
+				strErr,
+			)
+
+			return resp, err
 		default:
 			var resp AdendumFailedResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
 			if err != nil {
 				logrus.
 					WithFields(logrus.Fields{
-						"at":  "ERPPrivy.Adendum",
-						"src": "AdendumBadRequestResponse{}",
+						"action": "DecodeAdendumFailedResponse",
+						"at":     "ERPPrivy.Adendum",
+						"src":    "AdendumBadRequestResponse{}",
 					}).
 					Error(err)
 				return AdendumResponse{}, err
 			}
 
-			return AdendumResponse{}, errors.New("something went wrong")
+			logrus.
+				WithFields(logrus.Fields{
+					"action": "GetResponseNot200Privy",
+					"at":     "ERPPrivy.Adendum",
+					"src":    "AdendumBadRequestResponse{}",
+				}).
+				Error(resp)
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy adendum unknown code",
+				"CredentialERPPrivy.Adendum",
+				resp,
+			)
+
+			return resp, err
 		}
 	}
 
@@ -410,7 +615,7 @@ func (c *CredentialERPPrivy) Adendum(ctx context.Context, param AdendumParam) (A
 	return resp, nil
 }
 
-func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam) (ReconcileResponse, error) {
+func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam, xrequestid string) (interface{}, error) {
 	ReconcileURL := c.host + EndpointReconcile
 
 	body := new(bytes.Buffer)
@@ -427,7 +632,7 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 	req, _ := http.NewRequest(http.MethodPatch, ReconcileURL, body)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Lang", "en")
-	req.Header.Set("X-Request-Id", c.requestid)
+	req.Header.Set("X-Request-Id", xrequestid)
 	req.Header.Set("Application-Key", c.applicationkey)
 	req.SetBasicAuth(c.username, c.password)
 
@@ -442,10 +647,17 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 			}).
 			Error(err)
 
-		return ReconcileResponse{}, err
+		errs := rapperror.ErrInternalServerError(
+			"",
+			"failed to request erp privy reconcile",
+			"CredentialERPPrivy.Reconcile",
+			err.Error(),
+		)
+
+		return err.Error(), errs
 	}
 
-	if res.StatusCode != 200 {
+	if !slices.Contains(defaultSuccessCode(), res.StatusCode) {
 		var strErr string
 		switch res.StatusCode {
 		case 401:
@@ -455,8 +667,27 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 					"src": "ReconcileFailedResponse{}",
 				}).
 				Error(err)
+			var resp ReconcileFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"action": "DecodeReconcileFailedResponse",
+						"at":     "ERPPrivy.Reconcile",
+						"src":    "ReconcileBadRequestResponse{}",
+					}).
+					Error(err)
+				return ReconcileResponse{}, err
+			}
 
-			return ReconcileResponse{}, errors.New("request erp privy unauthorized")
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy unauthorized",
+				"CredentialERPPrivy.Reconcile",
+				"Unauthorized",
+			)
+
+			return resp, err
 		case 422:
 			var resp ReconcileBadRequestResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
@@ -470,28 +701,51 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 			}
 
 			if resp.Errors == nil {
-				return ReconcileResponse{}, errors.New(resp.Message)
+				return resp, errors.New(resp.Message)
 			}
 
 			for _, v := range resp.Errors {
 				strErr += v.Field + " " + v.Description + " "
 			}
 
-			return ReconcileResponse{}, errors.New(strErr)
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy validation failed",
+				"CredentialERPPrivy.Reconcile",
+				strErr,
+			)
+
+			return resp, err
 		default:
 			var resp ReconcileFailedResponse
 			err = json.NewDecoder(res.Body).Decode(&resp)
 			if err != nil {
 				logrus.
 					WithFields(logrus.Fields{
-						"at":  "ERPPrivy.Reconcile",
-						"src": "ReconcileBadRequestResponse{}",
+						"action": "DecodeReconcileFailedResponse",
+						"at":     "ERPPrivy.Reconcile",
+						"src":    "ReconcileBadRequestResponse{}",
 					}).
 					Error(err)
 				return ReconcileResponse{}, err
 			}
 
-			return ReconcileResponse{}, errors.New("something went wrong")
+			logrus.
+				WithFields(logrus.Fields{
+					"action": "GetResponseNot200Privy",
+					"at":     "ERPPrivy.Reconcile",
+					"src":    "ReconcileBadRequestResponse{}",
+				}).
+				Error(resp)
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy reconcile unknown code",
+				"CredentialERPPrivy.Reconcile",
+				resp,
+			)
+
+			return resp, err
 		}
 	}
 
@@ -505,6 +759,155 @@ func (c *CredentialERPPrivy) Reconcile(ctx context.Context, param ReconcileParam
 			Error(err)
 
 		return ReconcileResponse{}, err
+	}
+
+	return resp, nil
+}
+
+func (c *CredentialERPPrivy) TransferBalanceERP(ctx context.Context, param TransferBalanceERPParam, xrequestid string) (interface{}, error) {
+	TransferBalanceURL := c.host + EndpointTransferBalance
+
+	body := new(bytes.Buffer)
+	_ = json.NewEncoder(body).Encode(param)
+
+	logrus.
+		WithFields(logrus.Fields{
+			"at":   "ERPPrivy.TransferBalance",
+			"src":  "TransferBalance{}.beforeDo",
+			"host": TransferBalanceURL,
+		}).
+		Info(body.String())
+
+	req, _ := http.NewRequest(http.MethodPost, TransferBalanceURL, body)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Lang", "en")
+	req.Header.Set("X-Request-Id", xrequestid)
+	req.Header.Set("Application-Key", c.applicationkey)
+	req.SetBasicAuth(c.username, c.password)
+
+	resp := TransferBalanceERPResponse{}
+	http := &http.Client{}
+	res, err := http.Do(req)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ERPPrivy.TransferBalanceERP",
+				"src": "TransferBalanceERP{}",
+			}).
+			Error(err)
+
+		errs := rapperror.ErrInternalServerError(
+			"",
+			"failed to request erp privy TransferBalanceERP",
+			"CredentialERPPrivy.TransferBalanceERP",
+			err.Error(),
+		)
+
+		return err.Error(), errs
+	}
+
+	if !slices.Contains(defaultSuccessCode(), res.StatusCode) {
+		var strErr string
+		switch res.StatusCode {
+		case 401:
+			logrus.
+				WithFields(logrus.Fields{
+					"at":  "ERPPrivy.TransferBalanceERP",
+					"src": "TransferBalanceERPFailedResponse{}",
+				}).
+				Error(err)
+			var resp TransferBalanceERPFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"action": "DecodeTransferBalanceERPFailedResponse",
+						"at":     "ERPPrivy.TransferBalanceERP",
+						"src":    "TransferBalanceERPBadRequestResponse{}",
+					}).
+					Error(err)
+				return TransferBalanceERPResponse{}, err
+			}
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy unauthorized",
+				"CredentialERPPrivy.TransferBalanceERP",
+				"Unauthorized",
+			)
+
+			return resp, err
+		case 422:
+			var resp TransferBalanceERPBadRequestResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"at":  "ERPPrivy.TransferBalanceERP",
+						"src": "TransferBalanceERPBadRequestResponse{}",
+					}).
+					Error(err)
+			}
+
+			if resp.Errors == nil {
+				return resp, errors.New(resp.Message)
+			}
+
+			for _, v := range resp.Errors {
+				strErr += v.Field + " " + v.Description + " "
+			}
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy validation failed",
+				"CredentialERPPrivy.TransferBalanceERP",
+				strErr,
+			)
+
+			return resp, err
+		default:
+			var resp TransferBalanceERPFailedResponse
+			err = json.NewDecoder(res.Body).Decode(&resp)
+			if err != nil {
+				logrus.
+					WithFields(logrus.Fields{
+						"action": "DecodeTransferBalanceERPFailedResponse",
+						"at":     "ERPPrivy.TransferBalanceERP",
+						"src":    "TransferBalanceERPBadRequestResponse{}",
+					}).
+					Error(err)
+				return TransferBalanceERPResponse{}, err
+			}
+
+			logrus.
+				WithFields(logrus.Fields{
+					"action": "GetResponseNot200Privy",
+					"at":     "ERPPrivy.TransferBalanceERP",
+					"src":    "TransferBalanceERPBadRequestResponse{}",
+				}).
+				Error(resp)
+
+			err = rapperror.ErrInternalServerError(
+				"",
+				"request erp privy TransferBalance unknown code",
+				"CredentialERPPrivy.TransferBalanceERP",
+				resp,
+			)
+
+			return resp, err
+		}
+	}
+
+	err = json.NewDecoder(res.Body).Decode(&resp)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "ERPPrivy.TransferBalanceERP",
+				"src": "TransferBalanceERPResponse{}",
+			}).
+			Error(err)
+
+		return TransferBalanceERPResponse{}, err
 	}
 
 	return resp, nil
