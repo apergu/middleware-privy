@@ -263,7 +263,7 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "Reconcile successfully created", resPrivy)
+	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "CheckTopUpStatus successfully", resPrivy)
 	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
 }
 
