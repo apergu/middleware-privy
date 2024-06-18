@@ -169,6 +169,10 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	// } else {
 	// if payload.CRMLeadID != "" {
 	if payload.EntityStatus == "13" {
+
+		if payload.SubIndustry == "" {
+			payload.SubIndustry = "Others"
+		}
 		log.Println("payload masuk 13", payload)
 		roleId, meta, err := h.Command.Create(ctx, payload)
 		if err != nil {
