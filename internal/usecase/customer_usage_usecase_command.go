@@ -132,7 +132,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		CustrecordPrivyTypeTransIntegrasi:    false,
 		CustrecordPrivyChannelNameIntgrasi:   channel.ChannelID + " - " + channel.ChannelName,
 		CcustrecordPrivyTrxIdIntegrasi:       cust.TrxId,
-		CustrecordEnterpriseeID:              cust.EnterpriseID,
+		CustrecordEnterpriseeID:              custUsage[0],
 		CustrecordServiceID:                  cust.ServiceID,
 		CustrecordUnitPrice:                  cust.UnitPrice,
 	}
