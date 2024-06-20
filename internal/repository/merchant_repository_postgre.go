@@ -189,6 +189,25 @@ func (c *MerchantRepositoryPostgre) FindByMerchantID(ctx context.Context, enterp
 	return c.queryOneFind(ctx, cmd, query, enterprisePrivyID)
 }
 
+func (c *MerchantRepositoryPostgre) FindByEnterprisePrivyID(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.MerchantFind, error) {
+	var cmd sqlcommand.Command = c.pool
+	if tx != nil {
+		cmd = tx
+	}
+
+	query := `select
+	merchants.id,
+	merchants.merchant_id,
+	merchants.merchant_name
+	from
+		merchants
+	where
+		merchants.enterprise_id = $1
+	limit 1`
+
+	return c.queryOneFind(ctx, cmd, query, enterprisePrivyID)
+}
+
 func (c *MerchantRepositoryPostgre) FindByName(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.MerchantFind, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {

@@ -286,6 +286,25 @@ func (c *ChannelRepositoryPostgre) FindByName(ctx context.Context, enterprisePri
 	return c.queryOneFind(ctx, cmd, query, enterprisePrivyID)
 }
 
+func (c *ChannelRepositoryPostgre) FindByMerchantID(ctx context.Context, merchantId string, tx pgx.Tx) (entity.ChannelFind, error) {
+	var cmd sqlcommand.Command = c.pool
+	if tx != nil {
+		cmd = tx
+	}
+
+	query := `select
+	channels.id,
+	channels.channel_id,
+	channels.channel_name
+	from
+		channels
+	where
+		channels.merchant_id = $1
+	limit 1`
+
+	return c.queryOneFind(ctx, cmd, query, merchantId)
+}
+
 func (c *ChannelRepositoryPostgre) Count(ctx context.Context, filter ChannelFilter, tx pgx.Tx) (int64, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {

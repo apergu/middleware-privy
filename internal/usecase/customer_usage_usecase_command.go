@@ -79,7 +79,6 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 
 		return 0, nil, err
 	}
-	println("custId", &cust.EnterpriseID)
 
 	customer_filter := repository.CustomerFilter{
 		EnterprisePrivyID: &custUsage[0],
@@ -111,19 +110,8 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 	if len(channels) > 0 {
 		channel = channels[0]
 	}
-
-	// custPrivyUsgProdId, _ := strconv.Atoi(cust.ProductID)
-
 	custPrivyUsgParam := credential.CustomerUsageParam{
-		RecordType: "customrecord_privy_integrasi_usage",
-		// CustrecordPrivyCustomerName:     cust.CustomerName,
-		// CustrecordPrivyIdProduct:        custPrivyUsgProdId,
-		// CustrecordPrivyProductName:      cust.ProductName,
-		// CustrecordPrivyTransactionUsage: cust.TransactionAt.Format("02/01/2006"),
-		// CustrecordPrivyQuantityUsage:    cust.Usage,
-		// CustrecordPrivyAmount:           int64(cust.UsageAmount),
-		// CustrecordPrivySoTransaction:    int(cust.SalesOrderReference),
-
+		RecordType:                           "customrecord_privy_integrasi_usage",
 		CustrecordPrivyUsageDateIntegrasi:    cust.TransactionDate,
 		CustrecordPrivyCustomerNameIntegrasi: customer.CustomerName,
 		CustrecordPrivyServiceIntegrasi:      cust.ServiceID,
