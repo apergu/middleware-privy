@@ -189,7 +189,7 @@ func (c *MerchantRepositoryPostgre) FindByMerchantID(ctx context.Context, enterp
 	return c.queryOneFind(ctx, cmd, query, enterprisePrivyID)
 }
 
-func (c *MerchantRepositoryPostgre) FindByEnterprisePrivyID(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.MerchantFind, error) {
+func (c *MerchantRepositoryPostgre) FindByEnterprisePrivyID(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.Merchant, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
@@ -197,15 +197,30 @@ func (c *MerchantRepositoryPostgre) FindByEnterprisePrivyID(ctx context.Context,
 
 	query := `select
 	merchants.id,
-	merchants.merchant_id,
-	merchants.merchant_name
+		merchants.customer_id,
+		merchants.enterprise_id,
+		merchants.merchant_code,
+		merchants.merchant_id,
+		merchants.merchant_name,
+		merchants."address",
+		merchants.email,
+		merchants.phone_no,
+		merchants.state,
+		merchants.city,
+		merchants.zip_code,
+		merchants.merchant_internalid,
+		merchants.customer_internalid,
+		merchants.created_by,
+		merchants.created_at,
+		merchants.updated_by,
+		merchants.updated_at
 	from
 		merchants
 	where
 		merchants.enterprise_id = $1
 	limit 1`
 
-	return c.queryOneFind(ctx, cmd, query, enterprisePrivyID)
+	return c.queryOne(ctx, cmd, query, enterprisePrivyID)
 }
 
 func (c *MerchantRepositoryPostgre) FindByName(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.MerchantFind, error) {

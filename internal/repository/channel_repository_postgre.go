@@ -286,7 +286,7 @@ func (c *ChannelRepositoryPostgre) FindByName(ctx context.Context, enterprisePri
 	return c.queryOneFind(ctx, cmd, query, enterprisePrivyID)
 }
 
-func (c *ChannelRepositoryPostgre) FindByMerchantID(ctx context.Context, merchantId string, tx pgx.Tx) (entity.ChannelFind, error) {
+func (c *ChannelRepositoryPostgre) FindByMerchantID(ctx context.Context, merchantId string, tx pgx.Tx) (entity.Channel, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx
@@ -294,15 +294,30 @@ func (c *ChannelRepositoryPostgre) FindByMerchantID(ctx context.Context, merchan
 
 	query := `select
 	channels.id,
-	channels.channel_id,
-	channels.channel_name
+		channels.merchant_id,
+		channels.channel_code,
+		channels.channel_id,
+		channels.channel_name,
+		channels."address",
+		channels."email",
+		channels.phone_no,
+		channels.state,
+		channels."city",
+		channels.zip_code,
+		channels.customer_internalid,
+		channels.merchant_internalid,
+		channels.channel_internalid,
+		channels.created_by,
+		channels.created_at,
+		channels.updated_by,
+		channels.updated_at
 	from
 		channels
 	where
 		channels.merchant_id = $1
 	limit 1`
 
-	return c.queryOneFind(ctx, cmd, query, merchantId)
+	return c.queryOne(ctx, cmd, query, merchantId)
 }
 
 func (c *ChannelRepositoryPostgre) Count(ctx context.Context, filter ChannelFilter, tx pgx.Tx) (int64, error) {
