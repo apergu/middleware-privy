@@ -107,13 +107,24 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 
 	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.TopUpBalance", "ERPTopupBalance", message, payload.TopUPID)
+
 		logrus.
 			WithFields(logrus.Fields{
 				"at":     "ErpPrivyHttpHandler.TopUpBalance",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
-			Error(err)
+			Error(message)
 
 		errorResponse := map[string]interface{}{
 			"code":    422,
@@ -157,7 +168,6 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 
 func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Request) {
 	var err error
-
 	var ctx = r.Context()
 
 	var payload model.CheckTopUpStatus
@@ -219,13 +229,24 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 
 	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.CheckTopUpStatus", "ERPCheckTopUpStatus", message, payload.TopUPID)
+
 		logrus.
 			WithFields(logrus.Fields{
 				"at":     "ErpPrivyHttpHandler.CheckTopUpStatus",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
-			Error(err)
+			Error(message)
 
 		errorResponse := map[string]interface{}{
 			"code":    422,
@@ -332,13 +353,24 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 
 	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.VoidBalance", "ERPVoidBalance", message, payload.TopUPID)
+
 		logrus.
 			WithFields(logrus.Fields{
 				"at":     "ErpPrivyHttpHandler.VoidBalance",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
-			Error(err)
+			Error(message)
 
 		errorResponse := map[string]interface{}{
 			"code":    422,
@@ -445,13 +477,24 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 
 	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.Adendum", "ERPAdendum", message, payload.TopUPID)
+
 		logrus.
 			WithFields(logrus.Fields{
 				"at":     "ErpPrivyHttpHandler.Adendum",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
-			Error(err)
+			Error(message)
 
 		errorResponse := map[string]interface{}{
 			"code":    422,
@@ -563,13 +606,24 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 
 	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.Reconcile", "ERPReconcile", message, payload.TopUPID)
+
 		logrus.
 			WithFields(logrus.Fields{
 				"at":     "ErpPrivyHttpHandler.Reconcile",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
-			Error(err)
+			Error(message)
 
 		errorResponse := map[string]interface{}{
 			"code":    422,
@@ -676,13 +730,24 @@ func (h ErpPrivyHttpHandler) TransferBalance(w http.ResponseWriter, r *http.Requ
 
 	errors := pkgvalidator.Validate(payload)
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.TransferBalance", "ERPTransferBalance", message, payload.Origin.TopUPID)
+
 		logrus.
 			WithFields(logrus.Fields{
 				"at":     "ErpPrivyHttpHandler.TransferBalance",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
-			Error(err)
+			Error(message)
 
 		errorResponse := map[string]interface{}{
 			"code":    422,

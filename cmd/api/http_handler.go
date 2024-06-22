@@ -81,6 +81,9 @@ func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.
 
 				r.Use(appmiddleware.BasicAuth(basicAuth.Username, basicAuth.Password, prop.DefaultDecoder))
 
+				// set context key
+				r.Use(appmiddleware.HandlerSetContextValue)
+
 				r.Get("/healthcheck/logged", func(w http.ResponseWriter, r *http.Request) {
 					w.Write([]byte("SUCCESS Logged"))
 				})

@@ -9,4 +9,6 @@ const (
 	SessionUserId         Session = "session-user-id"
 	SessionUserMenu       Session = "session-user-menu"
 	SessionUserMenuAccess Session = "session-user-menu-access"
+	Mode                  Session = "mode"
+	Timestamp             Session = "timestamp"
 )
