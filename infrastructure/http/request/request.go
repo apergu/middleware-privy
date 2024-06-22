@@ -52,3 +52,25 @@ type RequestToHttpClient struct {
 	Script      string
 	ServiceName string
 }
+
+type PaymentGateway struct {
+	RecordType                       string     `json:"recordtype" validate:"required"`
+	CustomForm                       string     `json:"customform" validate:"required"`
+	CustBodyPrivySoCustID            string     `json:"custbody_privy_so_custid" validate:"required"`
+	Entity                           string     `json:"entity" validate:"required"`
+	StartDate                        string     `json:"startdate" validate:"required"`
+	EndDate                          string     `json:"enddate" validate:"required"`
+	CustBodyPrivyTermOfPayment       string     `json:"custbody_privy_termofpayment" validate:"required"`
+	OtherRefNum                      string     `json:"otherrefnum" validate:"required"`
+	CustBodyPrivyBilling             string     `json:"custbody_privy_billing" validate:"required"`
+	CustBodyPrivyIntegrasi           string     `json:"custbody_privy_integrasi" validate:"required"`
+	Memo                             string     `json:"memo,omitempty"` // Optional
+	CustBodyPrivyBDA                 string     `json:"custbody_privy_bda" validate:"required"`
+	CustBodyPrivyBDM                 string     `json:"custbody_privy_bdm" validate:"required"`
+	CustBodyPrivySalesSupport        string     `json:"custbody_privy_salessupport" validate:"required"`
+	CustBodyPrivySalesSupportManager string     `json:"custbodyprivy_salessupportmanager" validate:"required"`
+	CustBody10                       string     `json:"custbody10" validate:"required"`
+	CustBody9                        string     `json:"custbody9" validate:"required"`
+	CustBody7                        string     `json:"custbody7" validate:"required"`
+	Lines                            []LineItem `json:"lines" validate:"required,dive,required"`
+}
