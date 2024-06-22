@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"fmt"
 	"io"
 	"middleware/infrastructure/logger"
 	"middleware/internal/constants"
@@ -64,7 +65,25 @@ func LoggerValidateStructfunc(w http.ResponseWriter, r *http.Request, event, ser
 		StartTime:       r.Context().Value(constants.Timestamp).(time.Time).Format(time.RFC3339),
 	}
 
-	CreateLogERPPRivy(dataLog, "warn", serviceName, string(LogValidate))
+	createLogERPPRivy(dataLog, "warn", serviceName, string(LogValidate))
+}
+
+func LoggerSuccessStructfunc(w http.ResponseWriter, r *http.Request, event, serviceName, message, id string) {
+	dataLog := LogStruct{
+		Env:             os.Getenv("APP_MODE"),
+		Event:           Event{ErpTopupNo: id, Name: event},
+		Message:         message,
+		ProcessTime:     float64(time.Since(r.Context().Value(constants.Timestamp).(time.Time)).Seconds()),
+		ProcessTimeUnit: "second",
+		RequestID:       r.Header.Get("X-Request-Id"),
+		RequestIP:       readUserIP(r),
+		RequestMethod:   r.Method,
+		RequestPath:     r.RequestURI,
+		Service:         serviceName,
+		StartTime:       r.Context().Value(constants.Timestamp).(time.Time).Format(time.RFC3339),
+	}
+
+	createLogERPPRivy(dataLog, "info", serviceName, string(LogValidate))
 }
 
 func readUserIP(r *http.Request) string {
@@ -78,7 +97,7 @@ func readUserIP(r *http.Request) string {
 	return IPAddress
 }
 
-func CreateLogERPPRivy(data LogStruct, typeLog, typeService, logFileName string) error {
+func createLogERPPRivy(data LogStruct, typeLog, typeService, logFileName string) error {
 	log := logrus.New()
 
 	counter, fileName, line, _ := runtime.Caller(2)
@@ -92,8 +111,9 @@ func CreateLogERPPRivy(data LogStruct, typeLog, typeService, logFileName string)
 	relativePath := strings.TrimPrefix(fileName, projectDir+"/")
 	data.file = relativePath
 
-	logField := logrus.Fields{}
-	filePathLog := "logs/" + typeService + ".log"
+	// logField := logrus.Fields{}
+
+	filePathLog := fmt.Sprintf("logs/log_%s_%s.log", typeService, time.Now().Format("20060102150405"))
 
 	ensureDir(filePathLog)
 
@@ -103,27 +123,27 @@ func CreateLogERPPRivy(data LogStruct, typeLog, typeService, logFileName string)
 	log.Formatter = &logrus.JSONFormatter{}
 	log.SetOutput(writer)
 
-	switch logFileName {
-	case string(LogValidate):
-		logField = logrus.Fields{
-			"env":               data.Env,
-			"event":             data.Event,
-			"line":              data.Line,
-			"file":              data.file,
-			"message":           data.Message,
-			"function":          data.Func,
-			"process_time":      data.ProcessTime,
-			"process_time_unit": data.ProcessTimeUnit,
-			"request_id":        data.RequestID,
-			"request_ip":        data.RequestIP,
-			"request_method":    data.RequestMethod,
-			"request_path":      data.RequestPath,
-			"service":           data.Service,
-			"start_time":        data.StartTime,
-		}
-	case string(LogEvent):
-		logField = logrus.Fields{}
+	// switch logFileName {
+	// case string(LogValidate):
+	logField := logrus.Fields{
+		"env":               data.Env,
+		"event":             data.Event,
+		"line":              data.Line,
+		"file":              data.file,
+		"message":           data.Message,
+		"function":          data.Func,
+		"process_time":      data.ProcessTime,
+		"process_time_unit": data.ProcessTimeUnit,
+		"request_id":        data.RequestID,
+		"request_ip":        data.RequestIP,
+		"request_method":    data.RequestMethod,
+		"request_path":      data.RequestPath,
+		"service":           data.Service,
+		"start_time":        data.StartTime,
 	}
+	// case string(LogEvent):
+	// 	logField = logrus.Fields{}
+	// }
 
 	if typeLog == logger.LogWarn {
 		log.WithFields(logField).Warn()

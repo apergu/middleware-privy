@@ -164,6 +164,7 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 
 	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "TopUpBalance successfully created", resPrivy)
 	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
+	helper.LoggerSuccessStructfunc(w, r, "ErpPrivyHttpHandler.TopUpBalance", "ERPTopupBalance", "TopUpBalance successfully created", payload.TopUPID)
 }
 
 func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Request) {
@@ -286,6 +287,7 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 
 	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "CheckTopUpStatus successfully", resPrivy)
 	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
+	helper.LoggerSuccessStructfunc(w, r, "ErpPrivyHttpHandler.CheckTopUpStatus", "ERPCheckTopUpStatus", "CheckTopUpStatus successfully", payload.TopUPID)
 }
 
 func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request) {
@@ -410,6 +412,7 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 
 	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "VoidBalance successfully", resPrivy)
 	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
+	helper.LoggerSuccessStructfunc(w, r, "ErpPrivyHttpHandler.VoidBalance", "ERPVoidBalance", "VoidBalance successfully", payload.TopUPID)
 }
 
 func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
@@ -539,6 +542,7 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 
 	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "Adendum successfully created", resPrivy)
 	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
+	helper.LoggerSuccessStructfunc(w, r, "ErpPrivyHttpHandler.Adendum", "ERPAdendum", "Adendum successfully created", payload.TopUPID)
 }
 
 func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
@@ -663,6 +667,7 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 
 	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "Reconcile successfully created", respPrivy)
 	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
+	helper.LoggerSuccessStructfunc(w, r, "ErpPrivyHttpHandler.Reconcile", "ERPReconcile", "Reconcile successfully created", payload.TopUPID)
 }
 
 func (h ErpPrivyHttpHandler) TransferBalance(w http.ResponseWriter, r *http.Request) {
@@ -787,4 +792,5 @@ func (h ErpPrivyHttpHandler) TransferBalance(w http.ResponseWriter, r *http.Requ
 
 	responseOk, _ := helper.GenerateJSONResponse(http.StatusOK, true, "TransferBalance successfully created", respPrivy)
 	helper.WriteJSONResponse(w, responseOk, http.StatusOK)
+	helper.LoggerSuccessStructfunc(w, r, "ErpPrivyHttpHandler.TransferBalance", "ERPTransferBalance", "TransferBalance successfully created", payload.Origin.TopUPID)
 }
