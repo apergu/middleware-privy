@@ -7,38 +7,27 @@ import (
 	"middleware/pkg/credential"
 )
 
-type TopUpPaymentUsecaseGeneral struct {
+type TopUpPaymentGatewayUsecaseGeneral struct {
 	inf               *infrastructure.Infrastructure
 	TopUpPaymentPrivy service.PrivyToNetsuitService
 }
 
-func NewTopUpPaymentGateWayGeneral(TopUpPaymentPrivy service.PrivyToNetsuitService, inf *infrastructure.Infrastructure) *TopUpPaymentUsecaseGeneral {
-	return &TopUpPaymentUsecaseGeneral{
+func NewTopUpPaymentGateWayGeneral(TopUpPaymentPrivy service.PrivyToNetsuitService, inf *infrastructure.Infrastructure) *TopUpPaymentGatewayUsecaseGeneral {
+	return &TopUpPaymentGatewayUsecaseGeneral{
 		TopUpPaymentPrivy: TopUpPaymentPrivy,
 		inf:               inf,
 	}
 }
 
-func (r *TopUpPaymentUsecaseGeneral) TopUpPayment(payload request.CustomerDetails) (*credential.EnvelopeCustomerUsage, error) {
-
-	// custTopUpPayment := strings.Split(payload.TransactionID, "/")
-	custPrivyReq := credential.CustomerUsageParam{
-		// RecordType:                      "customrecord_privy_integrasi_top_up_payment",
-		// CustrecordPrivyServiceIntegrasi: payload.ServiceID,
-		// // CustrecordPrivyQuantityIntegrasi:    payload.,
-		// CustrecordPrivyUsageDateIntegrasi:   payload.TransactionDate,
-		// CustrecordEnterpriseeID:             custTopUpPayment[0],
-		// CustrecordPrivyMerchantNameIntgrasi: custTopUpPayment[1],
-		// CustrecordPrivyChannelNameIntgrasi:  custTopUpPayment[2],
-	}
+func (r *TopUpPaymentGatewayUsecaseGeneral) TopUpPaymentGateWay(payload request.PaymentGateway) (*credential.EnvelopePaymentGateway, error) {
 	url := r.inf.Config.CredentialPrivy.Host + credential.EndpointPostCustomer
 	resp := credential.EnvelopeCustomerUsage{}
 	req := request.RequestToNetsuit{
-		Request:     custPrivyReq,
+		Request:     payload,
 		Response:    resp,
-		Script:      "10",
+		Script:      "183",
 		Url:         url,
-		ServiceName: "TOP_UP_PAYMENT",
+		ServiceName: "TOP_UP_PAYMENTGATEWAY",
 	}
 
 	_, err := r.TopUpPaymentPrivy.ToNetsuit(req)
@@ -46,5 +35,5 @@ func (r *TopUpPaymentUsecaseGeneral) TopUpPayment(payload request.CustomerDetail
 		return nil, err
 	}
 
-	return &resp, nil
+	return nil, nil
 }

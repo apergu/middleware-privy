@@ -35,7 +35,7 @@ func NewTopUpPaymentGateWayHttpHandler(prop HTTPHandlerProperty, inf *infrastruc
 func (h TopUpPaymentGateWayHttpHandler) TopUpPayment(w http.ResponseWriter, r *http.Request) {
 
 	var err error
-	var payload request.CustomerDetails
+	var payload request.PaymentGateway
 
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 	if err != nil {
