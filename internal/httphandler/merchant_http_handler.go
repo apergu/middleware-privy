@@ -125,6 +125,17 @@ func (h MerchantHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	errors := payload.Validate()
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "CustomerUsageHttpHandler.Create", "merchant", message, "")
+
 		logrus.
 			WithFields(logrus.Fields{
 				"at":     "CustomerUsageHttpHandler.Create",
@@ -179,6 +190,7 @@ func (h MerchantHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	})
 
 	helper.WriteJSONResponse(w, response, http.StatusCreated)
+	helper.LoggerSuccessStructfunc(w, r, "CustomerUsageHttpHandler.Create", "merchant", "Merchant successfully created", "")
 
 }
 
@@ -233,6 +245,17 @@ func (h MerchantHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	errors := payload.Validate()
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "CustomerUsageHttpHandler.Update", "merchant", message, "")
+
 		logrus.
 			WithFields(logrus.Fields{
 				"at":     "CustomerUsageHttpHandler.Create",
@@ -280,6 +303,7 @@ func (h MerchantHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	response = rresponser.NewResponserSuccessOK("", "Merchant successfully updated", roleId, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.LoggerSuccessStructfunc(w, r, "CustomerUsageHttpHandler.Update", "merchant", "Merchant successfully updated", "")
 }
 
 func (h MerchantHttpHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -310,6 +334,7 @@ func (h MerchantHttpHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	response = rresponser.NewResponserSuccessOK("", "Merchant successfully deleted", roleId, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.LoggerSuccessStructfunc(w, r, "CustomerUsageHttpHandler.Delete", "merchant", "Merchant successfully deleted", "")
 }
 
 func (h MerchantHttpHandler) Find(w http.ResponseWriter, r *http.Request) {
@@ -358,6 +383,7 @@ func (h MerchantHttpHandler) Find(w http.ResponseWriter, r *http.Request) {
 
 	response = rresponser.NewResponserSuccessOK("", "Merchant successfully retrieved", roles, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.LoggerSuccessStructfunc(w, r, "CustomerUsageHttpHandler.Find", "merchant", "Merchant successfully retrieved", "")
 }
 
 func (h MerchantHttpHandler) FindById(w http.ResponseWriter, r *http.Request) {
@@ -388,4 +414,5 @@ func (h MerchantHttpHandler) FindById(w http.ResponseWriter, r *http.Request) {
 
 	response = rresponser.NewResponserSuccessOK("", "Merchant successfully retrieved", role, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.LoggerSuccessStructfunc(w, r, "CustomerUsageHttpHandler.FindById", "merchant", "Merchant successfully retrieved", "")
 }

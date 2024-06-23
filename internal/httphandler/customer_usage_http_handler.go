@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"middleware/internal/helper"
 	"middleware/internal/model"
 	"middleware/internal/repository"
 	"middleware/internal/usecase"
@@ -88,6 +89,17 @@ func (h CustomerUsageHttpHandler) Create(w http.ResponseWriter, r *http.Request)
 	//errors := []string
 	errors := payload.Validate()
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "CustomerUsageHttpHandler.Create", "customer", message, "")
+
 		logrus.
 			WithFields(logrus.Fields{
 				"at":     "CustomerUsageHttpHandler.Create",
@@ -135,6 +147,7 @@ func (h CustomerUsageHttpHandler) Create(w http.ResponseWriter, r *http.Request)
 
 	response = rresponser.NewResponserSuccessCreated("", "Customer Usage successfully created", roleId, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.LoggerSuccessStructfunc(w, r, "CustomerUsageHttpHandler.Create", "customer", "Customer Usage successfully created", "")
 }
 
 func (h CustomerUsageHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -188,9 +201,20 @@ func (h CustomerUsageHttpHandler) Update(w http.ResponseWriter, r *http.Request)
 
 	errors := payload.Validate()
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "CustomerUsageHttpHandler.Update", "customer", message, "")
+
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "CustomerUsageHttpHandler.Create",
+				"at":     "CustomerUsageHttpHandler.Update",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
@@ -235,6 +259,7 @@ func (h CustomerUsageHttpHandler) Update(w http.ResponseWriter, r *http.Request)
 
 	response = rresponser.NewResponserSuccessOK("", "Customer Usage successfully updated", roleId, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.LoggerSuccessStructfunc(w, r, "CustomerUsageHttpHandler.Update", "customer", "Customer Usage successfully updated", "")
 }
 
 func (h CustomerUsageHttpHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -265,6 +290,7 @@ func (h CustomerUsageHttpHandler) Delete(w http.ResponseWriter, r *http.Request)
 
 	response = rresponser.NewResponserSuccessOK("", "Customer Usage successfully deleted", roleId, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.LoggerSuccessStructfunc(w, r, "CustomerUsageHttpHandler.Delete", "customer", "Customer Usage successfully deleted", "")
 }
 
 func (h CustomerUsageHttpHandler) Find(w http.ResponseWriter, r *http.Request) {
@@ -313,6 +339,7 @@ func (h CustomerUsageHttpHandler) Find(w http.ResponseWriter, r *http.Request) {
 
 	response = rresponser.NewResponserSuccessOK("", "Customer Usage successfully retrieved", roles, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.LoggerSuccessStructfunc(w, r, "CustomerUsageHttpHandler.Find", "customer", "Customer Usage successfully retrieved", "")
 }
 
 func (h CustomerUsageHttpHandler) FindById(w http.ResponseWriter, r *http.Request) {
@@ -343,4 +370,5 @@ func (h CustomerUsageHttpHandler) FindById(w http.ResponseWriter, r *http.Reques
 
 	response = rresponser.NewResponserSuccessOK("", "Customer Usage successfully retrieved", role, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.LoggerSuccessStructfunc(w, r, "CustomerUsageHttpHandler.FindById", "customer", "Customer Usage successfully retrieved", "")
 }

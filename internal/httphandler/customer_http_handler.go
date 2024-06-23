@@ -522,6 +522,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		helper.WriteJSONResponse(w, response, http.StatusCreated)
 
 		// // response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
+		helper.LoggerSuccessStructfunc(w, r, "CustomerHttpHandler.Create", "Customer", "Customer successfully created", payload.CustomerName)
 	}
 
 	if payload.EntityStatus == "6" || payload.EntityStatus == "" {
@@ -596,6 +597,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		helper.WriteJSONResponse(w, response, http.StatusCreated)
 
 		// response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", resp.StatusCode, resp.Body)
+		helper.LoggerSuccessStructfunc(w, r, "CustomerHttpHandler.Create", "Customer", "Customer successfully created", payload.CustomerName)
 	}
 
 	if payload.EntityStatus == "7" {
@@ -614,6 +616,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 		helper.WriteJSONResponse(w, response, http.StatusCreated)
 		// response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
+		helper.LoggerSuccessStructfunc(w, r, "CustomerHttpHandler.Create", "Customer", "Customer successfully created", payload.CustomerName)
 	}
 	// } else {
 	// 	log.Println("CRM LEAD ID KOSONG", payload)
@@ -670,6 +673,17 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 
 	errors := payload.ValidateLead()
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "CustomerHttpHandler.Create", "customer", message, "")
+
 		logrus.
 			WithFields(logrus.Fields{
 				"at":     "CustomerHttpHandler.Create",
@@ -722,6 +736,7 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 	})
 	// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 	helper.WriteJSONResponse(w, response, http.StatusCreated)
+	helper.LoggerSuccessStructfunc(w, r, "CustomerHttpHandler.Create", "Customer", "Customer successfully created", payload.CustomerName)
 
 }
 
@@ -773,9 +788,19 @@ func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) 
 
 	errors := payload.ValidateLead()
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "CustomerHttpHandler.UpdateLead", "customer", message, "")
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "CustomerUsageHttpHandler.Create",
+				"at":     "CustomerHttpHandler.UpdateLead",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
@@ -892,9 +917,20 @@ func (h CustomerHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	errors := payload.Validate()
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "CustomerHttpHandler.Update", "customer", message, "")
+
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "CustomerUsageHttpHandler.Create",
+				"at":     "CustomerHttpHandler.Update",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).

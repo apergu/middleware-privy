@@ -120,9 +120,20 @@ func (h ChannelHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	errors := payload.Validate()
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "ChannelHttpHandler.Create", "channel", message, "")
+
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "CustomerUsageHttpHandler.Create",
+				"at":     "ChannelHttpHandler.Create",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
@@ -171,6 +182,7 @@ func (h ChannelHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	})
 
 	helper.WriteJSONResponse(w, response, http.StatusCreated)
+	helper.LoggerSuccessStructfunc(w, r, "ChannelHttpHandler.Create", "channel", "Channel successfully created", "")
 }
 
 func (h ChannelHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -224,9 +236,20 @@ func (h ChannelHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	errors := payload.Validate()
 	if len(errors) > 0 {
+		var message string
+		for _, v := range errors {
+			if message == "" {
+				message = v["description"].(string)
+			} else {
+				message = message + "; " + v["description"].(string)
+			}
+		}
+
+		helper.LoggerValidateStructfunc(w, r, "ChannelHttpHandler.Update", "channel", message, "")
+
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "CustomerUsageHttpHandler.Create",
+				"at":     "ChannelHttpHandler.Update",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
@@ -271,6 +294,7 @@ func (h ChannelHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	response = rresponser.NewResponserSuccessOK("", "Channel successfully updated", roleId, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.LoggerSuccessStructfunc(w, r, "ChannelHttpHandler.Update", "channel", "Channel successfully updated", "")
 }
 
 func (h ChannelHttpHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -301,6 +325,7 @@ func (h ChannelHttpHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	response = rresponser.NewResponserSuccessOK("", "Channel successfully deleted", roleId, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.LoggerSuccessStructfunc(w, r, "ChannelHttpHandler.Delete", "channel", "Channel successfully deleted", "")
 }
 
 func (h ChannelHttpHandler) Find(w http.ResponseWriter, r *http.Request) {
@@ -349,6 +374,7 @@ func (h ChannelHttpHandler) Find(w http.ResponseWriter, r *http.Request) {
 
 	response = rresponser.NewResponserSuccessOK("", "Channel successfully retrieved", roles, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.LoggerSuccessStructfunc(w, r, "ChannelHttpHandler.Find", "channel", "Channel successfully retrieved", "")
 }
 
 func (h ChannelHttpHandler) FindById(w http.ResponseWriter, r *http.Request) {
@@ -379,4 +405,5 @@ func (h ChannelHttpHandler) FindById(w http.ResponseWriter, r *http.Request) {
 
 	response = rresponser.NewResponserSuccessOK("", "Channel successfully retrieved", role, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.LoggerSuccessStructfunc(w, r, "ChannelHttpHandler.FindById", "channel", "Channel successfully retrieved", "")
 }
