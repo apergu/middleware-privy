@@ -161,7 +161,7 @@ func (c *HttpClient) GetAccessToken(jwtToken response.JWTToken) (*response.Crede
 
 	req, _ := http.NewRequest(http.MethodPost, accessTokenURL, strings.NewReader(form.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.SetBasicAuth(c.cfg.CredentialPrivy.Username, c.cfg.CredentialPrivy.Username)
+	req.SetBasicAuth(c.cfg.CredentialPrivy.Username, c.cfg.CredentialPrivy.Password)
 
 	resp, err := c.CreateHTTPClient().Do(req)
 	if err != nil {
