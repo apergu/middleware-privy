@@ -18,11 +18,11 @@ import (
 
 type CustomerCommandUsecaseGeneral struct {
 	custRepo      repository.CustomerCommandRepository
+	merchantRepo  repository.MerchantQueryRepository
+	channelRepo   repository.ChannelQueryRepository
 	customerPrivy credential.Customer
 	channelPrivy  credential.Channel
 	merchantPrivy credential.Merchant
-	merchantRepo  repository.MerchantCommandRepository
-	channelRepo   repository.ChannelCommandRepository
 }
 
 func NewCustomerCommandUsecaseGeneral(prop CustomerUsecaseProperty) *CustomerCommandUsecaseGeneral {
@@ -38,6 +38,7 @@ func NewCustomerCommandUsecaseGeneral(prop CustomerUsecaseProperty) *CustomerCom
 
 func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.Customer) (int64, interface{}, error) {
 
+	log.Println("BEFORE ERRROR ", r.merchantRepo)
 	tx, err := r.custRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
@@ -124,8 +125,12 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 			}
 		}
 	}()
+	log.Println("merchant CUST TEST", cust.EnterprisePrivyID)
 
-	merchant, _ := r.merchantRepo.FindByEnterprisePrivyID(ctx, cust.EnterprisePrivyID, tx)
+	merchant, err := r.merchantRepo.FindByEnterprisePrivyID(ctx, cust.EnterprisePrivyID, nil)
+
+	log.Println("merchant", err)
+	log.Println("merchant2", merchant)
 
 	if merchant.MerchantID != "" {
 		payloadMerchant := credential.MerchantParam{
@@ -146,7 +151,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 
 		r.merchantPrivy.CreateMerchant(ctx, payloadMerchant)
 
-		channel, _ := r.channelRepo.FindByMerchantID(ctx, merchant.MerchantID, tx)
+		channel, _ := r.channelRepo.FindByMerchantID(ctx, merchant.MerchantID, nil)
 
 		payloadChannel := credential.ChannelParam{
 			RecordType:                 "customrecord_customer_hierarchy",

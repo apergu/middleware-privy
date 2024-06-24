@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -190,6 +191,7 @@ func (c *MerchantRepositoryPostgre) FindByMerchantID(ctx context.Context, enterp
 }
 
 func (c *MerchantRepositoryPostgre) FindByEnterprisePrivyID(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.Merchant, error) {
+	log.Println("enterprisePrivyID", enterprisePrivyID)
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx

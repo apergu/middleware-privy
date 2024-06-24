@@ -11,11 +11,11 @@ import (
 
 type CustomerUsecaseProperty struct {
 	CustomerRepo  repository.CustomerRepository
+	MerchantRepo  repository.MerchantRepository
+	ChannelRepo   repository.ChannelRepository
 	CustomerPrivy credential.Credential
 	MerchantPrivy credential.Credential
 	ChannelPrivy  credential.Credential
-	MerchantRepo  repository.MerchantRepository
-	ChannelRepo   repository.ChannelRepository
 }
 
 type CustomerQueryUsecase interface {

@@ -88,3 +88,20 @@ func (r *MerchantQueryUsecaseGeneral) FindById(ctx context.Context, id int64) (e
 
 	return cust, nil, nil
 }
+
+func (r *MerchantQueryUsecaseGeneral) FindOneByEnterprisePrivyID(ctx context.Context, enterprisePrivyID string) (entity.Merchant, interface{}, error) {
+	cust, err := r.custRepo.FindByEnterprisePrivyID(ctx, enterprisePrivyID, nil)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "MerchantQueryUsecaseGeneral.FindById",
+				"src":   "custRepo.FindOneById",
+				"param": enterprisePrivyID,
+			}).
+			Error(err)
+
+		return entity.Merchant{}, nil, err
+	}
+
+	return cust, nil, nil
+}

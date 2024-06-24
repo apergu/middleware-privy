@@ -27,9 +27,9 @@ type MerchantHttpHandler struct {
 
 func NewMerchantHttpHandler(prop HTTPHandlerProperty) http.Handler {
 	ucProp := usecase.MerchantUsecaseProperty{
-		MerchantRepo:  repository.NewMerchantRepositoryPostgre(prop.DBPool),
 		MerchantPrivy: prop.DefaultCredential,
 		CustomerRepo:  repository.NewCustomerRepositoryPostgre(prop.DBPool),
+		MerchantRepo:  repository.NewMerchantRepositoryPostgre(prop.DBPool),
 	}
 
 	handler := MerchantHttpHandler{
