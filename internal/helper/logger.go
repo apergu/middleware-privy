@@ -16,8 +16,10 @@ import (
 )
 
 type Event struct {
-	ErpTopupNo string `json:"erp_topup_no,omitempty"`
-	Name       string `json:"name"`
+	ErpTopupNo string      `json:"erp_topup_no,omitempty"`
+	Name       string      `json:"name"`
+	Body       interface{} `json:"body,omitempty"`
+	Data       interface{} `json:"data,omitempty"`
 }
 
 type typeLog string
@@ -33,8 +35,10 @@ const (
 type LogStruct struct {
 	Env   string `json:"env"`
 	Event struct {
-		ErpTopupNo string `json:"erp_topup_no,omitempty"`
-		Name       string `json:"name"`
+		ErpTopupNo string      `json:"erp_topup_no,omitempty"`
+		Name       string      `json:"name"`
+		Body       interface{} `json:"body,omitempty"`
+		Data       interface{} `json:"data,omitempty"`
 	} `json:"event"`
 	file            string
 	Func            string  `json:"function"`
@@ -50,10 +54,10 @@ type LogStruct struct {
 	StartTime       string  `json:"start_time"`
 }
 
-func LoggerValidateStructfunc(w http.ResponseWriter, r *http.Request, event, serviceName, message, id string) {
+func LoggerValidateStructfunc(w http.ResponseWriter, r *http.Request, event, serviceName, message, id string, body interface{}) {
 	dataLog := LogStruct{
 		Env:             os.Getenv("APP_MODE"),
-		Event:           Event{ErpTopupNo: id, Name: event},
+		Event:           Event{ErpTopupNo: id, Name: event, Body: body},
 		Message:         message,
 		ProcessTime:     float64(time.Since(r.Context().Value(constants.Timestamp).(time.Time)).Seconds()),
 		ProcessTimeUnit: "second",
@@ -66,6 +70,25 @@ func LoggerValidateStructfunc(w http.ResponseWriter, r *http.Request, event, ser
 	}
 
 	createLogERPPRivy(dataLog, "warn", serviceName, string(LogValidate))
+}
+
+func LoggerErrorStructfunc(w http.ResponseWriter, r *http.Request, event, serviceName, message, id string, body interface{}, data interface{}) {
+	dataLog := LogStruct{
+		Env:             os.Getenv("APP_MODE"),
+		Event:           Event{ErpTopupNo: id, Name: event, Body: body, Data: data},
+		Message:         message,
+		ProcessTime:     float64(time.Since(r.Context().Value(constants.Timestamp).(time.Time)).Seconds()),
+		ProcessTimeUnit: "second",
+		RequestID:       r.Header.Get("X-Request-Id"),
+		RequestIP:       readUserIP(r),
+		RequestMethod:   r.Method,
+		RequestPath:     r.RequestURI,
+		Service:         serviceName,
+		StartTime:       r.Context().Value(constants.Timestamp).(time.Time).Format(time.RFC3339),
+	}
+
+	createLogERPPRivy(dataLog, "error", serviceName, string(LogValidate))
+
 }
 
 func LoggerSuccessStructfunc(w http.ResponseWriter, r *http.Request, event, serviceName, message, id string) {

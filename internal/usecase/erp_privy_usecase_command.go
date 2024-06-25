@@ -74,12 +74,6 @@ func (r *ErpPrivyCommandUsecaseGeneral) CheckTopUpStatus(ctx context.Context, pa
 
 	res, err := r.ErpPrivyCred.CheckTopUpStatus(ctx, input, xrequestid)
 	if err != nil {
-		err := rapperror.ErrUnprocessableEntity(
-			"",
-			"Start Period Date must be before End Period Date",
-			"CheckTopUpStatusCommandUsecaseGeneral.CheckTopUpStatus",
-			nil,
-		)
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), nil)
 		return response, nil, err
 	}

@@ -116,7 +116,7 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 			}
 		}
 
-		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.TopUpBalance", "ERPTopupBalance", message, payload.TopUPID)
+		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.TopUpBalance", "ERPTopupBalance", message, payload.TopUPID, payload)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -158,6 +158,7 @@ func (h ErpPrivyHttpHandler) TopUpBalance(w http.ResponseWriter, r *http.Request
 
 	res, resPrivy, err := h.Command.TopUpBalance(ctx, payload, xRequestId)
 	if err != nil {
+		helper.LoggerErrorStructfunc(w, r, "ErpPrivyHttpHandler.TopUpBalance", "ERPTopupBalance", err.Error(), payload.TopUPID, payload, resPrivy)
 		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}
@@ -239,7 +240,7 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 			}
 		}
 
-		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.CheckTopUpStatus", "ERPCheckTopUpStatus", message, payload.TopUPID)
+		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.CheckTopUpStatus", "ERPCheckTopUpStatus", message, payload.TopUPID, payload)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -281,6 +282,7 @@ func (h ErpPrivyHttpHandler) CheckTopUpStatus(w http.ResponseWriter, r *http.Req
 
 	res, resPrivy, err := h.Command.CheckTopUpStatus(ctx, payload, xRequestId)
 	if err != nil {
+		helper.LoggerErrorStructfunc(w, r, "ErpPrivyHttpHandler.CheckTopUpStatus", "ERPCheckTopUpStatus", err.Error(), payload.TopUPID, payload, resPrivy)
 		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}
@@ -364,7 +366,7 @@ func (h ErpPrivyHttpHandler) VoidBalance(w http.ResponseWriter, r *http.Request)
 			}
 		}
 
-		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.VoidBalance", "ERPVoidBalance", message, payload.TopUPID)
+		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.VoidBalance", "ERPVoidBalance", message, payload.TopUPID, payload)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -489,7 +491,7 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.Adendum", "ERPAdendum", message, payload.TopUPID)
+		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.Adendum", "ERPAdendum", message, payload.TopUPID, payload)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -531,6 +533,7 @@ func (h ErpPrivyHttpHandler) Adendum(w http.ResponseWriter, r *http.Request) {
 
 	res, resPrivy, err := h.Command.Adendum(ctx, payload, xRequestId)
 	if err != nil {
+		helper.LoggerErrorStructfunc(w, r, "ErpPrivyHttpHandler.Adendum", "ERPAdendum", err.Error(), payload.TopUPID, payload, resPrivy)
 		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}
@@ -619,7 +622,7 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.Reconcile", "ERPReconcile", message, payload.TopUPID)
+		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.Reconcile", "ERPReconcile", message, payload.TopUPID, payload)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -661,6 +664,7 @@ func (h ErpPrivyHttpHandler) Reconcile(w http.ResponseWriter, r *http.Request) {
 
 	res, respPrivy, err := h.Command.Reconcile(ctx, payload, xRequestId)
 	if err != nil {
+		helper.LoggerErrorStructfunc(w, r, "ErpPrivyHttpHandler.Reconcile", "ERPReconcile", err.Error(), payload.TopUPID, payload, respPrivy)
 		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}
@@ -744,7 +748,7 @@ func (h ErpPrivyHttpHandler) TransferBalance(w http.ResponseWriter, r *http.Requ
 			}
 		}
 
-		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.TransferBalance", "ERPTransferBalance", message, payload.Origin.TopUPID)
+		helper.LoggerValidateStructfunc(w, r, "ErpPrivyHttpHandler.TransferBalance", "ERPTransferBalance", message, payload.Origin.TopUPID, payload)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -786,6 +790,7 @@ func (h ErpPrivyHttpHandler) TransferBalance(w http.ResponseWriter, r *http.Requ
 
 	res, respPrivy, err := h.Command.TransferBalance(ctx, payload, xRequestId)
 	if err != nil {
+		helper.LoggerErrorStructfunc(w, r, "ErpPrivyHttpHandler.TransferBalance", "ERPTransferBalance", err.Error(), payload.Origin.TopUPID, payload, respPrivy)
 		helper.WriteJSONResponse(w, res, helper.GetErrorStatusCode(err))
 		return
 	}

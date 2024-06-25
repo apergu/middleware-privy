@@ -134,7 +134,7 @@ func (h MerchantHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		helper.LoggerValidateStructfunc(w, r, "CustomerUsageHttpHandler.Create", "merchant", message, "")
+		helper.LoggerValidateStructfunc(w, r, "CustomerUsageHttpHandler.Create", "merchant", message, "", payload)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -254,7 +254,7 @@ func (h MerchantHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		helper.LoggerValidateStructfunc(w, r, "CustomerUsageHttpHandler.Update", "merchant", message, "")
+		helper.LoggerValidateStructfunc(w, r, "CustomerUsageHttpHandler.Update", "merchant", message, "", payload)
 
 		logrus.
 			WithFields(logrus.Fields{
