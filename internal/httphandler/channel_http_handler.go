@@ -129,7 +129,7 @@ func (h ChannelHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		helper.LoggerValidateStructfunc(w, r, "ChannelHttpHandler.Create", "channel", message, "")
+		helper.LoggerValidateStructfunc(w, r, "ChannelHttpHandler.Create", "channel", message, "", payload)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -245,7 +245,7 @@ func (h ChannelHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		helper.LoggerValidateStructfunc(w, r, "ChannelHttpHandler.Update", "channel", message, "")
+		helper.LoggerValidateStructfunc(w, r, "ChannelHttpHandler.Update", "channel", message, "", payload)
 
 		logrus.
 			WithFields(logrus.Fields{

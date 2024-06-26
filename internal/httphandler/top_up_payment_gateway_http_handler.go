@@ -47,6 +47,7 @@ func (h TopUpPaymentGateWayHttpHandler) TopUpPayment(w http.ResponseWriter, r *h
 
 	_, err = h.Command.TopUpPaymentGateWay(payload)
 	if err != nil {
+		helper.LoggerErrorStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWay", err.Error(), "", payload, nil)
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return

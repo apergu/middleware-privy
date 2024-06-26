@@ -98,7 +98,7 @@ func (h CustomerUsageHttpHandler) Create(w http.ResponseWriter, r *http.Request)
 			}
 		}
 
-		helper.LoggerValidateStructfunc(w, r, "CustomerUsageHttpHandler.Create", "customer", message, "")
+		helper.LoggerValidateStructfunc(w, r, "CustomerUsageHttpHandler.Create", "customer", message, "", payload)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -210,7 +210,7 @@ func (h CustomerUsageHttpHandler) Update(w http.ResponseWriter, r *http.Request)
 			}
 		}
 
-		helper.LoggerValidateStructfunc(w, r, "CustomerUsageHttpHandler.Update", "customer", message, "")
+		helper.LoggerValidateStructfunc(w, r, "CustomerUsageHttpHandler.Update", "customer", message, "", payload)
 
 		logrus.
 			WithFields(logrus.Fields{
