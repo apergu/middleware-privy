@@ -30,7 +30,7 @@ func NewMerchantCommandUsecaseGeneral(prop MerchantUsecaseProperty) *MerchantCom
 
 func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant model.Merchant) (int64, interface{}, error) {
 	tx, err := r.merchantRepo.BeginTx(ctx)
-	log.Println("custRepo", r.custRepo);
+	log.Println("custRepo", r.custRepo)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -53,21 +53,6 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 	tmNow := time.Now().UnixNano() / 1000000
 
 	respCust, _ := r.merchantRepo.FindByName(ctx, merchant.MerchantName, tx)
-
-	defer func() {
-		if p := recover(); p != nil {
-			r.merchantRepo.RollbackTx(ctx, tx)
-			panic(p)
-		} else if err != nil {
-			log.Println("Rolling back transaction due to error:", err)
-			r.merchantRepo.RollbackTx(ctx, tx)
-		} else {
-			err = r.merchantRepo.CommitTx(ctx, tx)
-			if err != nil {
-				log.Println("Error committing transaction:", err)
-			}
-		}
-	}()
 
 	if respCust.MerchantName != "" {
 		return 0, nil, rapperror.ErrConflict(

@@ -132,6 +132,21 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 	log.Println("merchant", err)
 	log.Println("merchant2", merchant)
 
+	defer func() {
+		if p := recover(); p != nil {
+			r.custRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.custRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.custRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
+
 	if merchant.MerchantID != "" {
 		payloadMerchant := credential.MerchantParam{
 			RecordType:                  "customrecord_customer_hierarchy",
@@ -152,6 +167,21 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		r.merchantPrivy.CreateMerchant(ctx, payloadMerchant)
 
 		channel, _ := r.channelRepo.FindByMerchantID(ctx, merchant.MerchantID, nil)
+
+		defer func() {
+			if p := recover(); p != nil {
+				r.custRepo.RollbackTx(ctx, tx)
+				panic(p)
+			} else if err != nil {
+				log.Println("Rolling back transaction due to error:", err)
+				r.custRepo.RollbackTx(ctx, tx)
+			} else {
+				err = r.custRepo.CommitTx(ctx, tx)
+				if err != nil {
+					log.Println("Error committing transaction:", err)
+				}
+			}
+		}()
 
 		payloadChannel := credential.ChannelParam{
 			RecordType:                 "customrecord_customer_hierarchy",
@@ -194,6 +224,8 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		UpdatedAt:         tmNow,
 	}
 
+	custId, err := r.custRepo.Create(ctx, insertCustomer, tx)
+
 	defer func() {
 		if p := recover(); p != nil {
 			r.custRepo.RollbackTx(ctx, tx)
@@ -208,8 +240,6 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 			}
 		}
 	}()
-
-	custId, err := r.custRepo.Create(ctx, insertCustomer, tx)
 	log.Println("response", err)
 	log.Println("BEFORE ERRROR ")
 
