@@ -532,15 +532,15 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if payload.EntityStatus == "6" || payload.EntityStatus == "" {
 		log.Println("payload masuk 6", payload)
 
-		if payload.CRMLeadID == "" {
-			_, _, err := h.Command.CreateLeadZD(ctx, payload)
-			if err != nil {
-				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-				return
-			}
+		// if payload.CRMLeadID == "" {
+		_, _, err := h.Command.CreateLeadZD(ctx, payload)
+		if err != nil {
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+			return
 		}
+		// }
 
 		url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
 
