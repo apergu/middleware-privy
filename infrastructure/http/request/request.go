@@ -1,5 +1,7 @@
 package http_request_infrastructure
 
+import "time"
+
 type CustomerDetails struct {
 	CustomForm                 string     `json:"customform" validate:"required"`
 	CustBodyPrivySoCustID      string     `json:"custbody_privy_so_custid" validate:"required"`
@@ -77,4 +79,23 @@ type PaymentGateway struct {
 	CustBody9                        string     `json:"custbody9" validate:"required"`
 	CustBody7                        string     `json:"custbody7" validate:"required"`
 	Lines                            []LineItem `json:"lines" validate:"required,dive,required"`
+}
+
+type ResPaymentGateway struct {
+	Success  bool `json:"success"`
+	RecordID int  `json:"recordId"`
+	Data     struct {
+		TopupID         string    `json:"topup_id"`
+		EnterpriseID    string    `json:"enterprise_id"`
+		MerchantID      string    `json:"merchant_id"`
+		ChannelID       string    `json:"channel_id"`
+		ServiceID       string    `json:"service_id"`
+		PostPaid        bool      `json:"post_paid"`
+		Qty             int       `json:"qty"`
+		UnitPrice       int       `json:"unit_price"`
+		StartPeriodDate time.Time `json:"start_period_date"`
+		EndPeriodDate   time.Time `json:"end_period_date"`
+		TransactionDate time.Time `json:"transaction_date"`
+	} `json:"data"`
+	Message string `json:"message"`
 }
