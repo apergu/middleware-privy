@@ -3,6 +3,7 @@ package middleware
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"middleware/infrastructure"
 	request "middleware/infrastructure/http/request"
 	response "middleware/infrastructure/http/response"
@@ -35,11 +36,16 @@ func (ds *ToNetsuitService) ToNetsuit(req request.RequestToNetsuit) (interface{}
 		return nil, err
 	}
 	accessToken, err := ds.inf.HttpClient.GetAccessToken(*jwtToken)
+	log.Println("accessToken", accessToken)
+
 	if err != nil {
 		return nil, err
 	}
 
-	headers := map[string]string{"Authorization": accessToken.TokenType + " " + accessToken.AccessToken}
+	headers := map[string]string{
+		"Authorization": accessToken.TokenType + " " + accessToken.AccessToken,
+		"Content-Type":  "application/json",
+	}
 	reqq := request.RequestToHttpClient{
 		Body:        req.Request,
 		Headers:     headers,

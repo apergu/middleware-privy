@@ -33,6 +33,10 @@ type LineItem struct {
 	CustColPrivyStartDateLayanan    string `json:"custcol_privy_start_date_layanan,omitempty"` // Optional
 	CustColPrivyDateLayanan         string `json:"custcol_privy_date_layanan,omitempty"`       // Optional
 	CustColPrivyTrxID               string `json:"custcol_privy_trxid" validate:"required"`
+	CustColPaymentGatewayFee        string `json:"custcolprivy_paymentgatewayfee" ` // Optional
+	Amount                          string `json:"amount" validate:"required"`
+	CustColAmountBeforeDisc         string `json:"custcol_privy_amountbeforediscount" `
+	// Optional
 }
 
 type RequestToNetsuit struct {
