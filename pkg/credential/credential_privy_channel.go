@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/sirupsen/logrus"
-	"gitlab.com/rteja-library3/rapperror"
 )
 
 func (c *CredentialPrivy) CreateChannel(ctx context.Context, param ChannelParam) (ChannelResponse, error) {
@@ -109,12 +108,7 @@ func (c *CredentialPrivy) CreateChannel(ctx context.Context, param ChannelParam)
 	}
 
 	if len(custResp.SuccessTransaction) == 0 {
-		return ChannelResponse{}, rapperror.ErrUnprocessableEntity(
-			"",
-			"Unprocessable Entity - merchant is not found",
-			"",
-			nil,
-		)
+		return ChannelResponse{}, nil
 	}
 
 	return custResp.SuccessTransaction[0], nil
