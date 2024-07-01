@@ -145,8 +145,7 @@ func (h CustomerUsageHttpHandler) Create(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	response = rresponser.NewResponserSuccessCreated("", "Customer Usage successfully created", roleId, meta)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	helper.WriteJSONResponse(w, response, http.StatusCreated)
 	helper.LoggerSuccessStructfunc(w, r, "CustomerUsageHttpHandler.Create", "customer", "Customer Usage successfully created", "")
 }
 
