@@ -1014,6 +1014,39 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 		return 0, nil, err
 	}
 
+	if err != nil {
+		r.custRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Update",
+				"param": privyResp,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	err = r.custRepo.CommitTx(ctx, tx)
+	if err != nil {
+		r.custRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "CustomerCommandUsecaseGeneral.Update",
+				"src": "custRepo.CommitTx",
+			}).
+			Error(err)
+
+		return 0, nil, rapperror.ErrInternalServerError(
+			"",
+			"Something went wrong when commit",
+			"CustomerCommandUsecaseGeneral.Update",
+			nil,
+		)
+	}
+
 	// SELIP TEST
 
 	// log.Println("merchant CUST TEST", cust.EnterprisePrivyID)
@@ -1079,7 +1112,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 			CustRecordCustomerName:     strconv.Itoa(int(merchant.CustomerInternalID)),
 			CustRecordEnterpriseID:     merchant.EnterpriseID,
 			CustRecordChannelID:        channel.ChannelID,
-			CustRecordMerchantID:       merchant.MerchantID,
+			CustRecordMerchantID:       merchant.MerchantID + " - " + merchant.MerchantName,
 			CustRecordPrivyCodeChannel: channel.ChannelCode,
 			CustRecordChannelName:      channel.ChannelName,
 			CustRecordAddress:          channel.Address,
@@ -1095,39 +1128,6 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 	}
 
 	// SELIP END
-
-	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
-
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "CustomerCommandUsecaseGeneral.Create",
-				"src":   "custRepo.Update",
-				"param": privyResp,
-			}).
-			Error(err)
-
-		return 0, nil, err
-	}
-
-	err = r.custRepo.CommitTx(ctx, tx)
-	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
-
-		logrus.
-			WithFields(logrus.Fields{
-				"at":  "CustomerCommandUsecaseGeneral.Update",
-				"src": "custRepo.CommitTx",
-			}).
-			Error(err)
-
-		return 0, nil, rapperror.ErrInternalServerError(
-			"",
-			"Something went wrong when commit",
-			"CustomerCommandUsecaseGeneral.Update",
-			nil,
-		)
-	}
 
 	return id, nil, nil
 }
