@@ -1016,7 +1016,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 
 	// SELIP TEST
 
-	log.Println("merchant CUST TEST", cust.EnterprisePrivyID)
+	// log.Println("merchant CUST TEST", cust.EnterprisePrivyID)
 
 	merchant, err := r.merchantRepo.FindByEnterprisePrivyID(ctx, cust.EnterprisePrivyID, nil)
 
