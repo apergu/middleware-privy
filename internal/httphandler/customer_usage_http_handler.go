@@ -145,7 +145,12 @@ func (h CustomerUsageHttpHandler) Create(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	helper.WriteJSONResponse(w, response, http.StatusCreated)
+	responseJson, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Channel successfully created", map[string]interface{}{
+		"roleId": roleId,
+		"meta":   meta,
+	})
+
+	helper.WriteJSONResponse(w, responseJson, http.StatusCreated)
 	helper.LoggerSuccessStructfunc(w, r, "CustomerUsageHttpHandler.Create", "customer", "Customer Usage successfully created", "")
 }
 
