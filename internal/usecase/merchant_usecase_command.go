@@ -80,7 +80,7 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 
 	respCust2, _ := r.merchantRepo.FindByMerchantID(ctx, merchant.MerchantID, tx)
 
-	if respCust2.MerchantID != "" {
+	if respCust2.MerchantID != "" && respCust2.MerchantID != "000" {
 		return 0, nil, rapperror.ErrConflict(
 			"",
 			"Merchant with Merchant ID "+merchant.MerchantID+" already exist",
