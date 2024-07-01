@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"middleware/infrastructure"
 	request "middleware/infrastructure/http/request"
@@ -58,6 +59,9 @@ func (ds *ToNetsuitService) ToNetsuit(req request.RequestToNetsuit) (interface{}
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(string(result.RespBody))
+	fmt.Println(result.RespData.StatusCode)
 
 	switch result.RespData.StatusCode {
 	case http.StatusCreated:

@@ -89,6 +89,8 @@ func (hc *HttpClient) MakeAPIRequest(request request.RequestToHttpClient) (*Http
 		return nil, exceptions.ErrInternalServerError
 	}
 
+	fmt.Println("in request")
+
 	q := req.URL.Query()
 	for key, value := range request.Params {
 		q.Add(key, value)
@@ -118,6 +120,8 @@ func (hc *HttpClient) MakeAPIRequest(request request.RequestToHttpClient) (*Http
 		}, logger.LogError, logger.DefaultLogFileName)
 		return nil, exceptions.ErrInternalServerError
 	}
+
+	fmt.Println(respData.Header)
 
 	respBody, err := io.ReadAll(respData.Body)
 	if err != nil {

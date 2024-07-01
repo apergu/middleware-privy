@@ -92,9 +92,9 @@ func (h CustomerUsageHttpHandler) Create(w http.ResponseWriter, r *http.Request)
 		var message string
 		for _, v := range errors {
 			if message == "" {
-				message = v["description"].(string)
+				message = v["Description"].(string)
 			} else {
-				message = message + "; " + v["description"].(string)
+				message = message + "; " + v["Description"].(string)
 			}
 		}
 
@@ -145,8 +145,12 @@ func (h CustomerUsageHttpHandler) Create(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	response = rresponser.NewResponserSuccessCreated("", "Customer Usage successfully created", roleId, meta)
-	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	responseJson, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer Usage successfully created", map[string]interface{}{
+		"roleId": roleId,
+		"meta":   meta,
+	})
+
+	helper.WriteJSONResponse(w, responseJson, http.StatusCreated)
 	helper.LoggerSuccessStructfunc(w, r, "CustomerUsageHttpHandler.Create", "customer", "Customer Usage successfully created", "")
 }
 
@@ -204,9 +208,9 @@ func (h CustomerUsageHttpHandler) Update(w http.ResponseWriter, r *http.Request)
 		var message string
 		for _, v := range errors {
 			if message == "" {
-				message = v["description"].(string)
+				message = v["Description"].(string)
 			} else {
-				message = message + "; " + v["description"].(string)
+				message = message + "; " + v["Description"].(string)
 			}
 		}
 

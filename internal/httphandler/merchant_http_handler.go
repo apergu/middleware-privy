@@ -128,9 +128,9 @@ func (h MerchantHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		var message string
 		for _, v := range errors {
 			if message == "" {
-				message = v["description"].(string)
+				message = v["Description"].(string)
 			} else {
-				message = message + "; " + v["description"].(string)
+				message = message + "; " + v["Description"].(string)
 			}
 		}
 
@@ -248,9 +248,9 @@ func (h MerchantHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 		var message string
 		for _, v := range errors {
 			if message == "" {
-				message = v["description"].(string)
+				message = v["Description"].(string)
 			} else {
-				message = message + "; " + v["description"].(string)
+				message = message + "; " + v["Description"].(string)
 			}
 		}
 

@@ -19,7 +19,7 @@ func NewTopUpPaymentGateWayGeneral(TopUpPaymentPrivy service.PrivyToNetsuitServi
 	}
 }
 
-func (r *TopUpPaymentGatewayUsecaseGeneral) TopUpPaymentGateWay(payload request.PaymentGateway) (*credential.EnvelopePaymentGateway, error) {
+func (r *TopUpPaymentGatewayUsecaseGeneral) TopUpPaymentGateWay(payload request.PaymentGateway) (interface{}, error) {
 	url := r.inf.Config.CredentialPrivy.Host + credential.EndpointPostCustomer
 	resp := credential.EnvelopeCustomerUsage{}
 	req := request.RequestToNetsuit{
@@ -30,10 +30,10 @@ func (r *TopUpPaymentGatewayUsecaseGeneral) TopUpPaymentGateWay(payload request.
 		ServiceName: "TOP_UP_PAYMENTGATEWAY",
 	}
 
-	_, err := r.TopUpPaymentPrivy.ToNetsuit(req)
+	result, err := r.TopUpPaymentPrivy.ToNetsuit(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	return result, nil
 }
