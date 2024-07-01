@@ -52,31 +52,31 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 
 	tmNow := time.Now().UnixNano() / 1000000
 
-	respCust, _ := r.merchantRepo.FindByName(ctx, merchant.MerchantName, tx)
+	// respCust, _ := r.merchantRepo.FindByName(ctx, merchant.MerchantName, tx)
 
-	if respCust.MerchantName != "" {
-		return 0, nil, rapperror.ErrConflict(
-			"",
-			"Merchant with name "+merchant.MerchantName+" already exist",
-			"MerchantCommandUsecaseGeneral.Create",
-			nil,
-		)
-	}
+	// if respCust.MerchantName != "" {
+	// 	return 0, nil, rapperror.ErrConflict(
+	// 		"",
+	// 		"Merchant with name "+merchant.MerchantName+" already exist",
+	// 		"MerchantCommandUsecaseGeneral.Create",
+	// 		nil,
+	// 	)
+	// }
 
-	defer func() {
-		if p := recover(); p != nil {
-			r.merchantRepo.RollbackTx(ctx, tx)
-			panic(p)
-		} else if err != nil {
-			log.Println("Rolling back transaction due to error:", err)
-			r.merchantRepo.RollbackTx(ctx, tx)
-		} else {
-			err = r.merchantRepo.CommitTx(ctx, tx)
-			if err != nil {
-				log.Println("Error committing transaction:", err)
-			}
-		}
-	}()
+	// defer func() {
+	// 	if p := recover(); p != nil {
+	// 		r.merchantRepo.RollbackTx(ctx, tx)
+	// 		panic(p)
+	// 	} else if err != nil {
+	// 		log.Println("Rolling back transaction due to error:", err)
+	// 		r.merchantRepo.RollbackTx(ctx, tx)
+	// 	} else {
+	// 		err = r.merchantRepo.CommitTx(ctx, tx)
+	// 		if err != nil {
+	// 			log.Println("Error committing transaction:", err)
+	// 		}
+	// 	}
+	// }()
 
 	respCust2, _ := r.merchantRepo.FindByMerchantID(ctx, merchant.MerchantID, tx)
 

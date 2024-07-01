@@ -83,44 +83,44 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 		}
 	}()
 
-	fmt.Println("respCust FIND NAME")
-	respCust, _ := r.channelRepo.FindByName(ctx, channelParam.ChannelName, tx)
+	// fmt.Println("respCust FIND NAME")
+	// respCust, _ := r.channelRepo.FindByName(ctx, channelParam.ChannelName, tx)
 
-	if respCust.ChannelName != "" {
-		return 0, nil, rapperror.ErrConflict(
-			"",
-			"Channel with name "+channelParam.ChannelName+" already exist",
-			"ChannelCommandUsecaseGeneral.Create",
-			nil,
-		)
-	}
+	// if respCust.ChannelName != "" {
+	// 	return 0, nil, rapperror.ErrConflict(
+	// 		"",
+	// 		"Channel with name "+channelParam.ChannelName+" already exist",
+	// 		"ChannelCommandUsecaseGeneral.Create",
+	// 		nil,
+	// 	)
+	// }
 
-	defer func() {
-		if p := recover(); p != nil {
-			r.channelRepo.RollbackTx(ctx, tx)
-			panic(p)
-		} else if err != nil {
-			log.Println("Rolling back transaction due to error:", err)
-			r.channelRepo.RollbackTx(ctx, tx)
-		} else {
-			err = r.channelRepo.CommitTx(ctx, tx)
-			if err != nil {
-				log.Println("Error committing transaction:", err)
-			}
-		}
-	}()
+	// defer func() {
+	// 	if p := recover(); p != nil {
+	// 		r.channelRepo.RollbackTx(ctx, tx)
+	// 		panic(p)
+	// 	} else if err != nil {
+	// 		log.Println("Rolling back transaction due to error:", err)
+	// 		r.channelRepo.RollbackTx(ctx, tx)
+	// 	} else {
+	// 		err = r.channelRepo.CommitTx(ctx, tx)
+	// 		if err != nil {
+	// 			log.Println("Error committing transaction:", err)
+	// 		}
+	// 	}
+	// }()
 
-	fmt.Println("respCust FIND NAME")
-	respCust2, _ := r.channelRepo.FindByChannelID(ctx, channelParam.ChannelID, tx)
-	fmt.Println("FINDOUT?")
-	if respCust2.ChannelID != "" {
-		return 0, nil, rapperror.ErrConflict(
-			"",
-			"Channel with ID "+channelParam.ChannelID+" already exist",
-			"ChannelCommandUsecaseGeneral.Create",
-			nil,
-		)
-	}
+	// fmt.Println("respCust FIND NAME")
+	// respCust2, _ := r.channelRepo.FindByChannelID(ctx, channelParam.ChannelID, tx)
+	// fmt.Println("FINDOUT?")
+	// if respCust2.ChannelID != "" {
+	// 	return 0, nil, rapperror.ErrConflict(
+	// 		"",
+	// 		"Channel with ID "+channelParam.ChannelID+" already exist",
+	// 		"ChannelCommandUsecaseGeneral.Create",
+	// 		nil,
+	// 	)
+	// }
 
 	// find merchant by merchant.EnterpriseID
 
