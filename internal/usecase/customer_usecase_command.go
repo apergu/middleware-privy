@@ -278,87 +278,6 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		return 0, nil, err
 	}
 
-	// SELIP
-	log.Println("merchant CUST TEST", cust.EnterprisePrivyID)
-
-	merchant, err := r.merchantRepo.FindByEnterprisePrivyID(ctx, cust.EnterprisePrivyID, nil)
-
-	log.Println("merchant", err)
-	log.Println("merchant2", merchant)
-
-	defer func() {
-		if p := recover(); p != nil {
-			r.custRepo.RollbackTx(ctx, tx)
-			panic(p)
-		} else if err != nil {
-			log.Println("Rolling back transaction due to error:", err)
-			r.custRepo.RollbackTx(ctx, tx)
-		} else {
-			err = r.custRepo.CommitTx(ctx, tx)
-			if err != nil {
-				log.Println("Error committing transaction:", err)
-			}
-		}
-	}()
-
-	if merchant.MerchantID != "" {
-		payloadMerchant := credential.MerchantParam{
-			RecordType:                  "customrecord_customer_hierarchy",
-			CustRecordCustomerName:      0,
-			CustRecordEnterpriseID:      merchant.EnterpriseID,
-			CustRecordMerchantID:        merchant.MerchantID,
-			CustRecordPrivyCodeMerchant: merchant.MerchantCode,
-			CustRecordMerchantName:      merchant.MerchantName,
-			CustRecordAddress:           merchant.Address,
-			CustRecordEmail:             merchant.Email,
-			CustRecordPhone:             merchant.PhoneNo,
-			CustRecordState:             merchant.State,
-			CustRecordCity:              merchant.City,
-			CustRecordZip:               merchant.ZipCode,
-			Method:                      "POST",
-		}
-
-		r.merchantPrivy.CreateMerchant(ctx, payloadMerchant)
-
-		channel, _ := r.channelRepo.FindByMerchantID(ctx, merchant.MerchantID, nil)
-
-		defer func() {
-			if p := recover(); p != nil {
-				r.custRepo.RollbackTx(ctx, tx)
-				panic(p)
-			} else if err != nil {
-				log.Println("Rolling back transaction due to error:", err)
-				r.custRepo.RollbackTx(ctx, tx)
-			} else {
-				err = r.custRepo.CommitTx(ctx, tx)
-				if err != nil {
-					log.Println("Error committing transaction:", err)
-				}
-			}
-		}()
-
-		payloadChannel := credential.ChannelParam{
-			RecordType:                 "customrecord_customer_hierarchy",
-			CustRecordCustomerName:     strconv.Itoa(int(merchant.CustomerInternalID)),
-			CustRecordEnterpriseID:     merchant.EnterpriseID,
-			CustRecordChannelID:        channel.ChannelID,
-			CustRecordMerchantID:       merchant.MerchantID,
-			CustRecordPrivyCodeChannel: channel.ChannelCode,
-			CustRecordChannelName:      channel.ChannelName,
-			CustRecordAddress:          channel.Address,
-			CustRecordEmail:            channel.Email,
-			CustRecordPhone:            channel.PhoneNo,
-			CustRecordState:            channel.State,
-			CustRecordCity:             channel.City,
-			CustRecordZip:              channel.ZipCode,
-			Method:                     channel.Method,
-		}
-
-		r.channelPrivy.CreateChannel(ctx, payloadChannel)
-	}
-
-	// END SELIP
-
 	err = r.custRepo.CommitTx(ctx, tx)
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)
@@ -917,6 +836,8 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 }
 
 func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id string, cust model.Lead) (any, interface{}, error) {
+
+	print("========== UPDATE LEAD ==========")
 	tx, err := r.custRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
