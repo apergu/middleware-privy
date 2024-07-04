@@ -168,9 +168,43 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if payload.CRMLeadID == "" {
+	if payload.CRMLeadID == "13" || payload.CRMLeadID == "7" {
+		if payload.EnterprisePrivyID == "" {
+			errors = append(errors, map[string]interface{}{
+				"field":   "EnterprisePrivyID",
+				"message": "Enterprise Privy ID is required",
+			})
 
-	// } else {
+			errorResponse := map[string]interface{}{
+				"code":    422,
+				"success": false,
+				"message": "Validation failed",
+				"errors":  errors,
+			}
+
+			// Convert error response to JSON
+			responseJSON, marshalErr := json.Marshal(errorResponse)
+			if marshalErr != nil {
+				// Handle JSON marshaling error
+				fmt.Println("Error encoding JSON:", marshalErr)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
+			// Set the response headers
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnprocessableEntity) // Set the appropriate HTTP status code
+
+			// Write the JSON response to the client
+			_, writeErr := w.Write(responseJSON)
+			if writeErr != nil {
+				// Handle write error
+				fmt.Println("Error writing response:", writeErr)
+			}
+
+			return
+		}
+	}
 	// if payload.CRMLeadID != "" {
 	if payload.EntityStatus == "13" {
 
