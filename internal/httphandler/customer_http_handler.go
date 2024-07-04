@@ -71,6 +71,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 	fmt.Println("err =>", err)
+	defer r.Body.Close()
 	if err != nil {
 		msg := err.Error()
 		re := regexp.MustCompile(`Customer\.(\w+)`)
