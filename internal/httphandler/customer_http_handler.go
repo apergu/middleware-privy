@@ -71,7 +71,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 	fmt.Println("err =>", err)
-	defer r.Body.Close()
 	if err != nil {
 		msg := err.Error()
 		re := regexp.MustCompile(`Customer\.(\w+)`)
@@ -96,6 +95,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			nil,
 		)
 
+		defer r.Body.Close()
+
 		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
@@ -117,6 +118,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				"field":   "SubIndustry",
 				"message": "Sub Industry is required",
 			})
+
+			defer r.Body.Close()
 		}
 	}
 
@@ -146,6 +149,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			"errors":  errors,
 		}
 
+		defer r.Body.Close()
+
 		// Convert error response to JSON
 		responseJSON, marshalErr := json.Marshal(errorResponse)
 		if marshalErr != nil {
@@ -155,6 +160,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		defer r.Body.Close()
 		// Set the response headers
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnprocessableEntity) // Set the appropriate HTTP status code
@@ -189,6 +195,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				// Handle JSON marshaling error
 				fmt.Println("Error encoding JSON:", marshalErr)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				defer r.Body.Close()
 				return
 			}
 
@@ -202,7 +209,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				// Handle write error
 				fmt.Println("Error writing response:", writeErr)
 			}
-
+			defer r.Body.Close()
 			return
 		}
 	}
@@ -222,6 +229,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			})
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+			defer r.Body.Close()
 			return
 		}
 
@@ -335,6 +343,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+
+				defer r.Body.Close()
 			}
 
 			reqGetData.Header.Add("Content-Type", "application/json")
@@ -348,6 +358,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				defer r.Body.Close()
 				return
 			}
 
