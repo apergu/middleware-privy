@@ -271,6 +271,20 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 			customFieldsData := responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{})
 
+			if customFieldsData["ActiveCampaign Contact ID"] == nil {
+				err = rapperror.ErrNotFound(
+					"",
+					"Active Campaign Contact ID is Not Found",
+					"CustomerHttpHandler.Create",
+					nil,
+				)
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				defer r.Body.Close()
+				return
+			}
+
 			newResp := responsDetailData.Data.(map[string]interface{})
 			responseDetail.FirstName = newResp["first_name"].(string)
 			responseDetail.LastName = newResp["last_name"].(string)
