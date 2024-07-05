@@ -247,6 +247,8 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		},
 	}
 
+	fmt.Println("========= crdCustParam ========", crdCustParam)
+
 	privyResp, err := r.customerPrivy.CreateCustomer(ctx, crdCustParam)
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)

@@ -393,6 +393,18 @@ func (c *CustomerRepositoryPostgre) FindSubindustry(ctx context.Context, subindu
 		subindustries.subindustry_name = $1
 	limit 1`
 
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in f", r)
+		}
+	}()
+
+	select {
+	case <-ctx.Done():
+		return entity.Subindustry{}, fmt.Errorf("context canceled before query execution: %w", ctx.Err())
+	default:
+	}
+
 	return c.querySubindustry(ctx, cmd, query, subindustry)
 }
 

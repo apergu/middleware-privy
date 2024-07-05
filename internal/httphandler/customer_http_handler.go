@@ -18,7 +18,6 @@ import (
 	"gitlab.com/rteja-library3/rhelper"
 	"gitlab.com/rteja-library3/rresponser"
 
-	"middleware/internal/constants"
 	"middleware/internal/helper"
 	"middleware/internal/model"
 	"middleware/internal/repository"
@@ -62,7 +61,8 @@ func NewCustomerHttpHandler(prop HTTPHandlerProperty) http.Handler {
 }
 
 func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
-	// var response rresponser.Responser
+
+	// var response rresponser.Response
 	var err error
 	ctx := r.Context()
 
@@ -102,7 +102,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}
-	println("payload", ctx.Value(constants.SessionUserId))
 	// get user from context
 	// user := ctx.Value(constants.SessionUserId).(int64)
 
