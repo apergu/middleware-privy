@@ -218,19 +218,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		if payload.SubIndustry == "" {
 			payload.SubIndustry = "Others"
 		}
-		log.Println("payload masuk 13", payload)
-		roleId, meta, err := h.Command.Create(ctx, payload)
-		if err != nil {
-			// fmt.Println("error", err.Error())
-			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{
-				"roleId": roleId,
-				"meta":   meta,
-			})
-			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-			defer r.Body.Close()
-			return
-		}
 
 		if payload.CRMLeadID != "" {
 			// GET DETAIL DATA
@@ -243,7 +230,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 			clientDetailData := &http.Client{}
 			respDetailData, err := clientDetailData.Do(reqDetailData)
-			fmt.Println("response", respDetailData.Body)
 
 			defer respDetailData.Body.Close()
 
@@ -267,6 +253,20 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				Email        string                 `json:"email"`
 				PhoneNumber  string                 `json:"phone"`
 				CustomFields map[string]interface{} `json:"custom_fields"`
+			}
+
+			if responsDetailData.Data == nil {
+				err = rapperror.ErrNotFound(
+					"",
+					"Lead Data is Not Found",
+					"CustomerHttpHandler.Create",
+					nil,
+				)
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				defer r.Body.Close()
+				return
 			}
 
 			customFieldsData := responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{})
@@ -562,6 +562,20 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				"meta":   jsonBodyWon,
 			})
 			helper.WriteJSONResponse(w, response, http.StatusCreated)
+		}
+
+		log.Println("payload masuk 13", payload)
+		roleId, meta, err := h.Command.Create(ctx, payload)
+		if err != nil {
+			// fmt.Println("error", err.Error())
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{
+				"roleId": roleId,
+				"meta":   meta,
+			})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+			defer r.Body.Close()
+			return
 		}
 
 		response, _ := helper.GenerateJSONResponse(http.StatusCreated, true, "Customer successfully created", map[string]interface{}{
