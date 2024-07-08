@@ -116,7 +116,7 @@ func (c *CustomerRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand
 			&data.UpdatedBy,
 			&data.UpdatedAt,
 			&data.EntityStatus,
-			&data.CRMDealID,
+			// &data.CRMDealID,
 		)
 	if err != nil {
 		logrus.
@@ -580,7 +580,7 @@ func (c *CustomerRepositoryPostgre) Create(ctx context.Context, cust entity.Cust
 			cust.UpdatedBy,
 			cust.UpdatedAt,
 			cust.EntityStatus,
-			cust.CRMDealID,
+			// cust.CRMDealID,
 		).
 		Scan(&id)
 
@@ -664,7 +664,7 @@ func (c *CustomerRepositoryPostgre) CreateLead(ctx context.Context, cust entity.
 			cust.UpdatedBy,
 			cust.UpdatedAt,
 			cust.EntityStatus,
-			cust.CRMDealID,
+			// cust.CRMDealID,
 		).
 		Scan(&id)
 
@@ -734,7 +734,7 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 		cust.ZipCode,
 		cust.CustomerInternalID,
 		cust.EntityStatus,
-		cust.CRMDealID,
+		// cust.CRMDealID,
 	)
 
 	if err != nil {
@@ -797,7 +797,7 @@ func (c *CustomerRepositoryPostgre) UpdateLead2(ctx context.Context, id int64, c
 		cust.ZipCode,
 		cust.CustomerInternalID,
 		cust.EntityStatus,
-		cust.CRMDealID,
+		// cust.CRMDealID,
 	)
 
 	if err != nil {
@@ -923,7 +923,7 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, c
 		cust.UpdatedAt,
 		id, // This corresponds to the $18 placeholder in your query
 		cust.EntityStatus,
-		cust.CRMDealID,
+		// cust.CRMDealID,
 	)
 
 	if err != nil {

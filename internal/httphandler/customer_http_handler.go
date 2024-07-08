@@ -226,7 +226,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 			print("findData", findData.EntityStatus)
 
-			if findData.EntityStatus == "13" || findData.CRMDealID != "" {
+			if findData.EntityStatus == "13" {
 				err = rapperror.ErrConflict(
 					"",
 					"CRM Lead ID "+payload.CRMLeadID+" already Won",
