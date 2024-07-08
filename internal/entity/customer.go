@@ -22,6 +22,8 @@ type Customer struct {
 	CreatedAt          int64  `json:"createdAt"`
 	UpdatedBy          int64  `json:"-"`
 	UpdatedAt          int64  `json:"updatedAt"`
+	EntityStatus       string `json:"entityStatus"`
+	CRMDealID          string `json:"crmDealId"`
 }
 
 type Subindustry struct {

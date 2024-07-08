@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"regexp"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
@@ -67,41 +66,43 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var payload model.Customer
+	var payloadLead model.Lead
 	//var payloadLead model.Lead
 
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
+	err = rdecoder.DecodeRest(r, h.Decorder, &payloadLead)
 	fmt.Println("err =>", err)
-	if err != nil {
-		msg := err.Error()
-		re := regexp.MustCompile(`Customer\.(\w+)`)
-		custm := re.FindStringSubmatch(msg)
-		re = regexp.MustCompile(`([a-z])([A-Z])`)
-		spaced := re.ReplaceAllString(custm[1], `$1 $2`)
-		re = regexp.MustCompile(`type ([^\]]+)`)
-		format := re.FindStringSubmatch(msg)
-		message := fmt.Sprintf("Unprocessable entity - %s value must in %s format", spaced, format[1])
-		logrus.
-			WithFields(logrus.Fields{
-				"action": "try to decode data",
-				"at":     "CustomerHttpHandler.Create",
-				"src":    "rdecoder.DecodeRest",
-			}).
-			Error(err)
+	// if err != nil {
+	// 	msg := err.Error()
+	// 	re := regexp.MustCompile(`Customer\.(\w+)`)
+	// 	custm := re.FindStringSubmatch(msg)
+	// 	re = regexp.MustCompile(`([a-z])([A-Z])`)
+	// 	spaced := re.ReplaceAllString(custm[1], `$1 $2`)
+	// 	re = regexp.MustCompile(`type ([^\]]+)`)
+	// 	format := re.FindStringSubmatch(msg)
+	// 	message := fmt.Sprintf("Unprocessable entity - %s value must in %s format", spaced, format[1])
+	// 	logrus.
+	// 		WithFields(logrus.Fields{
+	// 			"action": "try to decode data",
+	// 			"at":     "CustomerHttpHandler.Create",
+	// 			"src":    "rdecoder.DecodeRest",
+	// 		}).
+	// 		Error(err)
 
-		err = rapperror.ErrUnprocessableEntity(
-			"",
-			message,
-			"CustomerHttpHandler.Create",
-			nil,
-		)
+	// 	err = rapperror.ErrUnprocessableEntity(
+	// 		"",
+	// 		message,
+	// 		"CustomerHttpHandler.Create",
+	// 		nil,
+	// 	)
 
-		defer r.Body.Close()
+	// 	defer r.Body.Close()
 
-		response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
-		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-		return
-	}
+	// 	response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
+	// 	// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	// 	helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+	// 	return
+	// }
 	// get user from context
 	// user := ctx.Value(constants.SessionUserId).(int64)
 
@@ -220,6 +221,24 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if payload.CRMLeadID != "" {
+
+			findData, _, _ := h.Query.FindByCRMLeadID(ctx, payload.CRMLeadID)
+
+			print("findData", findData.EntityStatus)
+
+			if findData.EntityStatus == "13" || findData.CRMDealID != "" {
+				err = rapperror.ErrConflict(
+					"",
+					"CRM Lead ID "+payload.CRMLeadID+" already Won",
+					"CustomerHttpHandler.Create",
+					nil,
+				)
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				defer r.Body.Close()
+				return
+			}
 			// GET DETAIL DATA
 
 			urlDetailData := "https://api.getbase.com/v2/leads/"
@@ -578,18 +597,23 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			helper.WriteJSONResponse(w, response, http.StatusCreated)
 		}
 
-		log.Println("payload masuk 13", payload)
-		roleId, meta, err := h.Command.Create(ctx, payload)
-		if err != nil {
-			// fmt.Println("error", err.Error())
-			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{
-				"roleId": roleId,
-				"meta":   meta,
-			})
-			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-			defer r.Body.Close()
-			return
+		custId, _, err := h.Command.UpdateLead(ctx, payload.CustomerName, payloadLead)
+
+		if err != nil || custId == nil {
+			log.Println("payload masuk 13", payload)
+			roleId, meta, err := h.Command.Create(ctx, payload)
+
+			if err != nil {
+				// fmt.Println("error", err.Error())
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{
+					"roleId": roleId,
+					"meta":   meta,
+				})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				defer r.Body.Close()
+				return
+			}
 		}
 
 		response, _ := helper.GenerateJSONResponse(http.StatusCreated, true, "Customer successfully created", map[string]interface{}{

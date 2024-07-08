@@ -115,6 +115,8 @@ func (c *CustomerRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcommand
 			&data.CreatedAt,
 			&data.UpdatedBy,
 			&data.UpdatedAt,
+			&data.EntityStatus,
+			&data.CRMDealID,
 		)
 	if err != nil {
 		logrus.
@@ -462,7 +464,9 @@ func (c *CustomerRepositoryPostgre) FindByCRMLeadId(ctx context.Context, crmLead
 		customers.created_by,
 		customers.created_at,
 		customers.updated_by,
-		customers.updated_at
+		customers.updated_at,
+		customers.entitystatus,
+		customers.crm_deal_id
 	from
 		customers
 	where
@@ -535,10 +539,10 @@ func (c *CustomerRepositoryPostgre) Create(ctx context.Context, cust entity.Cust
 		"city",
 		"zip_code",
 		"customer_internalid",
-		created_by, created_at, updated_by, updated_at
+		created_by, created_at, updated_by, updated_at, entitystatus, crm_deal_id
 	) values (
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-		,$11, $12 ,$13, $14, $15, $16, $17, $18, $19, $20
+		,$11, $12 ,$13, $14, $15, $16, $17, $18, $19, $20, $21, $22
 	) RETURNING id`
 
 	fmt.Println("============== ID ==============", cust)
@@ -575,6 +579,8 @@ func (c *CustomerRepositoryPostgre) Create(ctx context.Context, cust entity.Cust
 			cust.CreatedAt,
 			cust.UpdatedBy,
 			cust.UpdatedAt,
+			cust.EntityStatus,
+			cust.CRMDealID,
 		).
 		Scan(&id)
 
@@ -619,10 +625,10 @@ func (c *CustomerRepositoryPostgre) CreateLead(ctx context.Context, cust entity.
 		"city",
 		"zip_code",
 		"customer_internalid",
-		created_by, created_at, updated_by, updated_at
+		created_by, created_at, updated_by, updated_at, entitystatus, crm_deal_id
 	) values (
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-		,$11, $12 ,$13, $14, $15, $16, $17, $18, $19, $20
+		,$11, $12 ,$13, $14, $15, $16, $17, $18, $19, $20, $21, $22
 	) RETURNING id`
 
 	var custId *string
@@ -657,6 +663,8 @@ func (c *CustomerRepositoryPostgre) CreateLead(ctx context.Context, cust entity.
 			cust.CreatedAt,
 			cust.UpdatedBy,
 			cust.UpdatedAt,
+			cust.EntityStatus,
+			cust.CRMDealID,
 		).
 		Scan(&id)
 
@@ -698,6 +706,8 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 		"customer_internalid" = $18,
 		updated_by = $10,
 		updated_at = $11
+		entitystatus = $19,
+		crm_deal_id = $20
 	where
 		id = $12`
 
@@ -723,6 +733,8 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 		cust.City,
 		cust.ZipCode,
 		cust.CustomerInternalID,
+		cust.EntityStatus,
+		cust.CRMDealID,
 	)
 
 	if err != nil {
@@ -756,7 +768,9 @@ func (c *CustomerRepositoryPostgre) UpdateLead2(ctx context.Context, id int64, c
 		"zip_code" = $17,
 		"customer_internalid" = $18,
 		updated_by = $10,
-		updated_at = $11
+		updated_at = $11,
+		entitystatus = $19,
+		crm_deal_id = $20
 	where
 		id = $12`
 
@@ -782,6 +796,8 @@ func (c *CustomerRepositoryPostgre) UpdateLead2(ctx context.Context, id int64, c
 		cust.City,
 		cust.ZipCode,
 		cust.CustomerInternalID,
+		cust.EntityStatus,
+		cust.CRMDealID,
 	)
 
 	if err != nil {
@@ -876,7 +892,9 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, c
 		"city" = $13,
 		"zip_code" = $14,
 		updated_by = $15,
-		updated_at = $16
+		updated_at = $16,
+		entitystatus = $18,
+		crm_deal_id = $19
 	where
 		"customer_name" = $17`
 
@@ -904,6 +922,8 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, c
 		cust.UpdatedBy,
 		cust.UpdatedAt,
 		id, // This corresponds to the $18 placeholder in your query
+		cust.EntityStatus,
+		cust.CRMDealID,
 	)
 
 	if err != nil {
@@ -932,3 +952,35 @@ func (c *CustomerRepositoryPostgre) Delete(ctx context.Context, id int64, tx pgx
 
 	return nil
 }
+
+// func (c *CustomerRepositoryPostgre) FindByCRMLeadID(ctx context.Context, crmLeadId string, tx pgx.Tx) (entity.Customer, error) {
+// 	var cmd sqlcommand.Command = c.pool
+// 	if tx != nil {
+// 		cmd = tx
+// 	}
+
+// 	query := `select
+// 		customers.id,
+// 		customers.customer_id,
+// 		customers.customer_type,
+// 		customers.customer_name,
+// 		customers.first_name,
+// 		customers.last_name,
+// 		customers.email,
+// 		customers.phone_no,
+// 		customers."address",
+// 		customers."crm_lead_id",
+// 		customers."enterprise_privy_id",
+// 		customers."customer_internalid",
+// 		customers.created_by,
+// 		customers.created_at,
+// 		customers.updated_by,
+// 		customers.updated_at
+// 	from
+// 		customers
+// 	where
+// 		customers.crm_lead_id = $1
+// 	limit 1`
+
+// 	return c.queryOne(ctx, cmd, query, crmLeadId)
+// }

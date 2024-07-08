@@ -24,6 +24,7 @@ type CustomerQueryUsecase interface {
 	Count(ctx context.Context, filter repository.CustomerFilter) (int64, interface{}, error)
 	FindById(ctx context.Context, id int64) (entity.Customer, interface{}, error)
 	FindSubindustry(ctx context.Context, subindustry string) (entity.Subindustry, interface{}, error)
+	FindByCRMLeadID(ctx context.Context, crmLeadID string) (entity.Customer, interface{}, error)
 }
 
 type CustomerCommandUsecase interface {
