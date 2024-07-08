@@ -466,7 +466,6 @@ func (c *CustomerRepositoryPostgre) FindByCRMLeadId(ctx context.Context, crmLead
 		customers.updated_by,
 		customers.updated_at,
 		customers.entitystatus,
-		customers.crm_deal_id
 	from
 		customers
 	where
@@ -539,7 +538,7 @@ func (c *CustomerRepositoryPostgre) Create(ctx context.Context, cust entity.Cust
 		"city",
 		"zip_code",
 		"customer_internalid",
-		created_by, created_at, updated_by, updated_at, entitystatus, crm_deal_id
+		created_by, created_at, updated_by, updated_at, entitystatus
 	) values (
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
 		,$11, $12 ,$13, $14, $15, $16, $17, $18, $19, $20, $21, $22
@@ -625,7 +624,7 @@ func (c *CustomerRepositoryPostgre) CreateLead(ctx context.Context, cust entity.
 		"city",
 		"zip_code",
 		"customer_internalid",
-		created_by, created_at, updated_by, updated_at, entitystatus, crm_deal_id
+		created_by, created_at, updated_by, updated_at, entitystatus
 	) values (
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
 		,$11, $12 ,$13, $14, $15, $16, $17, $18, $19, $20, $21, $22
@@ -706,8 +705,7 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 		"customer_internalid" = $18,
 		updated_by = $10,
 		updated_at = $11
-		entitystatus = $19,
-		crm_deal_id = $20
+		entitystatus = $19
 	where
 		id = $12`
 
@@ -769,8 +767,7 @@ func (c *CustomerRepositoryPostgre) UpdateLead2(ctx context.Context, id int64, c
 		"customer_internalid" = $18,
 		updated_by = $10,
 		updated_at = $11,
-		entitystatus = $19,
-		crm_deal_id = $20
+		entitystatus = $19
 	where
 		id = $12`
 
@@ -893,8 +890,7 @@ func (c *CustomerRepositoryPostgre) UpdateLead(ctx context.Context, id string, c
 		"zip_code" = $14,
 		updated_by = $15,
 		updated_at = $16,
-		entitystatus = $18,
-		crm_deal_id = $19
+		entitystatus = $18
 	where
 		"customer_name" = $17`
 
