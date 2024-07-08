@@ -119,7 +119,9 @@ func (h TopUpPaymentGateWayHttpHandler) TopUpPayment(w http.ResponseWriter, r *h
 		return
 	}
 
-	res, _ := helper.GenerateJSONResponse(http.StatusCreated, true, "TopUpPayment successfully created", map[string]interface{}{})
+	res, _ := helper.GenerateJSONResponse(http.StatusCreated, true, "TopUpPayment successfully created", map[string]interface{}{
+		"trx_id": resTopUpmodel.Data.TopupID,
+	})
 	helper.LoggerSuccessStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWay", "TopUpPayment successfully created", "")
 	helper.WriteJSONResponse(w, res, http.StatusCreated)
 }
