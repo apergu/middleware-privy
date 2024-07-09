@@ -705,35 +705,38 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
+		if payload.RequestFrom != "zendesk" {
 
-		fmt.Println("url", url)
+			url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
 
-		// Make the HTTP POST request
-		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+			fmt.Println("url", url)
 
-		if err != nil {
-			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-			return
+			// Make the HTTP POST request
+			req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
+			req.Header.Add("Content-Type", "application/json")
+			req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
+
+			client := &http.Client{}
+			resp, err := client.Do(req)
+			fmt.Println("response", err)
+
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
+			defer resp.Body.Close()
 		}
-
-		req.Header.Add("Content-Type", "application/json")
-		req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
-
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		fmt.Println("response", err)
-
-		if err != nil {
-			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-			return
-		}
-
-		defer resp.Body.Close()
 
 		// } else {
 

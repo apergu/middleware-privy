@@ -30,6 +30,7 @@ type Customer struct {
 	ZipCode           string `json:"zip" validate:"max=255"`
 	CreatedBy         int64  `json:"-"`
 	SubIndustry       string `json:"subIndustry" validate:"max=255"`
+	RequestFrom       string `json:"requestFrom"`
 }
 
 type Lead struct {
