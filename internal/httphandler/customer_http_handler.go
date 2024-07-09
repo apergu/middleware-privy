@@ -641,7 +641,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if payload.EntityStatus == "6" || payload.EntityStatus == "" {
 		log.Println("payload masuk 6", payload)
 
-		h.Command.CreateLeadZD(ctx, payload)
+		// h.Command.CreateLeadZD(ctx, payload)
 
 		// Replace the following map with your actual data
 		data := map[string]interface{}{
@@ -692,7 +692,9 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		err = json.Unmarshal(bodyDetailData, &responsDetailData)
 		fmt.Println("response Body", responsDetailData.Data)
 
-		if responsDetailData.Data == nil {
+		respDB, _, _ := h.Query.FindByCRMLeadID(ctx, payload.CRMLeadID)
+
+		if responsDetailData.Data == nil || respDB.CRMLeadID == "" {
 			// if payload.CRMLeadID == "" {
 			_, _, err := h.Command.CreateLeadZD(ctx, payload)
 			if err != nil {
