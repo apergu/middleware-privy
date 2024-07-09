@@ -11,7 +11,7 @@ type Customer struct {
 	FirstName    string  `json:"firstName" validate:"max=255"`
 	LastName     string  `json:"lastName"  validate:"required,max=255"`
 	Email        string  `json:"email" validate:"required,max=255"`
-	PhoneNo      string  `json:"phoneNo" validate:"required,max=255"`
+	PhoneNo      string  `json:"phoneNo" validate:"max=255"`
 	Address      string  `json:"address" validate:"max=1000"`
 	IsPerson     bool    `json:"isPerson"`
 	EntityStatus string  `json:"entityStatus" validate:"max=2"`

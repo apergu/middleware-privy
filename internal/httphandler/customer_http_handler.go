@@ -176,10 +176,22 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if payload.CRMLeadID == "13" || payload.CRMLeadID == "7" {
-		if payload.EnterprisePrivyID == "" {
+		if payload.EnterprisePrivyID == "" || payload.PhoneNo == "" {
+
+			message := ""
+			field := ""
+			switch {
+			case payload.EnterprisePrivyID == "":
+				message = "Enterprise Privy ID is required"
+				field = "EnterprisePrivyID"
+			case payload.PhoneNo == "":
+				message = "Phone Number is required"
+				field = "PhoneNo"
+			}
+
 			errors = append(errors, map[string]interface{}{
-				"field":   "EnterprisePrivyID",
-				"message": "Enterprise Privy ID is required",
+				"field":   field,
+				"message": message,
 			})
 
 			errorResponse := map[string]interface{}{
@@ -629,20 +641,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if payload.EntityStatus == "6" || payload.EntityStatus == "" {
 		log.Println("payload masuk 6", payload)
 
-		// if payload.CRMLeadID == "" {
-		_, _, err := h.Command.CreateLeadZD(ctx, payload)
-		if err != nil {
-			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-			return
-		}
-		// }
-
-		url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
-
-		fmt.Println("url", url)
-
 		// Replace the following map with your actual data
 		data := map[string]interface{}{
 			"zd_lead_id":          payload.CRMLeadID,
@@ -667,31 +665,137 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		// Make the HTTP POST request
-		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+		urlDetailData := "https://api.getbase.com/v2/leads/"
+		reqDetailData, err := http.NewRequest("GET", urlDetailData+payload.CRMLeadID, nil)
+
+		reqDetailData.Header.Add("Content-Type", "application/json")
+		reqDetailData.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+
+		clientDetailData := &http.Client{}
+		respDetailData, err := clientDetailData.Do(reqDetailData)
+
+		defer respDetailData.Body.Close()
+
+		bodyDetailData, err := ioutil.ReadAll(respDetailData.Body)
+
+		var responsDetailData struct {
+			Data interface{} `json:"data"`
+		}
 
 		if err != nil {
-			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+			fmt.Println("Error:", err)
 			return
 		}
 
-		req.Header.Add("Content-Type", "application/json")
-		req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
+		err = json.Unmarshal(bodyDetailData, &responsDetailData)
+		fmt.Println("response Body", responsDetailData.Data)
 
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		fmt.Println("response", err)
+		if responsDetailData.Data == nil {
+			// if payload.CRMLeadID == "" {
+			_, _, err := h.Command.CreateLeadZD(ctx, payload)
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+			// }
+			url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
 
-		if err != nil {
-			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-			return
+			fmt.Println("url", url)
+
+			// Make the HTTP POST request
+			req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
+			req.Header.Add("Content-Type", "application/json")
+			req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
+
+			client := &http.Client{}
+			resp, err := client.Do(req)
+			fmt.Println("response", err)
+
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
+			defer resp.Body.Close()
+
+		} else {
+
+			payloadData := map[string]interface{}{
+				"first_name": payload.FirstName,
+				"email":      payload.Email,
+				"mobile":     payload.PhoneNo,
+				"custom_fields": map[string]interface{}{
+					"Sub Industry":  payload.SubIndustry,
+					"NPWP":          payload.NPWP,
+					"Enterprise ID": payload.EnterprisePrivyID,
+				},
+			}
+
+			if responsDetailData.Data.(map[string]interface{})["first_name"] != payload.FirstName {
+				payloadData["custom_fields"].(map[string]interface{})["First Name - Adonara"] = payload.FirstName
+			}
+
+			if responsDetailData.Data.(map[string]interface{})["last_name"] != payload.LastName {
+				payloadData["custom_fields"].(map[string]interface{})["Last Name - Adonara"] = payload.LastName
+			}
+
+			if responsDetailData.Data.(map[string]interface{})["email"] != payload.Email {
+				payloadData["custom_fields"].(map[string]interface{})["Email - Adonara"] = payload.Email
+			}
+
+			if responsDetailData.Data.(map[string]interface{})["company_name"] != payload.CustomerName {
+				payloadData["custom_fields"].(map[string]interface{})["Company Name - Adonara"] = payload.CustomerName
+			}
+
+			sendData := map[string]interface{}{
+				"data": payloadData,
+			}
+
+			jsonDataZD, err := json.Marshal(sendData)
+			if err != nil {
+				fmt.Println("Error marshalling JSON:", err)
+				return
+			}
+
+			urlDetailData := "https://api.getbase.com/v2/leads/" + payload.CRMLeadID
+			reqDetailData, err := http.NewRequest("PUT", urlDetailData, bytes.NewBuffer(jsonDataZD))
+			if err != nil {
+				fmt.Println("Error creating request:", err)
+				return
+			}
+
+			reqDetailData.Header.Add("Content-Type", "application/json")
+			reqDetailData.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+
+			clientDetailData := &http.Client{}
+			respDetailData, err := clientDetailData.Do(reqDetailData)
+			if err != nil {
+				fmt.Println("Error sending request:", err)
+				return
+			}
+			defer respDetailData.Body.Close()
+
+			body, err := ioutil.ReadAll(respDetailData.Body)
+			if err != nil {
+				fmt.Println("Error reading response body:", err)
+				return
+			}
+
+			fmt.Println("response BODY ZD", string(body))
+
 		}
-
-		defer resp.Body.Close()
 
 		response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer successfully created", map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
