@@ -638,6 +638,10 @@ func (c *CustomerRepositoryPostgre) CreateLead(ctx context.Context, cust entity.
 		custId = &cust.CustomerID
 	}
 
+	if cust.CustomerID == "" && cust.EnterprisePrivyID == "" {
+		custId = &cust.CRMLeadID
+	}
+
 	err := cmd.
 		QueryRow(
 			ctx,
