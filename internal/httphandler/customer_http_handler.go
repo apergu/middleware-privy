@@ -641,6 +641,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if payload.EntityStatus == "6" || payload.EntityStatus == "" {
 		log.Println("payload masuk 6", payload)
 
+		h.Command.CreateLeadZD(ctx, payload)
+
 		// Replace the following map with your actual data
 		data := map[string]interface{}{
 			"zd_lead_id":          payload.CRMLeadID,
