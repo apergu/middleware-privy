@@ -630,18 +630,17 @@ func (c *CustomerRepositoryPostgre) CreateLead(ctx context.Context, cust entity.
 		,$11, $12 ,$13, $14, $15, $16, $17, $18, $19, $20, $21
 	) RETURNING id`
 
-	var custId *string
+	// var custId *string
 
-	if cust.CustomerID == "" {
-		custId = &cust.EnterprisePrivyID
-	} else {
-		custId = &cust.CustomerID
-	}
+	// if cust.CustomerID == "" {
+	// 	custId = &cust.EnterprisePrivyID
+	// } else {
+	// 	custId = &cust.CustomerID
+	// }
 
-	if cust.CustomerID == "" && cust.EnterprisePrivyID == "" {
-		custId = &cust.CRMLeadID
-	}
-
+	// if cust.CustomerID == "" && cust.EnterprisePrivyID == "" {
+	custId := &cust.CRMLeadID
+	// }
 	err := cmd.
 		QueryRow(
 			ctx,
