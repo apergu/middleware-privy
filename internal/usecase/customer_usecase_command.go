@@ -503,6 +503,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLeadZD(ctx context.Context, cust m
 		Address:           cust.Address,
 		CRMLeadID:         cust.CRMLeadID,
 		EnterprisePrivyID: cust.EnterprisePrivyID,
+		EntityStatus:      cust.EntityStatus,
 		NPWP:              cust.NPWP,
 		Address1:          cust.Address1,
 		State:             cust.State,
