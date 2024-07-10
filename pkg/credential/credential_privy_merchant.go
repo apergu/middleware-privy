@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/sirupsen/logrus"
-	"gitlab.com/rteja-library3/rapperror"
 )
 
 func (c *CredentialPrivy) CreateMerchant(ctx context.Context, param MerchantParam) (MerchantResponse, error) {
@@ -106,13 +105,9 @@ func (c *CredentialPrivy) CreateMerchant(ctx context.Context, param MerchantPara
 	}
 
 	if len(custResp.SuccessTransaction) == 0 {
-		return MerchantResponse{}, rapperror.ErrUnprocessableEntity(
-			"",
-			"Unprocessable Entity - enterprise ID is not found",
-			"",
-			nil,
-		)
+		return MerchantResponse{}, nil
 	}
+	// print("Cust Resp", &custResp.)
 
 	return custResp.SuccessTransaction[0], nil
 }

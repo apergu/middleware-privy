@@ -48,15 +48,6 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 
 	respCRMLead, _ := r.custRepo.FindByCRMLeadId(ctx, cust.CRMLeadID, tx)
 
-	if respCRMLead.CRMLeadID != "" {
-		return 0, nil, rapperror.ErrConflict(
-			"",
-			"Customer with CRM Lead ID "+cust.CRMLeadID+" already Won",
-			"CustomerCommandUsecaseGeneral.Create",
-			nil,
-		)
-	}
-
 	defer func() {
 		if p := recover(); p != nil {
 			r.custRepo.RollbackTx(ctx, tx)
@@ -72,8 +63,32 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		}
 	}()
 
+	if respCRMLead.CRMLeadID != "" {
+		return 0, nil, rapperror.ErrConflict(
+			"",
+			"Customer with CRM Lead ID "+cust.CRMLeadID+" already Won",
+			"CustomerCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
+
 	fmt.Println("respCust FIND NAME")
 	respCust, _ := r.custRepo.FindByName(ctx, cust.CustomerName, tx)
+
+	defer func() {
+		if p := recover(); p != nil {
+			r.custRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.custRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.custRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
 
 	if respCust.CustomerName != "" {
 		return 0, nil, rapperror.ErrConflict(
@@ -84,6 +99,9 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		)
 	}
 
+	fmt.Println("respCust FIND NAME")
+	respCust2, _ := r.custRepo.FindByEnterprisePrivyID(ctx, cust.EnterprisePrivyID, tx)
+
 	defer func() {
 		if p := recover(); p != nil {
 			r.custRepo.RollbackTx(ctx, tx)
@@ -98,9 +116,6 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 			}
 		}
 	}()
-
-	fmt.Println("respCust FIND NAME")
-	respCust2, _ := r.custRepo.FindByEnterprisePrivyID(ctx, cust.EnterprisePrivyID, tx)
 
 	if respCust2.EnterprisePrivyID != "" {
 		return 0, nil, rapperror.ErrConflict(
@@ -109,98 +124,6 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 			"CustomerCommandUsecaseGeneral.Create",
 			nil,
 		)
-	}
-
-	defer func() {
-		if p := recover(); p != nil {
-			r.custRepo.RollbackTx(ctx, tx)
-			panic(p)
-		} else if err != nil {
-			log.Println("Rolling back transaction due to error:", err)
-			r.custRepo.RollbackTx(ctx, tx)
-		} else {
-			err = r.custRepo.CommitTx(ctx, tx)
-			if err != nil {
-				log.Println("Error committing transaction:", err)
-			}
-		}
-	}()
-	log.Println("merchant CUST TEST", cust.EnterprisePrivyID)
-
-	merchant, err := r.merchantRepo.FindByEnterprisePrivyID(ctx, cust.EnterprisePrivyID, nil)
-
-	log.Println("merchant", err)
-	log.Println("merchant2", merchant)
-
-	defer func() {
-		if p := recover(); p != nil {
-			r.custRepo.RollbackTx(ctx, tx)
-			panic(p)
-		} else if err != nil {
-			log.Println("Rolling back transaction due to error:", err)
-			r.custRepo.RollbackTx(ctx, tx)
-		} else {
-			err = r.custRepo.CommitTx(ctx, tx)
-			if err != nil {
-				log.Println("Error committing transaction:", err)
-			}
-		}
-	}()
-
-	if merchant.MerchantID != "" {
-		payloadMerchant := credential.MerchantParam{
-			RecordType:                  "customrecord_customer_hierarchy",
-			CustRecordCustomerName:      0,
-			CustRecordEnterpriseID:      merchant.EnterpriseID,
-			CustRecordMerchantID:        merchant.MerchantID,
-			CustRecordPrivyCodeMerchant: merchant.MerchantCode,
-			CustRecordMerchantName:      merchant.MerchantName,
-			CustRecordAddress:           merchant.Address,
-			CustRecordEmail:             merchant.Email,
-			CustRecordPhone:             merchant.PhoneNo,
-			CustRecordState:             merchant.State,
-			CustRecordCity:              merchant.City,
-			CustRecordZip:               merchant.ZipCode,
-			Method:                      "POST",
-		}
-
-		r.merchantPrivy.CreateMerchant(ctx, payloadMerchant)
-
-		channel, _ := r.channelRepo.FindByMerchantID(ctx, merchant.MerchantID, nil)
-
-		defer func() {
-			if p := recover(); p != nil {
-				r.custRepo.RollbackTx(ctx, tx)
-				panic(p)
-			} else if err != nil {
-				log.Println("Rolling back transaction due to error:", err)
-				r.custRepo.RollbackTx(ctx, tx)
-			} else {
-				err = r.custRepo.CommitTx(ctx, tx)
-				if err != nil {
-					log.Println("Error committing transaction:", err)
-				}
-			}
-		}()
-
-		payloadChannel := credential.ChannelParam{
-			RecordType:                 "customrecord_customer_hierarchy",
-			CustRecordCustomerName:     strconv.Itoa(int(merchant.CustomerInternalID)),
-			CustRecordEnterpriseID:     merchant.EnterpriseID,
-			CustRecordChannelID:        channel.ChannelID,
-			CustRecordMerchantID:       merchant.MerchantID,
-			CustRecordPrivyCodeChannel: channel.ChannelCode,
-			CustRecordChannelName:      channel.ChannelName,
-			CustRecordAddress:          channel.Address,
-			CustRecordEmail:            channel.Email,
-			CustRecordPhone:            channel.PhoneNo,
-			CustRecordState:            channel.State,
-			CustRecordCity:             channel.City,
-			CustRecordZip:              channel.ZipCode,
-			Method:                     channel.Method,
-		}
-
-		r.channelPrivy.CreateChannel(ctx, payloadChannel)
 	}
 
 	insertCustomer := entity.Customer{
@@ -241,22 +164,6 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		}
 	}()
 	log.Println("response", err)
-	log.Println("BEFORE ERRROR ")
-
-	defer func() {
-		if p := recover(); p != nil {
-			r.custRepo.RollbackTx(ctx, tx)
-			panic(p)
-		} else if err != nil {
-			log.Println("Rolling back transaction due to error:", err)
-			r.custRepo.RollbackTx(ctx, tx)
-		} else {
-			err = r.custRepo.CommitTx(ctx, tx)
-			if err != nil {
-				log.Println("Error committing transaction:", err)
-			}
-		}
-	}()
 
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)
@@ -323,6 +230,8 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 			Zip:   cust.ZipCode,
 		},
 	}
+
+	fmt.Println("========= crdCustParam ========", crdCustParam)
 
 	privyResp, err := r.customerPrivy.CreateCustomer(ctx, crdCustParam)
 	if err != nil {
@@ -584,7 +493,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLeadZD(ctx context.Context, cust m
 	tmNow := time.Now().UnixNano() / 1000000
 
 	insertCustomer := entity.Customer{
-		CustomerID:        cust.CRMLeadID,
+		CustomerID:        cust.EnterprisePrivyID,
 		CustomerType:      cust.CustomerType,
 		CustomerName:      cust.CustomerName,
 		FirstName:         cust.FirstName,
@@ -594,6 +503,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLeadZD(ctx context.Context, cust m
 		Address:           cust.Address,
 		CRMLeadID:         cust.CRMLeadID,
 		EnterprisePrivyID: cust.EnterprisePrivyID,
+		EntityStatus:      cust.EntityStatus,
 		NPWP:              cust.NPWP,
 		Address1:          cust.Address1,
 		State:             cust.State,
@@ -912,7 +822,9 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 	return custId, nil, nil
 }
 
-func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id string, cust model.Lead) (any, interface{}, error) {
+func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id string, cust model.Customer) (any, interface{}, error) {
+
+	print("========== UPDATE LEAD ==========")
 	tx, err := r.custRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
@@ -931,6 +843,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 		Address:           cust.Address,
 		CRMLeadID:         cust.CRMLeadID,
 		EnterprisePrivyID: cust.EnterprisePrivyID,
+		EntityStatus:      cust.EntityStatus,
 		NPWP:              cust.NPWP,
 		Address1:          cust.Address1,
 		State:             cust.State,
@@ -940,6 +853,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 	}
 
 	err = r.custRepo.UpdateLead(ctx, id, updatedCustomer, tx)
+
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)
 
@@ -954,23 +868,23 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 		return 0, nil, err
 	}
 
-	var entityStatus string
+	// var entityStatus string
 
-	if cust.CRMLeadID == "" {
-		entityStatus = "6"
-	} else {
-		entityStatus = "13"
-	}
+	// if cust.CRMLeadID == "" {
+	// 	entityStatus = "6"
+	// } else {
+	// 	entityStatus = "13"
+	// }
 
 	crdCustParam := credential.CustomerParam{
 		Recordtype:                     "lead",
 		Customform:                     "2",
-		EntityID:                       cust.CRMLeadID,
+		EntityID:                       cust.CustomerName,
 		IsPerson:                       "F",
 		CompanyName:                    cust.CustomerName,
 		Comments:                       "",
 		Email:                          cust.Email,
-		EntityStatus:                   entityStatus,
+		EntityStatus:                   updatedCustomer.EntityStatus,
 		URL:                            cust.URL,
 		Phone:                          cust.PhoneNo,
 		AltPhone:                       cust.AltPhone,
@@ -985,6 +899,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 		ZipCode:                        cust.ZipCode,
 		CompanyNameLong:                cust.CustomerName,
 		CRMLeadID:                      cust.CRMLeadID,
+		SubIndustry:                    cust.SubIndustry,
 		BankAccount:                    "103",
 		AddressBook: credential.AddressBook{
 			Addr1: cust.Address1,
@@ -995,32 +910,28 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 	}
 
 	privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
-	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
-
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "CustomerCommandUsecaseGeneral.Create",
-				"src":   "customerPrivy.CreateCustomer",
-				"param": crdCustParam,
-			}).
-			Error(err)
-
-		return 0, nil, err
-	}
 
 	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+		fmt.Println("========== ERROR ==========", privyResp)
+		if updatedCustomer.EntityStatus == "13" {
+			crdCustParam.Recordtype = "customer"
+			crdCustParam.EntityStatus = "13"
+		}
+		_, err := r.customerPrivy.CreateCustomer(ctx, crdCustParam)
+		if err != nil {
 
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "CustomerCommandUsecaseGeneral.Create",
-				"src":   "custRepo.Update",
-				"param": privyResp,
-			}).
-			Error(err)
+			r.custRepo.RollbackTx(ctx, tx)
 
-		return 0, nil, err
+			logrus.
+				WithFields(logrus.Fields{
+					"at":    "CustomerCommandUsecaseGeneral.Create",
+					"src":   "custRepo.Update",
+					"param": privyResp,
+				}).
+				Error(err)
+			return 0, nil, err
+		}
+
 	}
 
 	err = r.custRepo.CommitTx(ctx, tx)
@@ -1042,10 +953,92 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 		)
 	}
 
+	// SELIP TEST
+
+	// log.Println("merchant CUST TEST", cust.EnterprisePrivyID)
+
+	merchant, err := r.merchantRepo.FindByEnterprisePrivyID(ctx, cust.EnterprisePrivyID, nil)
+
+	log.Println("merchant", err)
+	log.Println("merchant2", merchant)
+
+	defer func() {
+		if p := recover(); p != nil {
+			r.custRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.custRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.custRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
+
+	if merchant.MerchantID != "" {
+		payloadMerchant := credential.MerchantParam{
+			RecordType:                  "customrecord_customer_hierarchy",
+			CustRecordCustomerName:      0,
+			CustRecordEnterpriseID:      merchant.EnterpriseID,
+			CustRecordMerchantID:        merchant.MerchantID,
+			CustRecordPrivyCodeMerchant: merchant.MerchantCode,
+			CustRecordMerchantName:      merchant.MerchantName,
+			CustRecordAddress:           merchant.Address,
+			CustRecordEmail:             merchant.Email,
+			CustRecordPhone:             merchant.PhoneNo,
+			CustRecordState:             merchant.State,
+			CustRecordCity:              merchant.City,
+			CustRecordZip:               merchant.ZipCode,
+			Method:                      "POST",
+		}
+
+		r.merchantPrivy.CreateMerchant(ctx, payloadMerchant)
+
+		channel, _ := r.channelRepo.FindByMerchantID(ctx, merchant.MerchantID, nil)
+
+		defer func() {
+			if p := recover(); p != nil {
+				r.custRepo.RollbackTx(ctx, tx)
+				panic(p)
+			} else if err != nil {
+				log.Println("Rolling back transaction due to error:", err)
+				r.custRepo.RollbackTx(ctx, tx)
+			} else {
+				err = r.custRepo.CommitTx(ctx, tx)
+				if err != nil {
+					log.Println("Error committing transaction:", err)
+				}
+			}
+		}()
+
+		payloadChannel := credential.ChannelParam{
+			RecordType:                 "customrecord_customer_hierarchy",
+			CustRecordCustomerName:     strconv.Itoa(int(merchant.CustomerInternalID)),
+			CustRecordEnterpriseID:     merchant.EnterpriseID,
+			CustRecordChannelID:        channel.ChannelID,
+			CustRecordMerchantID:       merchant.MerchantID + " - " + merchant.MerchantName,
+			CustRecordPrivyCodeChannel: channel.ChannelCode,
+			CustRecordChannelName:      channel.ChannelName,
+			CustRecordAddress:          channel.Address,
+			CustRecordEmail:            channel.Email,
+			CustRecordPhone:            channel.PhoneNo,
+			CustRecordState:            channel.State,
+			CustRecordCity:             channel.City,
+			CustRecordZip:              channel.ZipCode,
+			Method:                     channel.Method,
+		}
+
+		r.channelPrivy.CreateChannel(ctx, payloadChannel)
+	}
+
+	// SELIP END
+
 	return id, nil, nil
 }
 
-func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id int64, cust model.Lead) (int64, interface{}, error) {
+func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id string, cust model.Customer) (int64, interface{}, error) {
 	tx, err := r.custRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
@@ -1054,7 +1047,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id int6
 	tmNow := time.Now().UnixNano() / 1000000
 
 	updatedCustomer := entity.Customer{
-		CustomerID:        cust.CRMLeadID,
+		CustomerID:        cust.EnterprisePrivyID,
 		CustomerType:      cust.CustomerType,
 		CustomerName:      cust.CustomerName,
 		FirstName:         cust.FirstName,
@@ -1063,7 +1056,8 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id int6
 		PhoneNo:           cust.PhoneNo,
 		Address:           cust.Address,
 		CRMLeadID:         cust.CRMLeadID,
-		EnterprisePrivyID: cust.CRMLeadID,
+		EnterprisePrivyID: cust.EnterprisePrivyID,
+		EntityStatus:      "6",
 		NPWP:              cust.NPWP,
 		Address1:          cust.Address1,
 		State:             cust.State,
@@ -1072,7 +1066,11 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id int6
 		UpdatedAt:         tmNow,
 	}
 
-	err = r.custRepo.Update(ctx, id, updatedCustomer, tx)
+	strToint, _ := strconv.Atoi(id)
+
+	err = r.custRepo.UpdateLead(ctx, id, updatedCustomer, tx)
+
+	fmt.Println("========= ERROR ========", err)
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)
 
@@ -1087,77 +1085,77 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id int6
 		return 0, nil, err
 	}
 
-	var entityStatus string
+	// var entityStatus string
 
-	if cust.CRMLeadID == "" {
-		entityStatus = "6"
-	} else {
-		entityStatus = "13"
-	}
+	// if cust.CRMLeadID == "" {
+	// 	entityStatus = "6"
+	// } else {
+	// 	entityStatus = "13"
+	// }
 
-	crdCustParam := credential.CustomerParam{
-		Recordtype:                     "lead",
-		Customform:                     "2",
-		EntityID:                       cust.CRMLeadID,
-		IsPerson:                       "F",
-		CompanyName:                    cust.CustomerName,
-		Comments:                       "",
-		Email:                          cust.Email,
-		EntityStatus:                   entityStatus,
-		URL:                            cust.URL,
-		Phone:                          cust.PhoneNo,
-		AltPhone:                       cust.AltPhone,
-		Fax:                            cust.Fax,
-		CustEntityPrivyCustomerBalance: cust.Balance,
-		CustEntityPrivyCustomerUsage:   cust.Usage,
-		EnterprisePrivyID:              cust.EnterprisePrivyID,
-		NPWP:                           cust.NPWP,
-		Address1:                       cust.Address1,
-		State:                          cust.State,
-		City:                           cust.City,
-		ZipCode:                        cust.ZipCode,
-		CompanyNameLong:                cust.CustomerName,
-		// SubIndustry:                    cust.SubIndustry,
-		CRMLeadID:   cust.CRMLeadID,
-		BankAccount: "103",
-		AddressBook: credential.AddressBook{
-			Addr1: cust.Address1,
-			State: cust.State,
-			City:  cust.City,
-			Zip:   cust.ZipCode,
-		},
-	}
+	// crdCustParam := credential.CustomerParam{
+	// 	Recordtype:                     "lead",
+	// 	Customform:                     "2",
+	// 	EntityID:                       cust.CRMLeadID,
+	// 	IsPerson:                       "F",
+	// 	CompanyName:                    cust.CustomerName,
+	// 	Comments:                       "",
+	// 	Email:                          cust.Email,
+	// 	EntityStatus:                   entityStatus,
+	// 	URL:                            cust.URL,
+	// 	Phone:                          cust.PhoneNo,
+	// 	AltPhone:                       cust.AltPhone,
+	// 	Fax:                            cust.Fax,
+	// 	CustEntityPrivyCustomerBalance: cust.Balance,
+	// 	CustEntityPrivyCustomerUsage:   cust.Usage,
+	// 	EnterprisePrivyID:              cust.EnterprisePrivyID,
+	// 	NPWP:                           cust.NPWP,
+	// 	Address1:                       cust.Address1,
+	// 	State:                          cust.State,
+	// 	City:                           cust.City,
+	// 	ZipCode:                        cust.ZipCode,
+	// 	CompanyNameLong:                cust.CustomerName,
+	// 	// SubIndustry:                    cust.SubIndustry,
+	// 	CRMLeadID:   cust.CRMLeadID,
+	// 	BankAccount: "103",
+	// 	AddressBook: credential.AddressBook{
+	// 		Addr1: cust.Address1,
+	// 		State: cust.State,
+	// 		City:  cust.City,
+	// 		Zip:   cust.ZipCode,
+	// 	},
+	// }
 
-	//privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
+	// //privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
 
-	privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
-	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+	// privyResp, err := r.customerPrivy.UpdateLead(ctx, crdCustParam)
+	// if err != nil {
+	// 	r.custRepo.RollbackTx(ctx, tx)
 
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "CustomerCommandUsecaseGeneral.Create",
-				"src":   "customerPrivy.CreateCustomer",
-				"param": crdCustParam,
-			}).
-			Error(err)
+	// 	logrus.
+	// 		WithFields(logrus.Fields{
+	// 			"at":    "CustomerCommandUsecaseGeneral.Create",
+	// 			"src":   "customerPrivy.CreateCustomer",
+	// 			"param": crdCustParam,
+	// 		}).
+	// 		Error(err)
 
-		return 0, nil, err
-	}
+	// 	return 0, nil, err
+	// }
 
-	if err != nil {
-		r.custRepo.RollbackTx(ctx, tx)
+	// if err != nil {
+	// 	r.custRepo.RollbackTx(ctx, tx)
 
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "CustomerCommandUsecaseGeneral.Create",
-				"src":   "custRepo.Update",
-				"param": privyResp,
-			}).
-			Error(err)
+	// 	logrus.
+	// 		WithFields(logrus.Fields{
+	// 			"at":    "CustomerCommandUsecaseGeneral.Create",
+	// 			"src":   "custRepo.Update",
+	// 			"param": privyResp,
+	// 		}).
+	// 		Error(err)
 
-		return 0, nil, err
-	}
+	// 	return 0, nil, err
+	// }
 
 	err = r.custRepo.CommitTx(ctx, tx)
 	if err != nil {
@@ -1178,7 +1176,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead2(ctx context.Context, id int6
 		)
 	}
 
-	return id, nil, nil
+	return int64(strToint), nil, nil
 }
 
 func (r *CustomerCommandUsecaseGeneral) Update(ctx context.Context, id int64, cust model.Customer) (int64, interface{}, error) {

@@ -5,57 +5,60 @@ import (
 )
 
 type Customer struct {
-	CustomerID        string  `json:"customerId" validate:"max=255"`
-	CustomerType      string  `json:"customerType" `
-	CustomerName      string  `json:"customerName" validate:"required,max=255"`
-	FirstName         string  `json:"firstName" validate:"max=255"`
-	LastName          string  `json:"lastName"  validate:"required,max=255"`
-	Email             string  `json:"email" validate:"required,max=255"`
-	PhoneNo           string  `json:"phoneNo" validate:"required,max=255"`
-	Address           string  `json:"address" validate:"max=1000"`
-	IsPerson          bool    `json:"isPerson"`
-	EntityStatus      string  `json:"entityStatus" validate:"max=2"`
-	URL               string  `json:"url"`
-	AltPhone          *string `json:"altPhone"`
-	Fax               *string `json:"fax"`
-	Balance           int     `json:"balanceAmount"`
-	Usage             int     `json:"usageAmount"`
-	CRMLeadID         string  `json:"crmLeadId" validate:"max=255"`
-	EnterprisePrivyID string  `json:"enterprisePrivyId" validate:"required,max=255"`
-	Address1          string  `json:"address1"`
-	NPWP              string  `json:"npwp" validate:"max=255"`
-	State             string  `json:"state" validate:"max=255"`
-	City              string  `json:"city"validate:"max=255"`
-	ZipCode           string  `json:"zip" validate:"max=255"`
-	CreatedBy         int64   `json:"-"`
-	SubIndustry       string  `json:"subIndustry" validate:"max=255"`
+	CustomerID   string  `json:"customerId" validate:"max=255"`
+	CustomerType string  `json:"customerType" `
+	CustomerName string  `json:"customerName" validate:"required,max=255"`
+	FirstName    string  `json:"firstName" validate:"max=255"`
+	LastName     string  `json:"lastName"  validate:"required,max=255"`
+	Email        string  `json:"email" validate:"required,max=255"`
+	PhoneNo      string  `json:"phoneNo" validate:"max=255"`
+	Address      string  `json:"address" validate:"max=1000"`
+	IsPerson     bool    `json:"isPerson"`
+	EntityStatus string  `json:"entityStatus" validate:"max=2"`
+	URL          string  `json:"url"`
+	AltPhone     *string `json:"altPhone"`
+	Fax          *string `json:"fax"`
+	Balance      int     `json:"balanceAmount"`
+	Usage        int     `json:"usageAmount"`
+	CRMLeadID    string  `json:"crmLeadId" validate:"max=255"`
+	// CRMDealID         string  `json:"crmDealId" validate:"max=255"`
+	EnterprisePrivyID string `json:"enterprisePrivyId" validate:"max=255"`
+	Address1          string `json:"address1"`
+	NPWP              string `json:"npwp" validate:"max=255"`
+	State             string `json:"state" validate:"max=255"`
+	City              string `json:"city"validate:"max=255"`
+	ZipCode           string `json:"zip" validate:"max=255"`
+	CreatedBy         int64  `json:"-"`
+	SubIndustry       string `json:"subIndustry" validate:"max=255"`
+	RequestFrom       string `json:"requestFrom"`
 }
 
 type Lead struct {
-	CustomerID        string  `json:"customerId" Validate:"max=255"`
-	CustomerType      string  `json:"customerType" `
-	CustomerName      string  `json:"customerName" validate:"required,max=255"`
-	FirstName         string  `json:"firstName"`
-	LastName          string  `json:"lastName"`
-	Email             string  `json:"email" validate:"max=255"`
-	PhoneNo           string  `json:"phoneNo" validate:"max=255"`
-	Address           string  `json:"address" validate:"max=1000"`
-	IsPerson          bool    `json:"isPerson"`
-	EntityStatus      string  `json:"entityStatus"`
-	URL               string  `json:"url"`
-	AltPhone          *string `json:"altPhone"`
-	Fax               *string `json:"fax"`
-	Balance           int     `json:"balanceAmount"`
-	Usage             int     `json:"usageAmount"`
-	CRMLeadID         string  `json:"crmLeadId" validate:"max=255"`
-	EnterprisePrivyID string  `json:"enterprisePrivyId" validate:"max=255"`
-	Address1          string  `json:"address1"`
-	NPWP              string  `json:"npwp" validate:"max=255"`
-	State             string  `json:"state" validate:"max=255"`
-	City              string  `json:"city"`
-	ZipCode           string  `json:"zip" validate:"max=255"`
-	CreatedBy         int64   `json:"-"`
-	SubIndustry       string  `json:"subIndustry" validate:"max=255"`
+	CustomerID   string  `json:"customerId" Validate:"max=255"`
+	CustomerType string  `json:"customerType" `
+	CustomerName string  `json:"customerName" validate:"required,max=255"`
+	FirstName    string  `json:"firstName"`
+	LastName     string  `json:"lastName"`
+	Email        string  `json:"email" validate:"max=255"`
+	PhoneNo      string  `json:"phoneNo" validate:"max=255"`
+	Address      string  `json:"address" validate:"max=1000"`
+	IsPerson     bool    `json:"isPerson"`
+	EntityStatus string  `json:"entityStatus"`
+	URL          string  `json:"url"`
+	AltPhone     *string `json:"altPhone"`
+	Fax          *string `json:"fax"`
+	Balance      int     `json:"balanceAmount"`
+	Usage        int     `json:"usageAmount"`
+	CRMLeadID    string  `json:"crmLeadId" validate:"max=255"`
+	// CRMDealID         string  `json:"crmDealId" validate:"max=255"`
+	EnterprisePrivyID string `json:"enterprisePrivyId" validate:"max=255"`
+	Address1          string `json:"address1"`
+	NPWP              string `json:"npwp" validate:"max=255"`
+	State             string `json:"state" validate:"max=255"`
+	City              string `json:"city"`
+	ZipCode           string `json:"zip" validate:"max=255"`
+	CreatedBy         int64  `json:"-"`
+	SubIndustry       string `json:"subIndustry" validate:"max=255"`
 }
 
 func (c Customer) Validate() []map[string]interface{} {
