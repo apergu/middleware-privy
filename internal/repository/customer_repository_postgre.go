@@ -370,7 +370,8 @@ func (c *CustomerRepositoryPostgre) FindByEnterprisePrivyID(ctx context.Context,
 		customers.created_by,
 		customers.created_at,
 		customers.updated_by,
-		customers.updated_at
+		customers.updated_at,
+		customers.entitystatus
 	from
 		customers
 	where
@@ -465,7 +466,7 @@ func (c *CustomerRepositoryPostgre) FindByCRMLeadId(ctx context.Context, crmLead
 		customers.created_at,
 		customers.updated_by,
 		customers.updated_at,
-		customers.entitystatus,
+		customers.entitystatus
 	from
 		customers
 	where
@@ -707,7 +708,7 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 		"zip_code" = $17,
 		"customer_internalid" = $18,
 		updated_by = $10,
-		updated_at = $11
+		updated_at = $11,
 		entitystatus = $19
 	where
 		id = $12`
@@ -738,6 +739,7 @@ func (c *CustomerRepositoryPostgre) Update(ctx context.Context, id int64, cust e
 		// cust.CRMDealID,
 	)
 
+	fmt.Println("============== UPDATE ==============", err)
 	if err != nil {
 		return pgxerror.FromPgxError(err, "", "CustomerRepositoryPostgre.Update")
 	}

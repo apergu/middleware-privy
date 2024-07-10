@@ -175,7 +175,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if payload.CRMLeadID == "13" || payload.CRMLeadID == "7" {
+	if payload.EntityStatus == "13" || payload.EntityStatus == "7" {
 		if payload.EnterprisePrivyID == "" || payload.PhoneNo == "" {
 
 			message := ""
@@ -227,7 +227,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	// if payload.CRMLeadID != "" {
 	if payload.EntityStatus == "13" {
-
+		// _, _, err := h.Command.UpdateLead(ctx, payload.CustomerName, payload)
 		if payload.SubIndustry == "" {
 			payload.SubIndustry = "Others"
 		}
@@ -490,9 +490,15 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 			fmt.Println("url", urlAC)
 
+			lastName := responseDetail.LastName
+
+			if payloadEdit["custom_fields"].(map[string]interface{})["Last Name - Adonara"] != nil {
+				lastName = payloadEdit["custom_fields"].(map[string]interface{})["Last Name - Adonara"].(string)
+			}
+
 			payloadAc := map[string]interface{}{
 				"contact": map[string]interface{}{
-					"lastName": payload.LastName,
+					"lastName": lastName,
 					"email":    responseDetail.Email,
 					"phone":    responseDetail.PhoneNumber,
 					"fieldValues": []map[string]interface{}{
@@ -608,25 +614,31 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			})
 			helper.WriteJSONResponse(w, response, http.StatusCreated)
 		}
+		_, _, err := h.Command.UpdateLead(ctx, payload.CustomerName, payload)
 
-		custId, _, err := h.Command.UpdateLead(ctx, payload.CustomerName, payloadLead)
-
-		if err != nil || custId == nil {
-			log.Println("payload masuk 13", payload)
-			roleId, meta, err := h.Command.Create(ctx, payload)
-
-			if err != nil {
-				// fmt.Println("error", err.Error())
-				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{
-					"roleId": roleId,
-					"meta":   meta,
-				})
-				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-				defer r.Body.Close()
-				return
-			}
+		if err != nil {
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+			return
 		}
+
+		// if err != nil || custId == nil {
+		// 	log.Println("payload masuk 13", payload)
+		// 	roleId, meta, err := h.Command.Create(ctx, payload)
+
+		// 	if err != nil {
+		// 		// fmt.Println("error", err.Error())
+		// 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{
+		// 			"roleId": roleId,
+		// 			"meta":   meta,
+		// 		})
+		// 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		// 		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+		// 		defer r.Body.Close()
+		// 		return
+		// 	}
+		// }
 
 		response, _ := helper.GenerateJSONResponse(http.StatusCreated, true, "Customer successfully created", map[string]interface{}{
 			"roleId": 1,
@@ -694,8 +706,9 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		respDB, _, _ := h.Query.FindByCRMLeadID(ctx, payload.CRMLeadID)
 
-		if responsDetailData.Data == nil || respDB.CRMLeadID == "" {
+		if respDB.LastName == "" {
 			// if payload.CRMLeadID == "" {
+			fmt.Println("CREATE LEAD")
 			_, _, err := h.Command.CreateLeadZD(ctx, payload)
 			if err != nil {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
@@ -703,6 +716,16 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 				return
 			}
+		} else {
+			fmt.Println("UPDATE LEAD")
+			_, _, err := h.Command.UpdateLead2(ctx, payload.CustomerName, payload)
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
 		}
 
 		if payload.RequestFrom != "zendesk" {
@@ -958,7 +981,7 @@ func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) 
 	var err error
 	ctx := r.Context()
 
-	var payload model.Lead
+	var payload model.Customer
 
 	id := chi.URLParam(r, "id")
 	//id := rhelper.ToInt64(chi.URLParam(r, "id"), 0)
@@ -999,7 +1022,7 @@ func (h CustomerHttpHandler) UpdateLead(w http.ResponseWriter, r *http.Request) 
 	// set created by value
 	payload.CreatedBy = 0
 
-	errors := payload.ValidateLead()
+	errors := payload.Validate()
 	if len(errors) > 0 {
 		var message string
 		for _, v := range errors {

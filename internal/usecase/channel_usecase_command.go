@@ -84,16 +84,20 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 	}()
 
 	// fmt.Println("respCust FIND NAME")
-	// respCust, _ := r.channelRepo.FindByName(ctx, channelParam.ChannelName, tx)
+	respCust, _ := r.channelRepo.FindByMerchantID(ctx, channelParam.MerchantID, tx)
+	respChannel, _ := r.channelRepo.FindByChannelID(ctx, channelParam.ChannelID, tx)
+	respChannelName, _ := r.channelRepo.FindByName(ctx, channelParam.ChannelName, tx)
+	// respMerch, _ := r.merchantRepo.FindByEnterprisePrivyID(ctx, respCust.EnterpriseID, tx)
 
-	// if respCust.ChannelName != "" {
-	// 	return 0, nil, rapperror.ErrConflict(
-	// 		"",
-	// 		"Channel with name "+channelParam.ChannelName+" already exist",
-	// 		"ChannelCommandUsecaseGeneral.Create",
-	// 		nil,
-	// 	)
-	// }
+	// if respCust.MerchantID != "" && respMerch.EnterpriseID == respCust.EnterpriseID {
+	if respCust.MerchantID != "" && respChannel.ChannelID == channelParam.ChannelID && respChannelName.ChannelName == channelParam.ChannelName {
+		return 0, nil, rapperror.ErrConflict(
+			"",
+			"Channel with ID "+channelParam.ChannelID+"; Name "+channelParam.ChannelName+"; Merchant ID "+channelParam.MerchantID+" already exist",
+			"ChannelCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
 
 	// defer func() {
 	// 	if p := recover(); p != nil {

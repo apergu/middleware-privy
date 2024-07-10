@@ -21,6 +21,7 @@ type CustomerQueryRepository interface {
 	GetLast(ctx context.Context, tx pgx.Tx) (entity.Customer, error)
 	FindSubindustry(ctx context.Context, subindustry string, tx pgx.Tx) (entity.Subindustry, error)
 	FindByCRMLeadId(ctx context.Context, crmLeadId string, tx pgx.Tx) (entity.Customer, error)
+	FindByEnterprisePrivyID(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.Customer, error)
 }
 
 type CustomerCommandRepository interface {

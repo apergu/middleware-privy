@@ -78,6 +78,32 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 	// 	}
 	// }()
 
+	respEnterprise, _ := r.custRepo.FindByEnterprisePrivyID(ctx, merchant.EnterpriseID, tx)
+
+	if respEnterprise.EnterprisePrivyID == "" {
+		return 0, nil, rapperror.ErrNotFound(
+			"",
+			"Enterprise with ID "+merchant.EnterpriseID+" is Not Found",
+			"MerchantCommandUsecaseGeneral.Create",
+			nil,
+		)
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			r.merchantRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.merchantRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.merchantRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
+
 	respCust2, _ := r.merchantRepo.FindByMerchantID(ctx, merchant.MerchantID, tx)
 
 	if respCust2.MerchantID != "" && respCust2.MerchantID != "000" {
