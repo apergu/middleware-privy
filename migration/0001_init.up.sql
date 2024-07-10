@@ -18,7 +18,8 @@ create table if not exists customers (
     npwp text, 
     state text,
     city text, 
-    zip_code text
+    zip_code text,
+    entitystatus text
 );
 create table if not exists customer_usages (
     id BIGSERIAL PRIMARY KEY,
