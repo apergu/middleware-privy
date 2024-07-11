@@ -120,3 +120,35 @@ func (r *CustomerQueryUsecaseGeneral) FindByCRMLeadID(ctx context.Context, subin
 
 	return cust, nil, nil
 }
+
+func (r *CustomerQueryUsecaseGeneral) FindByEnterprisePrivyID(ctx context.Context, crmLeadID string) (entity.Customer, interface{}, error) {
+	cust, err := r.custRepo.FindByEnterprisePrivyID(ctx, crmLeadID, nil)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "CustomerQueryUsecaseGeneral.FindByCRMLeadID",
+				"src": "custRepo.FindByCRMLeadID",
+			}).
+			Error(err)
+
+		return entity.Customer{}, nil, err
+	}
+
+	return cust, nil, nil
+}
+
+func (r *CustomerQueryUsecaseGeneral) FindByName(ctx context.Context, crmLeadID string) (entity.Customer, interface{}, error) {
+	cust, err := r.custRepo.FindByName(ctx, crmLeadID, nil)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "CustomerQueryUsecaseGeneral.FindByCRMLeadID",
+				"src": "custRepo.FindByCRMLeadID",
+			}).
+			Error(err)
+
+		return entity.Customer{}, nil, err
+	}
+
+	return cust, nil, nil
+}

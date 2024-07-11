@@ -433,7 +433,8 @@ func (c *CustomerRepositoryPostgre) FindByName(ctx context.Context, enterprisePr
 		customers.created_by,
 		customers.created_at,
 		customers.updated_by,
-		customers.updated_at
+		customers.updated_at,
+		customers.entitystatus
 	from
 		customers
 	where

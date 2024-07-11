@@ -8,6 +8,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"reflect"
+	"regexp"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
@@ -59,6 +61,19 @@ func NewCustomerHttpHandler(prop HTTPHandlerProperty) http.Handler {
 	return r
 }
 
+type CustomerResponse struct {
+	field string `json:"field"`
+}
+
+func Contains(arr []map[string]interface{}, target map[string]interface{}) bool {
+	for _, element := range arr {
+		if reflect.DeepEqual(element, target) {
+			return true
+		}
+	}
+	return false
+}
+
 func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	// var response rresponser.Response
@@ -66,43 +81,51 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var payload model.Customer
-	var payloadLead model.Lead
+	// var payloadLead model.Lead
 	//var payloadLead model.Lead
 
+	fmt.Println("BEFORE ERRROR ", r.Body)
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
-	err = rdecoder.DecodeRest(r, h.Decorder, &payloadLead)
-	fmt.Println("err =>", err)
-	// if err != nil {
-	// 	msg := err.Error()
-	// 	re := regexp.MustCompile(`Customer\.(\w+)`)
-	// 	custm := re.FindStringSubmatch(msg)
-	// 	re = regexp.MustCompile(`([a-z])([A-Z])`)
-	// 	spaced := re.ReplaceAllString(custm[1], `$1 $2`)
-	// 	re = regexp.MustCompile(`type ([^\]]+)`)
-	// 	format := re.FindStringSubmatch(msg)
-	// 	message := fmt.Sprintf("Unprocessable entity - %s value must in %s format", spaced, format[1])
-	// 	logrus.
-	// 		WithFields(logrus.Fields{
-	// 			"action": "try to decode data",
-	// 			"at":     "CustomerHttpHandler.Create",
-	// 			"src":    "rdecoder.DecodeRest",
-	// 		}).
-	// 		Error(err)
+	// err = rdecoder.DecodeRest(r, h.Decorder, &payloadLead)
+	// fmt.Println("err =>", err.Error())
+	errors := payload.Validate()
 
-	// 	err = rapperror.ErrUnprocessableEntity(
-	// 		"",
-	// 		message,
-	// 		"CustomerHttpHandler.Create",
-	// 		nil,
-	// 	)
+	if err != nil {
+		msg := err.Error()
+		re := regexp.MustCompile(`Customer\.(\w+)`)
+		custm := re.FindStringSubmatch(msg)
+		// re = regexp.MustCompile(`([a-z])([A-Z])`)
+		// spaced := re.ReplaceAllString(custm[1], `$1 $2`)
+		re = regexp.MustCompile(`type ([^\]]+)`)
+		format := re.FindStringSubmatch(msg)
+		message := fmt.Sprintf("is %s", format[1])
+		logrus.
+			WithFields(logrus.Fields{
+				"action": "try to decode data",
+				"at":     "CustomerHttpHandler.Create",
+				"src":    "rdecoder.DecodeRest",
+			}).
+			Error(err)
 
-	// 	defer r.Body.Close()
+		err = rapperror.ErrUnprocessableEntity(
+			"",
+			message,
+			"CustomerHttpHandler.Create",
+			nil,
+		)
 
-	// 	response, _ := helper.GenerateJSONResponse(422, false, err.Error(), map[string]interface{}{})
-	// 	// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-	// 	helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-	// 	return
-	// }
+		errors = append(errors, map[string]interface{}{
+			"field":   custm[1],
+			"message": message,
+		})
+
+		defer r.Body.Close()
+
+		response, _ := helper.GenerateJSONResponse(422, false, "", errors)
+		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+		return
+	}
 	// get user from context
 	// user := ctx.Value(constants.SessionUserId).(int64)
 
@@ -110,8 +133,22 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	payload.CreatedBy = 0
 
 	// fmt.Println("BEFORE ERRROR ")
+	respCustExist, _, _ := h.Query.FindByName(ctx, payload.CustomerName)
+	fmt.Println("respCustExist", respCustExist)
+	if respCustExist.CustomerName != "" {
+		err = rapperror.ErrConflict(
+			"",
+			"Customer with name "+respCustExist.CustomerName+" already exist",
+			"CustomerCommandUsecaseGeneral.Create",
+			nil,
+		)
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+		defer r.Body.Close()
+		return
+	}
 
-	errors := payload.Validate()
 	if payload.EntityStatus == "6" || payload.EntityStatus == "" {
 		if payload.SubIndustry == "" {
 			errors = append(errors, map[string]interface{}{
@@ -120,6 +157,113 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			})
 
 			defer r.Body.Close()
+		}
+	}
+
+	if payload.EntityStatus == "13" || payload.EntityStatus == "7" {
+
+		if payload.EnterprisePrivyID != "" {
+			fmt.Println("respCust FIND NAME")
+			respCust2, _, _ := h.Query.FindByEnterprisePrivyID(ctx, payload.EnterprisePrivyID)
+
+			if respCust2.EnterprisePrivyID != "" {
+
+				err := rapperror.ErrConflict(
+					"",
+					"Customer with enterprise privy id "+respCust2.EnterprisePrivyID+" already exist",
+					"CustomerCommandUsecaseGeneral.Create",
+					nil,
+				)
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				defer r.Body.Close()
+				return
+			}
+		}
+
+		if payload.EnterprisePrivyID == "" || payload.PhoneNo == "" || payload.CustomerName == "" || payload.FirstName == "" || payload.LastName == "" || payload.Email == "" {
+
+			message := ""
+			field := ""
+			switch {
+			case reflect.TypeOf(payload.EnterprisePrivyID).Kind() != reflect.String:
+				message = "must be a string"
+				field = "EnterprisePrivyID"
+			case payload.CustomerName == "":
+				message = "is required"
+				field = "CustomerName"
+			case payload.EnterprisePrivyID == "":
+				message = "is required"
+				field = "EnterprisePrivyID"
+			case payload.PhoneNo == "":
+				message = "is required"
+				field = "PhoneNo"
+			case payload.FirstName == "":
+				message = "First Name is required"
+				field = "FirstName"
+			case payload.LastName == "":
+				message = "Last Name is required"
+				field = "LastName"
+			case payload.Email == "":
+				message = "Email is required"
+				field = "Email"
+
+			}
+
+			errors = append(errors, map[string]interface{}{
+				"field":   field,
+				"message": message,
+			})
+
+			fmt.Println("errors", errors)
+			// errorResponse := map[string]interface{}{
+			// 	"code":    422,
+			// 	"success": false,
+			// 	"message": http.StatusUnprocessableEntity,
+			// 	"errors":  errors,
+			// }
+
+			errorToInterface := make(map[string]interface{})
+			for _, v := range errors {
+				errorToInterface[v["field"].(string)] = v["message"]
+			}
+
+			err := rapperror.ErrUnprocessableEntity(
+				"",
+				"",
+				"CustomerHttpHandler.Create",
+				errorToInterface,
+			)
+
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, "", errors)
+			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+			defer r.Body.Close()
+			return
+
+			// // Convert error response to JSON
+			// responseJSON, marshalErr := json.Marshal(errorResponse)
+			// if marshalErr != nil {
+			// 	// Handle JSON marshaling error
+			// 	fmt.Println("Error encoding JSON:", marshalErr)
+			// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			// 	defer r.Body.Close()
+			// 	return
+			// }
+
+			// // Set the response headers
+			// w.Header().Set("Content-Type", "application/json")
+			// w.WriteHeader(http.StatusUnprocessableEntity) // Set the appropriate HTTP status code
+
+			// // Write the JSON response to the client
+			// _, writeErr := w.Write(responseJSON)
+			// if writeErr != nil {
+			// 	// Handle write error
+			// 	fmt.Println("Error writing response:", writeErr)
+			// }
+			// defer r.Body.Close()
+			// return
 		}
 	}
 
@@ -145,7 +289,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		errorResponse := map[string]interface{}{
 			"code":    422,
 			"success": false,
-			"message": "Validation failed",
+			"message": http.StatusUnprocessableEntity,
 			"errors":  errors,
 		}
 
@@ -156,7 +300,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		if marshalErr != nil {
 			// Handle JSON marshaling error
 			fmt.Println("Error encoding JSON:", marshalErr)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			http.Error(w, "Internal Server Error", http.StatusUnprocessableEntity)
 			return
 		}
 
@@ -175,56 +319,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if payload.EntityStatus == "13" || payload.EntityStatus == "7" {
-		if payload.EnterprisePrivyID == "" || payload.PhoneNo == "" {
-
-			message := ""
-			field := ""
-			switch {
-			case payload.EnterprisePrivyID == "":
-				message = "Enterprise Privy ID is required"
-				field = "EnterprisePrivyID"
-			case payload.PhoneNo == "":
-				message = "Phone Number is required"
-				field = "PhoneNo"
-			}
-
-			errors = append(errors, map[string]interface{}{
-				"field":   field,
-				"message": message,
-			})
-
-			errorResponse := map[string]interface{}{
-				"code":    422,
-				"success": false,
-				"message": "Validation failed",
-				"errors":  errors,
-			}
-
-			// Convert error response to JSON
-			responseJSON, marshalErr := json.Marshal(errorResponse)
-			if marshalErr != nil {
-				// Handle JSON marshaling error
-				fmt.Println("Error encoding JSON:", marshalErr)
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				defer r.Body.Close()
-				return
-			}
-
-			// Set the response headers
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusUnprocessableEntity) // Set the appropriate HTTP status code
-
-			// Write the JSON response to the client
-			_, writeErr := w.Write(responseJSON)
-			if writeErr != nil {
-				// Handle write error
-				fmt.Println("Error writing response:", writeErr)
-			}
-			defer r.Body.Close()
-			return
-		}
-	}
 	// if payload.CRMLeadID != "" {
 	if payload.EntityStatus == "13" {
 		// _, _, err := h.Command.UpdateLead(ctx, payload.CustomerName, payload)
@@ -931,7 +1025,7 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 		errorResponse := map[string]interface{}{
 			"code":    422,
 			"success": false,
-			"message": "Validation failed",
+			"message": "Validation failed TEST",
 			"errors":  errors,
 		}
 
