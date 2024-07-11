@@ -81,7 +81,7 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 	respEnterprise, _ := r.custRepo.FindByEnterprisePrivyID(ctx, merchant.EnterpriseID, tx)
 
 	if respEnterprise.EnterprisePrivyID == "" {
-		return 0, nil, rapperror.ErrNotFound(
+		return 0, nil, rapperror.ErrUnprocessableEntity(
 			"",
 			"Enterprise with ID "+merchant.EnterpriseID+" is Not Found",
 			"MerchantCommandUsecaseGeneral.Create",
