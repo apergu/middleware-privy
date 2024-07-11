@@ -182,7 +182,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		if payload.EnterprisePrivyID == "" || payload.PhoneNo == "" || payload.CustomerName == "" || payload.FirstName == "" || payload.LastName == "" || payload.Email == "" {
+		if payload.EnterprisePrivyID == "" || payload.PhoneNo == "" || payload.FirstName == "" || payload.LastName == "" || payload.Email == "" {
 
 			message := ""
 			field := ""
@@ -199,9 +199,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			case payload.PhoneNo == "":
 				message = "is required"
 				field = "PhoneNo"
-			case payload.FirstName == "":
-				message = "First Name is required"
-				field = "FirstName"
 			case payload.LastName == "":
 				message = "Last Name is required"
 				field = "LastName"
