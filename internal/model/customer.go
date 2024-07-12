@@ -83,6 +83,10 @@ func (c Customer) Validate() []map[string]interface{} {
 			return true
 		}
 
+		if email == "" {
+			return true
+		}
+
 		return false
 
 	})
