@@ -234,7 +234,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				errorToInterface,
 			)
 
-			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, "", errors)
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, "Validation Failed", errors)
 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 			defer r.Body.Close()
