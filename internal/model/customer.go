@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -14,7 +15,7 @@ type Customer struct {
 	FirstName    string  `json:"firstName" validate:"alphanum,max=255"`
 	LastName     string  `json:"lastName"  validate:"alphanum,max=255"`
 	Email        string  `json:"email" validate:"email,max=255"`
-	PhoneNo      string  `json:"phoneNo" validate:"max=255"`
+	PhoneNo      string  `json:"phoneNo" validate:"phone,max=255"`
 	Address      string  `json:"address" validate:"alphanum,max=1000"`
 	IsPerson     bool    `json:"isPerson"`
 	EntityStatus string  `json:"entityStatus" validate:"alphanum,max=2"`
@@ -43,7 +44,7 @@ type Lead struct {
 	FirstName    string  `json:"firstName"`
 	LastName     string  `json:"lastName"`
 	Email        string  `json:"email" validate:"email,max=255"`
-	PhoneNo      string  `json:"phoneNo" validate:"max=255"`
+	PhoneNo      string  `json:"phoneNo" validate:"phone,max=255"`
 	Address      string  `json:"address" validate:"max=1000"`
 	IsPerson     bool    `json:"isPerson"`
 	EntityStatus string  `json:"entityStatus"`
@@ -88,6 +89,26 @@ func (c Customer) Validate() []map[string]interface{} {
 		}
 
 		return false
+
+	})
+
+	v.RegisterValidation("phone", func(fl validator.FieldLevel) bool {
+		phone := fl.Field().String()
+		fmt.Println("VALIDATE", phone)
+		if phone == "" {
+			return true
+		}
+
+		pattern := "^[0-9]+$"
+
+		// Kompilasi regex
+		re, _ := regexp.Compile(pattern)
+
+		if re.MatchString(phone) {
+			return true
+		} else {
+			return false
+		}
 
 	})
 
