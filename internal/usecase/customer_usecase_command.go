@@ -851,7 +851,13 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 		UpdatedAt:         tmNow,
 	}
 
-	err = r.custRepo.UpdateLead(ctx, id, updatedCustomer, tx)
+	findCust, _ := r.custRepo.FindByEnterprisePrivyID(ctx, cust.EnterprisePrivyID, tx)
+
+	if findCust.EnterprisePrivyID == "" {
+		_, err = r.custRepo.Create(ctx, updatedCustomer, tx)
+	} else {
+		err = r.custRepo.UpdateLead(ctx, id, updatedCustomer, tx)
+	}
 
 	if err != nil {
 		r.custRepo.RollbackTx(ctx, tx)
