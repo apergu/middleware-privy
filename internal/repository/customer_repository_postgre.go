@@ -550,17 +550,24 @@ func (c *CustomerRepositoryPostgre) Create(ctx context.Context, cust entity.Cust
 
 	// var custId *string
 
-	// if cust.CustomerID == "" {
+	// if cust.CustomerID == "" && (cust.EnterprisePrivyID == "" || cust.CRMLeadID == "") {
+	// 	custId = &cust.CustomerName
+
+	// }
+
+	// if cust.EnterprisePrivyID == "" {
 	// 	custId = &cust.EnterprisePrivyID
-	// } else {
-	// 	custId = &cust.CustomerID
+	// }
+
+	// if cust.CRMLeadID == "" {
+	// 	custId = &cust.CRMLeadID
 	// }
 
 	err := cmd.
 		QueryRow(
 			ctx,
 			query,
-			cust.CustomerID,
+			cust.CustomerName,
 			cust.CustomerType,
 			cust.CustomerName,
 			cust.FirstName,
@@ -640,9 +647,9 @@ func (c *CustomerRepositoryPostgre) CreateLead(ctx context.Context, cust entity.
 	// 	custId = &cust.CustomerID
 	// }
 
-	if cust.CustomerID == "" && (cust.EnterprisePrivyID == "" || cust.CRMLeadID == "") {
-		custId = &cust.CustomerName
-	}
+	// if cust.CustomerID == "" && (cust.EnterprisePrivyID == "" || cust.CRMLeadID == "") {
+	custId = &cust.CustomerName
+	// }
 	err := cmd.
 		QueryRow(
 			ctx,
