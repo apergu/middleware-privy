@@ -52,12 +52,38 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 
 	tmNow := time.Now().UnixNano() / 1000000
 
-	respCust, _ := r.merchantRepo.FindByName(ctx, merchant.MerchantName, tx)
+	// respCust, _ := r.merchantRepo.FindByName(ctx, merchant.MerchantName, tx)
 
-	if respCust.MerchantName != "" {
-		return 0, nil, rapperror.ErrConflict(
+	// if respCust.MerchantName != "" {
+	// 	return 0, nil, rapperror.ErrConflict(
+	// 		"",
+	// 		"Merchant with name "+merchant.MerchantName+" already exist",
+	// 		"MerchantCommandUsecaseGeneral.Create",
+	// 		nil,
+	// 	)
+	// }
+
+	// defer func() {
+	// 	if p := recover(); p != nil {
+	// 		r.merchantRepo.RollbackTx(ctx, tx)
+	// 		panic(p)
+	// 	} else if err != nil {
+	// 		log.Println("Rolling back transaction due to error:", err)
+	// 		r.merchantRepo.RollbackTx(ctx, tx)
+	// 	} else {
+	// 		err = r.merchantRepo.CommitTx(ctx, tx)
+	// 		if err != nil {
+	// 			log.Println("Error committing transaction:", err)
+	// 		}
+	// 	}
+	// }()
+
+	respEnterprise, _ := r.custRepo.FindByEnterprisePrivyID(ctx, merchant.EnterpriseID, tx)
+
+	if respEnterprise.EnterprisePrivyID == "" {
+		return 0, nil, rapperror.ErrUnprocessableEntity(
 			"",
-			"Merchant with name "+merchant.MerchantName+" already exist",
+			"Enterprise with ID "+merchant.EnterpriseID+" is Not Found",
 			"MerchantCommandUsecaseGeneral.Create",
 			nil,
 		)
@@ -80,7 +106,7 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 
 	respCust2, _ := r.merchantRepo.FindByMerchantID(ctx, merchant.MerchantID, tx)
 
-	if respCust2.MerchantID != "" {
+	if respCust2.MerchantID != "" && respCust2.MerchantID != "000" {
 		return 0, nil, rapperror.ErrConflict(
 			"",
 			"Merchant with Merchant ID "+merchant.MerchantID+" already exist",
@@ -123,9 +149,9 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 	}
 
 	merchantId, err := r.merchantRepo.Create(ctx, insertMerchant, tx)
-
+	print("merchantId", merchantId)
 	if err != nil {
-		r.merchantRepo.RollbackTx(ctx, tx)
+		r.merchantRepo.CommitTx(ctx, tx)
 
 		logrus.
 			WithFields(logrus.Fields{
@@ -135,7 +161,12 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 			}).
 			Error(err)
 
-		return 0, nil, err
+		data := map[string]interface{}{
+			"merchant": insertMerchant,
+			"message":  err.Error(),
+		}
+
+		return 0, data, nil
 	}
 
 	defer func() {
@@ -165,7 +196,7 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 			panic(p)
 		} else if err != nil {
 			log.Println("Rolling back transaction due to error:", err)
-			r.merchantRepo.RollbackTx(ctx, tx)
+			r.merchantRepo.CommitTx(ctx, tx)
 		} else {
 			err = r.merchantRepo.CommitTx(ctx, tx)
 			if err != nil {

@@ -104,3 +104,51 @@ func (r *CustomerQueryUsecaseGeneral) FindSubindustry(ctx context.Context, subin
 
 	return subindustries, nil, nil
 }
+
+func (r *CustomerQueryUsecaseGeneral) FindByCRMLeadID(ctx context.Context, subindustry string) (entity.Customer, interface{}, error) {
+	cust, err := r.custRepo.FindByCRMLeadId(ctx, subindustry, nil)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "CustomerQueryUsecaseGeneral.FindSubindustry",
+				"src": "custRepo.FindSubindustry",
+			}).
+			Error(err)
+
+		return entity.Customer{}, nil, err
+	}
+
+	return cust, nil, nil
+}
+
+func (r *CustomerQueryUsecaseGeneral) FindByEnterprisePrivyID(ctx context.Context, crmLeadID string) (entity.Customer, interface{}, error) {
+	cust, err := r.custRepo.FindByEnterprisePrivyID(ctx, crmLeadID, nil)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "CustomerQueryUsecaseGeneral.FindByCRMLeadID",
+				"src": "custRepo.FindByCRMLeadID",
+			}).
+			Error(err)
+
+		return entity.Customer{}, nil, err
+	}
+
+	return cust, nil, nil
+}
+
+func (r *CustomerQueryUsecaseGeneral) FindByName(ctx context.Context, crmLeadID string) (entity.Customer, interface{}, error) {
+	cust, err := r.custRepo.FindByName(ctx, crmLeadID, nil)
+	if err != nil {
+		logrus.
+			WithFields(logrus.Fields{
+				"at":  "CustomerQueryUsecaseGeneral.FindByCRMLeadID",
+				"src": "custRepo.FindByCRMLeadID",
+			}).
+			Error(err)
+
+		return entity.Customer{}, nil, err
+	}
+
+	return cust, nil, nil
+}

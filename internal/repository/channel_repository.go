@@ -22,6 +22,7 @@ type ChannelQueryRepository interface {
 
 type ChannelCommandRepository interface {
 	Command
+	FindByMerchantID(ctx context.Context, merchantID string, tx pgx.Tx) (entity.Channel, error)
 	FindOneByIdForUpdate(ctx context.Context, id int64, tx pgx.Tx) (entity.Channel, error)
 	FindByChannelID(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.ChannelFind, error)
 	FindByName(ctx context.Context, channelName string, tx pgx.Tx) (entity.ChannelFind, error)
