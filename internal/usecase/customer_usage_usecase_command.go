@@ -83,7 +83,21 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 	customer_filter := repository.CustomerFilter{
 		EnterprisePrivyID: &custUsage[0],
 	}
-	customers, _ := r.custRepo.Find(ctx, customer_filter, 1, 0, nil)
+	customers, err := r.custRepo.Find(ctx, customer_filter, 1, 0, nil)
+
+	if err != nil {
+		r.custUsageRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Find",
+				"param": customer_filter,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
 
 	var customer entity.Customer
 	if len(customers) > 0 {
@@ -93,7 +107,21 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 	merchant_filter := repository.MerchantFilter{
 		MerchantID: &custUsage[1],
 	}
-	merchants, _ := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
+	merchants, err := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
+
+	if err != nil {
+		r.custUsageRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Find",
+				"param": customer_filter,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
 
 	var merchant entity.Merchant
 	if len(merchants) > 0 {
@@ -104,11 +132,25 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		ChannelID: &custUsage[2],
 	}
 
-	channels, _ := r.channelRepo.Find(ctx, channel_filter, 1, 0, nil)
+	channels, err := r.channelRepo.Find(ctx, channel_filter, 1, 0, nil)
 
 	var channel entity.Channel
 	if len(channels) > 0 {
 		channel = channels[0]
+	}
+
+	if err != nil {
+		r.custUsageRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Find",
+				"param": customer_filter,
+			}).
+			Error(err)
+
+		return 0, nil, err
 	}
 	custPrivyUsgParam := credential.CustomerUsageParam{
 		RecordType:                           "customrecord_privy_integrasi_usage",
