@@ -43,6 +43,78 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 	tmNow := time.Now().UnixNano() / 1000000
 	transAt := cust.TransactionAt.UnixNano() / 1000000
 
+	customer_filter := repository.CustomerFilter{
+		EnterprisePrivyID: &custUsage[0],
+	}
+	customers, _ := r.custRepo.Find(ctx, customer_filter, 1, 0, nil)
+
+	if customers[0].CustomerName == "" {
+		r.custUsageRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Find",
+				"param": customer_filter,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	var customer entity.Customer
+	if len(customers) > 0 {
+		customer = customers[0]
+	}
+
+	merchant_filter := repository.MerchantFilter{
+		MerchantID: &custUsage[1],
+	}
+	merchants, err := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
+
+	if merchants[0].MerchantID == "" {
+		r.custUsageRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Find",
+				"param": customer_filter,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+
+	var merchant entity.Merchant
+	if len(merchants) > 0 {
+		merchant = merchants[0]
+	}
+
+	channel_filter := repository.ChannelFilter{
+		ChannelID: &custUsage[2],
+	}
+
+	channels, err := r.channelRepo.Find(ctx, channel_filter, 1, 0, nil)
+
+	if channels[0].ChannelID == "" {
+		r.custUsageRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Find",
+				"param": customer_filter,
+			}).
+			Error(err)
+
+		return 0, nil, err
+	}
+	var channel entity.Channel
+	if len(channels) > 0 {
+		channel = channels[0]
+	}
+
 	insertCustomerUsage := entity.CustomerUsage{
 		CustomerID:     cust.CustomerID,
 		CustomerName:   custUsage[0],
@@ -80,78 +152,6 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		return 0, nil, err
 	}
 
-	customer_filter := repository.CustomerFilter{
-		EnterprisePrivyID: &custUsage[0],
-	}
-	customers, err := r.custRepo.Find(ctx, customer_filter, 1, 0, nil)
-
-	if err != nil {
-		r.custUsageRepo.RollbackTx(ctx, tx)
-
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
-				"src":   "custRepo.Find",
-				"param": customer_filter,
-			}).
-			Error(err)
-
-		return 0, nil, err
-	}
-
-	var customer entity.Customer
-	if len(customers) > 0 {
-		customer = customers[0]
-	}
-
-	merchant_filter := repository.MerchantFilter{
-		MerchantID: &custUsage[1],
-	}
-	merchants, err := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
-
-	if err != nil {
-		r.custUsageRepo.RollbackTx(ctx, tx)
-
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
-				"src":   "custRepo.Find",
-				"param": customer_filter,
-			}).
-			Error(err)
-
-		return 0, nil, err
-	}
-
-	var merchant entity.Merchant
-	if len(merchants) > 0 {
-		merchant = merchants[0]
-	}
-
-	channel_filter := repository.ChannelFilter{
-		ChannelID: &custUsage[2],
-	}
-
-	channels, err := r.channelRepo.Find(ctx, channel_filter, 1, 0, nil)
-
-	var channel entity.Channel
-	if len(channels) > 0 {
-		channel = channels[0]
-	}
-
-	if err != nil {
-		r.custUsageRepo.RollbackTx(ctx, tx)
-
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
-				"src":   "custRepo.Find",
-				"param": customer_filter,
-			}).
-			Error(err)
-
-		return 0, nil, err
-	}
 	custPrivyUsgParam := credential.CustomerUsageParam{
 		RecordType:                           "customrecord_privy_integrasi_usage",
 		CustrecordPrivyUsageDateIntegrasi:    cust.TransactionDate,
