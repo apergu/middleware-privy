@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -48,7 +49,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 	}
 	customers, _ := r.custRepo.Find(ctx, customer_filter, 1, 0, nil)
 
-	if customers[0].CustomerName == "" {
+	if len(customers) == 0 {
 		r.custUsageRepo.RollbackTx(ctx, tx)
 
 		logrus.
@@ -59,7 +60,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 			}).
 			Error(err)
 
-		return 0, nil, err
+		return 0, nil, fmt.Errorf("customer not found")
 	}
 
 	var customer entity.Customer
@@ -72,7 +73,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 	}
 	merchants, err := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
 
-	if merchants[0].MerchantID == "" {
+	if len(merchants) == 0 {
 		r.custUsageRepo.RollbackTx(ctx, tx)
 
 		logrus.
@@ -83,7 +84,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 			}).
 			Error(err)
 
-		return 0, nil, err
+		return 0, nil, fmt.Errorf("merchant not found")
 	}
 
 	var merchant entity.Merchant
@@ -97,7 +98,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 
 	channels, err := r.channelRepo.Find(ctx, channel_filter, 1, 0, nil)
 
-	if channels[0].ChannelID == "" {
+	if len(channels) == 0 {
 		r.custUsageRepo.RollbackTx(ctx, tx)
 
 		logrus.
@@ -108,7 +109,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 			}).
 			Error(err)
 
-		return 0, nil, err
+		return 0, nil, fmt.Errorf("channel not found")
 	}
 	var channel entity.Channel
 	if len(channels) > 0 {
