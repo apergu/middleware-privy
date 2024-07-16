@@ -25,6 +25,7 @@ type CustomerQueryUsecase interface {
 	FindById(ctx context.Context, id int64) (entity.Customer, interface{}, error)
 	FindSubindustry(ctx context.Context, subindustry string) (entity.Subindustry, interface{}, error)
 	FindByCRMLeadID(ctx context.Context, crmLeadID string) (entity.Customer, interface{}, error)
+	FindByEmail(ctx context.Context, email string) (entity.Customer, interface{}, error)
 	FindByEnterprisePrivyID(ctx context.Context, crmLeadID string) (entity.Customer, interface{}, error)
 	FindByName(ctx context.Context, crmLeadID string) (entity.Customer, interface{}, error)
 }

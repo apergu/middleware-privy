@@ -19,6 +19,7 @@ import (
 	"gitlab.com/rteja-library3/rhelper"
 	"gitlab.com/rteja-library3/rresponser"
 
+	"middleware/internal/entity"
 	"middleware/internal/helper"
 	"middleware/internal/model"
 	"middleware/internal/repository"
@@ -794,10 +795,23 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		err = json.Unmarshal(bodyDetailData, &responsDetailData)
 		fmt.Println("response Body", responsDetailData.Data)
+		resp := entity.Customer{}
 
-		respDB, _, _ := h.Query.FindByCRMLeadID(ctx, payload.CRMLeadID)
+		if payload.CRMLeadID != "" {
+			resp, _, _ = h.Query.FindByCRMLeadID(ctx, payload.CRMLeadID)
 
-		if respDB.LastName == "" {
+		}
+		// respDB, _, _ := h.Query.FindByCRMLeadID(ctx, payload.CRMLeadID)
+
+		resp, _, _ = h.Query.FindByName(ctx, payload.CustomerName)
+
+		if payload.EnterprisePrivyID != "" {
+			resp, _, _ = h.Query.FindByEnterprisePrivyID(ctx, payload.EnterprisePrivyID)
+		}
+
+		resp, _, _ = h.Query.FindByEmail(ctx, payload.Email)
+
+		if resp.LastName == "" {
 			// if payload.CRMLeadID == "" {
 			fmt.Println("CREATE LEAD")
 			_, _, err := h.Command.CreateLeadZD(ctx, payload)

@@ -477,6 +477,39 @@ func (c *CustomerRepositoryPostgre) FindByCRMLeadId(ctx context.Context, crmLead
 	return c.queryOne(ctx, cmd, query, crmLeadId)
 }
 
+func (c *CustomerRepositoryPostgre) FindByEmail(ctx context.Context, email string, tx pgx.Tx) (entity.Customer, error) {
+	var cmd sqlcommand.Command = c.pool
+	if tx != nil {
+		cmd = tx
+	}
+
+	query := `select
+		customers.id,
+		customers.customer_id,
+		customers.customer_type,
+		customers.customer_name,
+		customers.first_name,
+		customers.last_name,
+		customers.email,
+		customers.phone_no,
+		customers."address",
+		customers."crm_lead_id",
+		customers."enterprise_privy_id",
+		customers."customer_internalid",
+		customers.created_by,
+		customers.created_at,
+		customers.updated_by,
+		customers.updated_at,
+		customers.entitystatus
+	from
+		customers
+	where
+		customers.email = $1
+	limit 1`
+
+	return c.queryOne(ctx, cmd, query, email)
+}
+
 func (c *CustomerRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, id int64, tx pgx.Tx) (entity.Customer, error) {
 	if tx == nil {
 		return entity.Customer{}, rapperror.ErrInternalServerError(
