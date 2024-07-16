@@ -148,21 +148,21 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	if payload.EntityStatus == "13" || payload.EntityStatus == "7" {
 
-		respCustExist, _, _ := h.Query.FindByName(ctx, payload.CustomerName)
-		fmt.Println("respCustExist", respCustExist)
-		if respCustExist.CustomerName != "" {
-			err = rapperror.ErrConflict(
-				"",
-				"Customer with name "+respCustExist.CustomerName+" already exist",
-				"CustomerCommandUsecaseGeneral.Create",
-				nil,
-			)
-			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-			defer r.Body.Close()
-			return
-		}
+		// respCustExist, _, _ := h.Query.FindByName(ctx, payload.CustomerName)
+		// fmt.Println("respCustExist", respCustExist)
+		// if respCustExist.CustomerName != "" {
+		// 	err = rapperror.ErrConflict(
+		// 		"",
+		// 		"Customer with name "+respCustExist.CustomerName+" already exist",
+		// 		"CustomerCommandUsecaseGeneral.Create",
+		// 		nil,
+		// 	)
+		// 	response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+		// 	// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		// 	helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+		// 	defer r.Body.Close()
+		// 	return
+		// }
 
 		if payload.EnterprisePrivyID != "" {
 			fmt.Println("respCust FIND NAME")
