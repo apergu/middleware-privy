@@ -146,33 +146,18 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if payload.EntityStatus == "13" || payload.EntityStatus == "7" {
+	custFind, _, _ := h.Query.FindByCRMLeadID(ctx, payload.CustomerName)
 
-		// respCustExist, _, _ := h.Query.FindByName(ctx, payload.CustomerName)
-		// fmt.Println("respCustExist", respCustExist)
-		// if respCustExist.CustomerName != "" {
-		// 	err = rapperror.ErrConflict(
-		// 		"",
-		// 		"Customer with name "+respCustExist.CustomerName+" already exist",
-		// 		"CustomerCommandUsecaseGeneral.Create",
-		// 		nil,
-		// 	)
-		// 	response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-		// 	// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		// 	helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-		// 	defer r.Body.Close()
-		// 	return
-		// }
+	if custFind.CustomerName != "" {
 
-		if payload.EnterprisePrivyID != "" {
-			fmt.Println("respCust FIND NAME")
-			respCust2, _, _ := h.Query.FindByEnterprisePrivyID(ctx, payload.EnterprisePrivyID)
+		if payload.EntityStatus == "13" || payload.EntityStatus == "7" {
 
-			if respCust2.EnterprisePrivyID != "" {
-
-				err := rapperror.ErrConflict(
+			respCustExist, _, _ := h.Query.FindByName(ctx, payload.CustomerName)
+			fmt.Println("respCustExist", respCustExist)
+			if respCustExist.CustomerName != "" {
+				err = rapperror.ErrConflict(
 					"",
-					"Customer with enterprise privy id "+respCust2.EnterprisePrivyID+" already exist",
+					"Customer with name "+respCustExist.CustomerName+" already exist",
 					"CustomerCommandUsecaseGeneral.Create",
 					nil,
 				)
@@ -182,87 +167,107 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				defer r.Body.Close()
 				return
 			}
-		}
 
-		if payload.EnterprisePrivyID == "" || payload.PhoneNo == "" || payload.LastName == "" || payload.Email == "" || payload.CustomerName == "" {
+			if payload.EnterprisePrivyID != "" {
+				fmt.Println("respCust FIND NAME")
+				respCust2, _, _ := h.Query.FindByEnterprisePrivyID(ctx, payload.EnterprisePrivyID)
 
-			message := ""
-			field := ""
-			switch {
-			case reflect.TypeOf(payload.EnterprisePrivyID).Kind() != reflect.String:
-				message = "must be a string"
-				field = "EnterprisePrivyID"
-			case payload.CustomerName == "":
-				message = "is required"
-				field = "CustomerName"
-			case payload.EnterprisePrivyID == "":
-				message = "is required"
-				field = "EnterprisePrivyID"
-			case payload.PhoneNo == "":
-				message = "is required"
-				field = "PhoneNo"
-			case payload.LastName == "":
-				message = "Last Name is required"
-				field = "LastName"
-			case payload.Email == "":
-				message = "Email is required"
-				field = "Email"
+				if respCust2.EnterprisePrivyID != "" {
 
+					err := rapperror.ErrConflict(
+						"",
+						"Customer with enterprise privy id "+respCust2.EnterprisePrivyID+" already exist",
+						"CustomerCommandUsecaseGeneral.Create",
+						nil,
+					)
+					response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+					// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+					helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+					defer r.Body.Close()
+					return
+				}
 			}
 
-			errors = append(errors, map[string]interface{}{
-				"field":   field,
-				"message": message,
-			})
+			if payload.EnterprisePrivyID == "" || payload.PhoneNo == "" || payload.LastName == "" || payload.Email == "" || payload.CustomerName == "" {
 
-			fmt.Println("errors", errors)
-			// errorResponse := map[string]interface{}{
-			// 	"code":    422,
-			// 	"success": false,
-			// 	"message": http.StatusUnprocessableEntity,
-			// 	"errors":  errors,
-			// }
+				message := ""
+				field := ""
+				switch {
+				case reflect.TypeOf(payload.EnterprisePrivyID).Kind() != reflect.String:
+					message = "must be a string"
+					field = "EnterprisePrivyID"
+				case payload.CustomerName == "":
+					message = "is required"
+					field = "CustomerName"
+				case payload.EnterprisePrivyID == "":
+					message = "is required"
+					field = "EnterprisePrivyID"
+				case payload.PhoneNo == "":
+					message = "is required"
+					field = "PhoneNo"
+				case payload.LastName == "":
+					message = "Last Name is required"
+					field = "LastName"
+				case payload.Email == "":
+					message = "Email is required"
+					field = "Email"
 
-			errorToInterface := make(map[string]interface{})
-			for _, v := range errors {
-				errorToInterface[v["field"].(string)] = v["message"]
+				}
+
+				errors = append(errors, map[string]interface{}{
+					"field":   field,
+					"message": message,
+				})
+
+				fmt.Println("errors", errors)
+				// errorResponse := map[string]interface{}{
+				// 	"code":    422,
+				// 	"success": false,
+				// 	"message": http.StatusUnprocessableEntity,
+				// 	"errors":  errors,
+				// }
+
+				errorToInterface := make(map[string]interface{})
+				for _, v := range errors {
+					errorToInterface[v["field"].(string)] = v["message"]
+				}
+
+				err := rapperror.ErrUnprocessableEntity(
+					"",
+					"",
+					"CustomerHttpHandler.Create",
+					errorToInterface,
+				)
+
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, "Validation Failed", errors)
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				defer r.Body.Close()
+				return
+
+				// // Convert error response to JSON
+				// responseJSON, marshalErr := json.Marshal(errorResponse)
+				// if marshalErr != nil {
+				// 	// Handle JSON marshaling error
+				// 	fmt.Println("Error encoding JSON:", marshalErr)
+				// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				// 	defer r.Body.Close()
+				// 	return
+				// }
+
+				// // Set the response headers
+				// w.Header().Set("Content-Type", "application/json")
+				// w.WriteHeader(http.StatusUnprocessableEntity) // Set the appropriate HTTP status code
+
+				// // Write the JSON response to the client
+				// _, writeErr := w.Write(responseJSON)
+				// if writeErr != nil {
+				// 	// Handle write error
+				// 	fmt.Println("Error writing response:", writeErr)
+				// }
+				// defer r.Body.Close()
+				// return
 			}
-
-			err := rapperror.ErrUnprocessableEntity(
-				"",
-				"",
-				"CustomerHttpHandler.Create",
-				errorToInterface,
-			)
-
-			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, "Validation Failed", errors)
-			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-			defer r.Body.Close()
-			return
-
-			// // Convert error response to JSON
-			// responseJSON, marshalErr := json.Marshal(errorResponse)
-			// if marshalErr != nil {
-			// 	// Handle JSON marshaling error
-			// 	fmt.Println("Error encoding JSON:", marshalErr)
-			// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			// 	defer r.Body.Close()
-			// 	return
-			// }
-
-			// // Set the response headers
-			// w.Header().Set("Content-Type", "application/json")
-			// w.WriteHeader(http.StatusUnprocessableEntity) // Set the appropriate HTTP status code
-
-			// // Write the JSON response to the client
-			// _, writeErr := w.Write(responseJSON)
-			// if writeErr != nil {
-			// 	// Handle write error
-			// 	fmt.Println("Error writing response:", writeErr)
-			// }
-			// defer r.Body.Close()
-			// return
 		}
 	}
 
