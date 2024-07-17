@@ -800,6 +800,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		err = json.Unmarshal(bodyDetailData, &responsDetailData)
 		fmt.Println("response Body", responsDetailData.Data)
+		customFieldsData := responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{})
+
 		resp := entity.Customer{}
 
 		if payload.CRMLeadID != "" {
@@ -881,7 +883,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 					"Sub Industry":  payload.SubIndustry,
 					"Lead ID":       payload.CRMLeadID,
 					"Enterprise ID": payload.EnterprisePrivyID,
-					"NPWP":          payload.NPWP,
+					"NPWP":          customFieldsData["NPWP"],
 				},
 			}
 
@@ -891,17 +893,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 			if responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{})["NPWP"] != "" {
 				payloadData["custom_fields"].(map[string]interface{})["NPWP"] = responsDetailData.Data.(map[string]interface{})["npwp"]
-			}
-
-			if customFields, ok := responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{}); ok {
-				if npwp, ok := customFields["NPWP"].(string); ok && npwp != "" {
-					if payloadFields, ok := payloadData["custom_fields"].(map[string]interface{}); ok {
-						if responsNPWP, ok := responsDetailData.Data.(map[string]interface{})["npwp"].(string); ok {
-							fmt.Println("NPWP", responsNPWP)
-							payloadFields["NPWP"] = responsNPWP
-						}
-					}
-				}
 			}
 
 			if responsDetailData.Data.(map[string]interface{})["last_name"] != payload.LastName {
