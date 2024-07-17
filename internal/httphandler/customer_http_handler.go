@@ -879,12 +879,16 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 					"Sub Industry":  payload.SubIndustry,
 					"Lead ID":       payload.CRMLeadID,
 					"Enterprise ID": payload.EnterprisePrivyID,
-					"NPWP":          "123456",
+					"NPWP":          payload.NPWP,
 				},
 			}
 
 			if responsDetailData.Data.(map[string]interface{})["first_name"] != payload.FirstName {
 				payloadData["custom_fields"].(map[string]interface{})["First Name - Adonara"] = payload.FirstName
+			}
+
+			if responsDetailData.Data.(map[string]interface{})["npwp"] != "" {
+				payloadData["custom_fields"].(map[string]interface{})["NPWP"] = responsDetailData.Data.(map[string]interface{})["npwp"]
 			}
 
 			if responsDetailData.Data.(map[string]interface{})["last_name"] != payload.LastName {
