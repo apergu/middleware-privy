@@ -86,14 +86,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	//var payloadLead model.Lead
 
 	fmt.Println("BEFORE ERRROR ", r.Body)
-
-	body, err := ioutil.ReadAll(r.Body)
-	// if err != nil {
-	// 	fmt.Println("Error reading body:", err)
-	// 	return
-	// }
-	// Print the body
-	fmt.Println("BEFORE ERROR", string(body))
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 	// err = rdecoder.DecodeRest(r, h.Decorder, &payloadLead)
 	// fmt.Println("err =>", err.Error())
@@ -879,7 +871,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			defer resp.Body.Close()
 		} else {
 			fmt.Println("UPDATE LEAD ZENDESK")
-			fmt.Printf("%+v\n", payload)
+			fmt.Println("responseDetailData", payload.NPWP)
 
 			payloadData := map[string]interface{}{
 				"first_name": payload.FirstName,
@@ -897,8 +889,19 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				payloadData["custom_fields"].(map[string]interface{})["First Name - Adonara"] = payload.FirstName
 			}
 
-			if responsDetailData.Data.(map[string]interface{})["npwp"] != "" {
+			if responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{})["NPWP"] != "" {
 				payloadData["custom_fields"].(map[string]interface{})["NPWP"] = responsDetailData.Data.(map[string]interface{})["npwp"]
+			}
+
+			if customFields, ok := responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{}); ok {
+				if npwp, ok := customFields["NPWP"].(string); ok && npwp != "" {
+					if payloadFields, ok := payloadData["custom_fields"].(map[string]interface{}); ok {
+						if responsNPWP, ok := responsDetailData.Data.(map[string]interface{})["npwp"].(string); ok {
+							fmt.Println("NPWP", responsNPWP)
+							payloadFields["NPWP"] = responsNPWP
+						}
+					}
+				}
 			}
 
 			if responsDetailData.Data.(map[string]interface{})["last_name"] != payload.LastName {
