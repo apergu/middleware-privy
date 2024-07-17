@@ -870,6 +870,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 			defer resp.Body.Close()
 		} else {
+			fmt.Println("UPDATE LEAD ZENDESK")
+			fmt.Printf("%+v\n", payload)
 
 			payloadData := map[string]interface{}{
 				"first_name": payload.FirstName,
