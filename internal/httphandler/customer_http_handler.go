@@ -881,7 +881,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			defer resp.Body.Close()
 		} else {
 			fmt.Println("UPDATE LEAD ZENDESK")
-			fmt.Println("responseDetailData", reflect.TypeOf(payload.NPWP))
+			fmt.Println("responseDetailData", payload.NPWP)
 
 			payloadData := map[string]interface{}{
 				"first_name": payload.FirstName,
@@ -891,13 +891,12 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 					"Sub Industry":  payload.SubIndustry,
 					"Lead ID":       payload.CRMLeadID,
 					"Enterprise ID": payload.EnterprisePrivyID,
-					"NPWP":          "1213423",
+					"NPWP":          payload.NPWP,
 				},
 			}
 
-			fmt.Println("NPWP", payloadData["custom_fields"].(map[string]interface{})["NPWP"])
-			fmt.Println("NPWP", payloadData["custom_fields"].(map[string]interface{})["Enterprise ID"])
 			if payload.NPWP != "" {
+				fmt.Println("NPWP", payload.NPWP)
 				payloadData["custom_fields"].(map[string]interface{})["NPWP"] = payload.NPWP
 			}
 
@@ -917,7 +916,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				payloadData["custom_fields"].(map[string]interface{})["Email - Adonara"] = payload.Email
 			}
 
-			if responsDetailData.Data.(map[string]interface{})["company_name"] != payload.CustomerName {
+			if responsDetailData.Data.(map[string]interface{})["organization_name"] != payload.CustomerName {
 				payloadData["custom_fields"].(map[string]interface{})["Company Name - Adonara"] = payload.CustomerName
 			}
 
