@@ -86,6 +86,14 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	//var payloadLead model.Lead
 
 	fmt.Println("BEFORE ERRROR ", r.Body)
+
+	body, err := ioutil.ReadAll(r.Body)
+	// if err != nil {
+	// 	fmt.Println("Error reading body:", err)
+	// 	return
+	// }
+	// Print the body
+	fmt.Println("BEFORE ERROR", string(body))
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 	// err = rdecoder.DecodeRest(r, h.Decorder, &payloadLead)
 	// fmt.Println("err =>", err.Error())
