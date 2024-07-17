@@ -881,7 +881,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			defer resp.Body.Close()
 		} else {
 			fmt.Println("UPDATE LEAD ZENDESK")
-			fmt.Println("responseDetailData", payload.NPWP)
+			fmt.Println("responseDetailData", reflect.TypeOf(payload.NPWP))
 
 			payloadData := map[string]interface{}{
 				"first_name": payload.FirstName,
@@ -891,7 +891,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 					"Sub Industry":  payload.SubIndustry,
 					"Lead ID":       payload.CRMLeadID,
 					"Enterprise ID": payload.EnterprisePrivyID,
-					"NPWP":          payload.NPWP,
+					"NPWP":          "1213423",
 				},
 			}
 
