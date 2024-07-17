@@ -148,7 +148,7 @@ func (h CustomerUsageHttpHandler) Create(w http.ResponseWriter, r *http.Request)
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 		// return
 
-		responseJson, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, "Customer Usage successfully created", map[string]interface{}{
+		responseJson, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{
 			"roleId": roleId,
 			"meta":   meta,
 		})
@@ -156,7 +156,7 @@ func (h CustomerUsageHttpHandler) Create(w http.ResponseWriter, r *http.Request)
 		helper.WriteJSONResponse(w, responseJson, http.StatusUnprocessableEntity)
 		// helper.LoggerErrorStructfunc(w, r, "CustomerUsageHttpHandler.Create", "customer", "Customer Usage successfully created", "");
 		helper.LoggerErrorStructfunc(w, r, "ErpPrivyHttpHandler.TopUpBalance", "Customer Usage", err.Error(), payload.ChannelName, payload, err)
-
+		return
 	}
 
 	responseJson, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer Usage successfully created", map[string]interface{}{

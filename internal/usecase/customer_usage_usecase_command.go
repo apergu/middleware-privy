@@ -60,7 +60,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 			}).
 			Error(err)
 
-		return 0, nil, fmt.Errorf("customer not found")
+		return 0, nil, fmt.Errorf("[err_unprocessable_entity] customer with enterprise id %s not found", custUsage[0])
 	}
 
 	var customer entity.Customer
@@ -84,7 +84,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 			}).
 			Error(err)
 
-		return 0, nil, fmt.Errorf("merchant not found")
+		return 0, nil, fmt.Errorf("[err_unprocessable_entity] merchant with merchant id %s not found", custUsage[1])
 	}
 
 	var merchant entity.Merchant
@@ -109,7 +109,7 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 			}).
 			Error(err)
 
-		return 0, nil, fmt.Errorf("channel not found")
+		return 0, nil, fmt.Errorf("[err_unprocessable_entity] channel with channel id %s not found", custUsage[2])
 	}
 	var channel entity.Channel
 	if len(channels) > 0 {

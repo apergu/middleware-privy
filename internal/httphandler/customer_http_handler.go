@@ -891,7 +891,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 					"Sub Industry":  payload.SubIndustry,
 					"Lead ID":       payload.CRMLeadID,
 					"Enterprise ID": payload.EnterprisePrivyID,
-					"NPWP":          customFieldsData["NPWP"],
+					"NPWP":          payload.NPWP,
 				},
 			}
 
