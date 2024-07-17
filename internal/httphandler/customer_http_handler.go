@@ -800,7 +800,13 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		err = json.Unmarshal(bodyDetailData, &responsDetailData)
 		fmt.Println("response Body", responsDetailData.Data)
-		customFieldsData := responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{})
+		customFieldsData := map[string]interface{}{}
+		if responsDetailData.Data != nil {
+
+			customFieldsData = responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{})
+			fmt.Println("responseDetailData", customFieldsData["NPWP"])
+			fmt.Println("responseDetailData", customFieldsData["Enterprise ID"])
+		}
 
 		resp := entity.Customer{}
 
