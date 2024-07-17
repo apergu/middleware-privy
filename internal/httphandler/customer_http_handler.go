@@ -895,7 +895,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				},
 			}
 
-			fmt.Println("NPWP", payload.NPWP)
+			fmt.Println("NPWP", payloadData["custom_fields"].(map[string]interface{})["NPWP"])
+			fmt.Println("NPWP", payloadData["custom_fields"].(map[string]interface{})["Enterprise ID"])
 			if payload.NPWP != "" {
 				payloadData["custom_fields"].(map[string]interface{})["NPWP"] = payload.NPWP
 			}
