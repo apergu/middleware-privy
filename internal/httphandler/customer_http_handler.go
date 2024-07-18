@@ -921,6 +921,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				payloadData["custom_fields"].(map[string]interface{})["Company Name - Adonara"] = payload.CustomerName
 			}
 
+			payloadData["custom_fields"].(map[string]interface{})["NPWP"] = "12345"
+
 			sendData := map[string]interface{}{
 				"data": payloadData,
 			}
