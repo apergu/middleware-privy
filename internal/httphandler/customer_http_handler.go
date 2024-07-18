@@ -926,6 +926,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 
 			jsonDataZD, err := json.Marshal(sendData)
+
+			println("jsonDataZD", string(jsonDataZD))
 			if err != nil {
 				fmt.Println("Error marshalling JSON:", err)
 				return
