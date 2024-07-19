@@ -64,8 +64,8 @@ type PaymentGateway struct {
 	CustomForm                       string     `json:"customform" validate:"required"`
 	CustBodyPrivySoCustID            string     `json:"custbody_privy_so_custid" validate:"required"`
 	Entity                           string     `json:"entity" validate:"required"`
-	StartDate                        string     `json:"startdate" validate:"required"`
-	EndDate                          string     `json:"enddate" validate:"required"`
+	StartDate                        string     `json:"startdate" validate:"required,datetime=02/01/2006"`
+	EndDate                          string     `json:"enddate" validate:"required,datetime=02/01/2006"`
 	CustBodyPrivyTermOfPayment       string     `json:"custbody_privy_termofpayment" validate:"required"`
 	OtherRefNum                      string     `json:"otherrefnum" validate:"required"`
 	CustBodyPrivyBilling             string     `json:"custbody_privy_billing" validate:"required"`
