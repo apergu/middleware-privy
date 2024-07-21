@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -43,6 +44,78 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 	tmNow := time.Now().UnixNano() / 1000000
 	transAt := cust.TransactionAt.UnixNano() / 1000000
 
+	customer_filter := repository.CustomerFilter{
+		EnterprisePrivyID: &custUsage[0],
+	}
+	customers, _ := r.custRepo.Find(ctx, customer_filter, 1, 0, nil)
+
+	if len(customers) == 0 {
+		r.custUsageRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Find",
+				"param": customer_filter,
+			}).
+			Error(err)
+
+		return 0, nil, fmt.Errorf("[err_unprocessable_entity] customer with enterprise id %s not found", custUsage[0])
+	}
+
+	var customer entity.Customer
+	if len(customers) > 0 {
+		customer = customers[0]
+	}
+
+	merchant_filter := repository.MerchantFilter{
+		MerchantID: &custUsage[1],
+	}
+	merchants, err := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
+
+	if len(merchants) == 0 {
+		r.custUsageRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Find",
+				"param": customer_filter,
+			}).
+			Error(err)
+
+		return 0, nil, fmt.Errorf("[err_unprocessable_entity] merchant with merchant id %s not found", custUsage[1])
+	}
+
+	var merchant entity.Merchant
+	if len(merchants) > 0 {
+		merchant = merchants[0]
+	}
+
+	channel_filter := repository.ChannelFilter{
+		ChannelID: &custUsage[2],
+	}
+
+	channels, err := r.channelRepo.Find(ctx, channel_filter, 1, 0, nil)
+
+	if len(channels) == 0 {
+		r.custUsageRepo.RollbackTx(ctx, tx)
+
+		logrus.
+			WithFields(logrus.Fields{
+				"at":    "CustomerUsageCommandUsecaseGeneral.Create",
+				"src":   "custRepo.Find",
+				"param": customer_filter,
+			}).
+			Error(err)
+
+		return 0, nil, fmt.Errorf("[err_unprocessable_entity] channel with channel id %s not found", custUsage[2])
+	}
+	var channel entity.Channel
+	if len(channels) > 0 {
+		channel = channels[0]
+	}
+
 	insertCustomerUsage := entity.CustomerUsage{
 		CustomerID:     cust.CustomerID,
 		CustomerName:   custUsage[0],
@@ -80,36 +153,6 @@ func (r *CustomerUsageCommandUsecaseGeneral) Create(ctx context.Context, cust mo
 		return 0, nil, err
 	}
 
-	customer_filter := repository.CustomerFilter{
-		EnterprisePrivyID: &custUsage[0],
-	}
-	customers, _ := r.custRepo.Find(ctx, customer_filter, 1, 0, nil)
-
-	var customer entity.Customer
-	if len(customers) > 0 {
-		customer = customers[0]
-	}
-
-	merchant_filter := repository.MerchantFilter{
-		MerchantID: &custUsage[1],
-	}
-	merchants, _ := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
-
-	var merchant entity.Merchant
-	if len(merchants) > 0 {
-		merchant = merchants[0]
-	}
-
-	channel_filter := repository.ChannelFilter{
-		ChannelID: &custUsage[2],
-	}
-
-	channels, _ := r.channelRepo.Find(ctx, channel_filter, 1, 0, nil)
-
-	var channel entity.Channel
-	if len(channels) > 0 {
-		channel = channels[0]
-	}
 	custPrivyUsgParam := credential.CustomerUsageParam{
 		RecordType:                           "customrecord_privy_integrasi_usage",
 		CustrecordPrivyUsageDateIntegrasi:    cust.TransactionDate,

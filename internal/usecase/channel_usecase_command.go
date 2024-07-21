@@ -60,7 +60,7 @@ func (r *ChannelCommandUsecaseGeneral) Create(ctx context.Context, channelParam 
 	merchants, err := r.merchantRepo.Find(ctx, merchant_filter, 1, 0, nil)
 
 	if len(merchants) == 0 {
-		return 0, nil, rapperror.ErrNotFound(
+		return 0, nil, rapperror.ErrUnprocessableEntity(
 			"",
 			"Merchant with ID "+channelParam.MerchantID+" is Not Found",
 			"ChannelCommandUsecaseGeneral.Create",

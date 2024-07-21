@@ -19,6 +19,7 @@ import (
 	"gitlab.com/rteja-library3/rhelper"
 	"gitlab.com/rteja-library3/rresponser"
 
+	"middleware/internal/entity"
 	"middleware/internal/helper"
 	"middleware/internal/model"
 	"middleware/internal/repository"
@@ -145,6 +146,10 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// custFind, _, _ := h.Query.FindByCRMLeadID(ctx, payload.CustomerName)
+
+	// if custFind.CustomerName != "" {
+
 	if payload.EntityStatus == "13" || payload.EntityStatus == "7" {
 
 		respCustExist, _, _ := h.Query.FindByName(ctx, payload.CustomerName)
@@ -264,6 +269,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			// return
 		}
 	}
+	// }
 
 	if payload.SubIndustry != "" {
 		_, _, err := h.Query.FindSubindustry(ctx, payload.SubIndustry)
@@ -794,10 +800,33 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		err = json.Unmarshal(bodyDetailData, &responsDetailData)
 		fmt.Println("response Body", responsDetailData.Data)
+		customFieldsData := map[string]interface{}{}
 
-		respDB, _, _ := h.Query.FindByCRMLeadID(ctx, payload.CRMLeadID)
+		if responsDetailData.Data != nil {
 
-		if respDB.LastName == "" {
+			customFieldsData = responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{})
+			fmt.Println("responseDetailData", customFieldsData["NPWP"])
+			payload.NPWP = customFieldsData["NPWP"].(string)
+			fmt.Println("responseDetailData", customFieldsData["Enterprise ID"])
+		}
+
+		resp := entity.Customer{}
+
+		if payload.CRMLeadID != "" {
+			resp, _, _ = h.Query.FindByCRMLeadID(ctx, payload.CRMLeadID)
+
+		}
+		// respDB, _, _ := h.Query.FindByCRMLeadID(ctx, payload.CRMLeadID)
+
+		resp, _, _ = h.Query.FindByName(ctx, payload.CustomerName)
+
+		if payload.EnterprisePrivyID != "" {
+			resp, _, _ = h.Query.FindByEnterprisePrivyID(ctx, payload.EnterprisePrivyID)
+		}
+
+		resp, _, _ = h.Query.FindByEmail(ctx, payload.Email)
+
+		if resp.LastName == "" {
 			// if payload.CRMLeadID == "" {
 			fmt.Println("CREATE LEAD")
 			_, _, err := h.Command.CreateLeadZD(ctx, payload)
@@ -850,74 +879,88 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 
 			defer resp.Body.Close()
+		} else {
+			fmt.Println("UPDATE LEAD ZENDESK")
+			fmt.Println("responseDetailData", payload.NPWP)
+
+			payloadData := map[string]interface{}{
+				"first_name": payload.FirstName,
+				"email":      payload.Email,
+				"mobile":     payload.PhoneNo,
+				"custom_fields": map[string]interface{}{
+					"Sub Industry":  payload.SubIndustry,
+					"Lead ID":       payload.CRMLeadID,
+					"Enterprise ID": payload.EnterprisePrivyID,
+					"NPWP":          payload.NPWP,
+				},
+			}
+
+			if payload.NPWP != "" {
+				fmt.Println("NPWP", payload.NPWP)
+				payloadData["custom_fields"].(map[string]interface{})["NPWP"] = payload.NPWP
+			}
+
+			if responsDetailData.Data.(map[string]interface{})["first_name"] != payload.FirstName {
+				payloadData["custom_fields"].(map[string]interface{})["First Name - Adonara"] = payload.FirstName
+			}
+
+			if responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{})["NPWP"] != "" {
+				payloadData["custom_fields"].(map[string]interface{})["NPWP"] = responsDetailData.Data.(map[string]interface{})["npwp"]
+			}
+
+			if responsDetailData.Data.(map[string]interface{})["last_name"] != payload.LastName {
+				payloadData["custom_fields"].(map[string]interface{})["Last Name - Adonara"] = payload.LastName
+			}
+
+			if responsDetailData.Data.(map[string]interface{})["email"] != payload.Email {
+				payloadData["custom_fields"].(map[string]interface{})["Email - Adonara"] = payload.Email
+			}
+
+			if responsDetailData.Data.(map[string]interface{})["organization_name"] != payload.CustomerName {
+				payloadData["custom_fields"].(map[string]interface{})["Company Name - Adonara"] = payload.CustomerName
+			}
+
+			payloadData["custom_fields"].(map[string]interface{})["NPWP"] = payload.NPWP
+
+			sendData := map[string]interface{}{
+				"data": payloadData,
+			}
+
+			jsonDataZD, err := json.Marshal(sendData)
+
+			println("jsonDataZD", string(jsonDataZD))
+			if err != nil {
+				fmt.Println("Error marshalling JSON:", err)
+				return
+			}
+
+			urlDetailData := "https://api.getbase.com/v2/leads/" + payload.CRMLeadID
+			reqDetailData, err := http.NewRequest("PUT", urlDetailData, bytes.NewBuffer(jsonDataZD))
+			if err != nil {
+				fmt.Println("Error creating request:", err)
+				return
+			}
+
+			reqDetailData.Header.Add("Content-Type", "application/json")
+			reqDetailData.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+
+			clientDetailData := &http.Client{}
+			respDetailData, err := clientDetailData.Do(reqDetailData)
+			if err != nil {
+				fmt.Println("Error sending request:", err)
+				return
+			}
+			defer respDetailData.Body.Close()
+
+			body, err := ioutil.ReadAll(respDetailData.Body)
+			if err != nil {
+				fmt.Println("Error reading response body:", err)
+				return
+			}
+
+			fmt.Println("response BODY ZD", string(body))
+
 		}
-
-		// } else {
-
-		// payloadData := map[string]interface{}{
-		// 	"first_name": payload.FirstName,
-		// 	"email":      payload.Email,
-		// 	"mobile":     payload.PhoneNo,
-		// 	"custom_fields": map[string]interface{}{
-		// 		"Sub Industry":  payload.SubIndustry,
-		// 		"NPWP":          payload.NPWP,
-		// 		"Enterprise ID": payload.EnterprisePrivyID,
-		// 	},
-		// }
-
-		// if responsDetailData.Data.(map[string]interface{})["first_name"] != payload.FirstName {
-		// 	payloadData["custom_fields"].(map[string]interface{})["First Name - Adonara"] = payload.FirstName
-		// }
-
-		// if responsDetailData.Data.(map[string]interface{})["last_name"] != payload.LastName {
-		// 	payloadData["custom_fields"].(map[string]interface{})["Last Name - Adonara"] = payload.LastName
-		// }
-
-		// if responsDetailData.Data.(map[string]interface{})["email"] != payload.Email {
-		// 	payloadData["custom_fields"].(map[string]interface{})["Email - Adonara"] = payload.Email
-		// }
-
-		// if responsDetailData.Data.(map[string]interface{})["company_name"] != payload.CustomerName {
-		// 	payloadData["custom_fields"].(map[string]interface{})["Company Name - Adonara"] = payload.CustomerName
-		// }
-
-		// sendData := map[string]interface{}{
-		// 	"data": payloadData,
-		// }
-
-		// jsonDataZD, err := json.Marshal(sendData)
-		// if err != nil {
-		// 	fmt.Println("Error marshalling JSON:", err)
-		// 	return
-		// }
-
-		// urlDetailData := "https://api.getbase.com/v2/leads/" + payload.CRMLeadID
-		// reqDetailData, err := http.NewRequest("PUT", urlDetailData, bytes.NewBuffer(jsonDataZD))
-		// if err != nil {
-		// 	fmt.Println("Error creating request:", err)
-		// 	return
-		// }
-
-		// 	reqDetailData.Header.Add("Content-Type", "application/json")
-		// 	reqDetailData.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
-
-		// 	clientDetailData := &http.Client{}
-		// 	respDetailData, err := clientDetailData.Do(reqDetailData)
-		// 	if err != nil {
-		// 		fmt.Println("Error sending request:", err)
-		// 		return
-		// 	}
-		// 	defer respDetailData.Body.Close()
-
-		// 	body, err := ioutil.ReadAll(respDetailData.Body)
-		// 	if err != nil {
-		// 		fmt.Println("Error reading response body:", err)
-		// 		return
-		// 	}
-
-		// 	fmt.Println("response BODY ZD", string(body))
-
-		// }
 
 		response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer successfully created", map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
