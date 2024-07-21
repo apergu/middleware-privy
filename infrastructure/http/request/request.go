@@ -84,7 +84,7 @@ type PaymentGateway struct {
 type ResPaymentGateway struct {
 	Success  bool `json:"success"`
 	RecordID int  `json:"recordId"`
-	Data     struct {
+	Data     []struct {
 		TopupID         string    `json:"topup_id"`
 		EnterpriseID    string    `json:"enterprise_id"`
 		MerchantID      string    `json:"merchant_id"`

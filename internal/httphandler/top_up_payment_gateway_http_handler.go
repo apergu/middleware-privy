@@ -184,30 +184,36 @@ func (h TopUpPaymentGateWayHttpHandler) TopUpPayment(w http.ResponseWriter, r *h
 		return
 	}
 
-	reqTopUpBalance := model.TopUpBalance{
-		TopUPID:         resTopUpmodel.Data.TopupID,
-		EnterpriseId:    resTopUpmodel.Data.EnterpriseID,
-		MerchantId:      resTopUpmodel.Data.MerchantID,
-		ChannelId:       resTopUpmodel.Data.ChannelID,
-		ServiceId:       resTopUpmodel.Data.ServiceID,
-		PostPaid:        resTopUpmodel.Data.PostPaid,
-		Qty:             resTopUpmodel.Data.Qty,
-		UnitPrice:       resTopUpmodel.Data.UnitPrice,
-		StartPeriodDate: resTopUpmodel.Data.StartPeriodDate.Format("02/01/2006"),
-		EndPeriodDate:   resTopUpmodel.Data.EndPeriodDate.Format("02/01/2006"),
-		TransactionDate: resTopUpmodel.Data.TransactionDate.Format("02/01/2006"),
-	}
+	var arrStr []string
 
-	_, _, err = h.CommandTopUp.TopUpBalance(context.Background(), reqTopUpBalance, xRequestId)
-	if err != nil {
-		helper.LoggerErrorStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWayWithTopUpBalance", err.Error(), "", reqTopUpBalance, nil)
-		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-		return
+	for _, v := range resTopUpmodel.Data {
+		reqTopUpBalance := model.TopUpBalance{
+			TopUPID:         v.TopupID,
+			EnterpriseId:    v.EnterpriseID,
+			MerchantId:      v.MerchantID,
+			ChannelId:       v.ChannelID,
+			ServiceId:       v.ServiceID,
+			PostPaid:        v.PostPaid,
+			Qty:             v.Qty,
+			UnitPrice:       v.UnitPrice,
+			StartPeriodDate: v.StartPeriodDate.Format("02/01/2006"),
+			EndPeriodDate:   v.EndPeriodDate.Format("02/01/2006"),
+			TransactionDate: v.TransactionDate.Format("02/01/2006"),
+		}
+
+		_, _, err = h.CommandTopUp.TopUpBalance(context.Background(), reqTopUpBalance, xRequestId)
+		if err != nil {
+			helper.LoggerErrorStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWayWithTopUpBalance", err.Error(), "", reqTopUpBalance, nil)
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+			return
+		}
+
+		arrStr = append(arrStr, v.TopupID)
 	}
 
 	res, _ := helper.GenerateJSONResponse(http.StatusCreated, true, "TopUpPayment successfully created", map[string]interface{}{
-		"trx_id": resTopUpmodel.Data.TopupID,
+		"trx_id": arrStr,
 	})
 	helper.LoggerSuccessStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWay", "TopUpPayment successfully created", "")
 	helper.WriteJSONResponse(w, res, http.StatusCreated)
