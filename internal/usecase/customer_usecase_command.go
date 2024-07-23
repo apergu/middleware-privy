@@ -318,9 +318,11 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 
 	custId := int64(0)
 	if findCust.CRMLeadID != "" {
+		log.Println("response Update", findCust.CRMLeadID)
 		err = r.custRepo.Update(ctx, findCust.ID, insertCustomer, tx)
 		// log.Println("response", err)
 	} else {
+		log.Println("response Create", findCust.CRMLeadID)
 		custId, err = r.custRepo.CreateLead(ctx, insertCustomer, tx)
 	}
 
