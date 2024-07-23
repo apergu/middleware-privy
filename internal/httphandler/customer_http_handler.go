@@ -154,7 +154,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		respCustExist, _, _ := h.Query.FindByName(ctx, payload.CustomerName)
 		fmt.Println("respCustExist", respCustExist)
-		if respCustExist.CustomerName != "" {
+		if respCustExist.CustomerName != "" && (respCustExist.EntityStatus == "13" || respCustExist.EntityStatus == "7") {
 			err = rapperror.ErrConflict(
 				"",
 				"Customer with name "+respCustExist.CustomerName+" already exist",
@@ -172,7 +172,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("respCust FIND NAME")
 			respCust2, _, _ := h.Query.FindByEnterprisePrivyID(ctx, payload.EnterprisePrivyID)
 
-			if respCust2.EnterprisePrivyID != "" {
+			if respCust2.EnterprisePrivyID != "" && (respCust2.EntityStatus == "13" || respCust2.EntityStatus == "7") {
 
 				err := rapperror.ErrConflict(
 					"",

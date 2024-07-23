@@ -314,7 +314,17 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 		UpdatedAt:         tmNow,
 	}
 
-	custId, err := r.custRepo.CreateLead(ctx, insertCustomer, tx)
+	findCust, _ := r.custRepo.FindByCRMLeadId(ctx, cust.CRMLeadID, tx)
+
+	custId := int64(0)
+	if findCust.CRMLeadID != "" {
+		err = r.custRepo.Update(ctx, findCust.ID, insertCustomer, tx)
+		// log.Println("response", err)
+	} else {
+		custId, err = r.custRepo.CreateLead(ctx, insertCustomer, tx)
+	}
+
+	// custId, err := r.custRepo.CreateLead(ctx, insertCustomer, tx)
 	log.Println("response", err)
 
 	if err != nil {
