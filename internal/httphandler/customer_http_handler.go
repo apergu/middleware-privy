@@ -329,7 +329,275 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			payload.SubIndustry = "Others"
 		}
 
-		if payload.CRMLeadID != "" {
+		if payload.CRMLeadID == "" {
+
+			url := "https://api.getbase.com/v2/deals"
+			payloadData := map[string]interface{}{
+				"data": map[string]interface{}{
+					"first_name":        payload.FirstName,
+					"last_name":         payload.LastName,
+					"organization_name": payload.CustomerName,
+					"email":             payload.Email,
+					"phone":             payload.PhoneNo,
+					"custom_fields": map[string]interface{}{
+						"Sub Industry":  payload.SubIndustry,
+						"NPWP":          payload.NPWP,
+						"Enterprise ID": payload.EnterprisePrivyID,
+					},
+				},
+			}
+
+			// Convert data to JSON
+
+			jsonData, err := json.Marshal(payloadData)
+			if err != nil {
+				panic(err)
+			}
+			reqData, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
+			reqData.Header.Add("Content-Type", "application/json")
+			reqData.Header.Add("Authorization", "Bearer	26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+
+			clientData := &http.Client{}
+			respData, err := clientData.Do(reqData)
+
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
+			defer respData.Body.Close()
+
+			bodyData, err := ioutil.ReadAll(respData.Body)
+
+			var responsData struct {
+				Data interface{} `json:"data"`
+			}
+
+			if err != nil {
+				fmt.Println("Error:", err)
+				return
+			}
+
+			err = json.Unmarshal(bodyData, &responsData)
+			fmt.Println("response Body", responsData)
+
+			var response struct {
+				ID int `json:"id"`
+			}
+
+			if err != nil {
+				fmt.Println("Error:", err)
+
+				return
+			}
+
+			err = json.Unmarshal(bodyData, &response)
+
+			fmt.Println("response Body", response)
+
+			payload.CRMLeadID = strconv.Itoa(response.ID)
+
+			// fmt.Println("respData", response.Data.ID)
+
+			urlConvert := "https://api.getbase.com/v2/lead_conversions"
+
+			// // Replace the following map with your actual data
+			leadID, _ := strconv.Atoi(payload.CRMLeadID)
+			data := map[string]interface{}{
+				"lead_id": leadID,
+			}
+
+			payloadDataConvert := map[string]interface{}{
+				"data": data,
+			}
+
+			// // Convert data to JSON
+			jsonDataConvert, err := json.Marshal(payloadDataConvert)
+			if err != nil {
+				panic(err)
+			}
+
+			// // Make the HTTP POST request
+			reqConvert, err := http.NewRequest("POST", urlConvert, bytes.NewBuffer(jsonDataConvert))
+
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
+			reqConvert.Header.Add("Content-Type", "application/json")
+
+			reqConvert.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+
+			clientConvert := &http.Client{}
+			respConvert, err := clientConvert.Do(reqConvert)
+
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
+			defer respConvert.Body.Close()
+
+			bodyConvert, err := ioutil.ReadAll(respConvert.Body)
+			// jsonBody := json.RawMessage(body)
+			fmt.Println("TEST", string(bodyConvert))
+			if err != nil {
+				fmt.Println("Error reading body:", err)
+				return
+			}
+
+			var responsConvert struct {
+				Data struct {
+					DealId int `json:"deal_id"`
+				} `json:"data"`
+			}
+
+			if err != nil {
+				fmt.Println("Error:", err)
+				return
+			}
+
+			err = json.Unmarshal(bodyConvert, &responsConvert)
+
+			fmt.Println("response Body", responsConvert)
+
+			urlStageWon := "https://api.getbase.com/v2/deals/" + strconv.Itoa(responsConvert.Data.DealId)
+
+			payloadDataStage := map[string]interface{}{
+				"data": map[string]interface{}{
+					"stage_id": 34108700,
+				},
+			}
+
+			// Convert data to JSON
+			jsonDataStage, err := json.Marshal(payloadDataStage)
+			if err != nil {
+				panic(err)
+			}
+
+			// Make the HTTP POST request
+			reqStage, err := http.NewRequest("PUT", urlStageWon, bytes.NewBuffer(jsonDataStage))
+
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
+			reqStage.Header.Add("Content-Type", "application/json")
+			reqStage.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+
+			clientStage := &http.Client{}
+
+			respStage, err := clientStage.Do(reqStage)
+
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
+			defer respStage.Body.Close()
+
+			bodyStage, err := ioutil.ReadAll(respStage.Body)
+
+			if err != nil {
+				fmt.Println("Error reading body:", err)
+				return
+			}
+
+			fmt.Println("response Body", string(bodyStage))
+
+			urlAC := "https://privy1706071639.api-us1.com/api/3/contacts"
+
+			fmt.Println("url", urlAC)
+
+			lastName := payload.LastName
+
+			payloadAc := map[string]interface{}{
+				"contact": map[string]interface{}{
+					"lastName": lastName,
+					"email":    payload.Email,
+					"phone":    payload.PhoneNo,
+					"fieldValues": []map[string]interface{}{
+						{
+							"field": 1,
+							"value": payload.CustomerName,
+						}, {
+							"field": 2,
+							"value": payload.SubIndustry,
+						}, {
+							"field": 3,
+							"value": "New Client - Inbound",
+						},
+						{
+							"field": 4,
+							"value": "Won - Contract Signed / Award Letter Issued",
+						}, {
+							"field": 5,
+							"value": payload.EnterprisePrivyID,
+						}, {
+							"field": 6,
+							"value": leadID,
+						},
+						{
+							"field": 7,
+							"value": strconv.Itoa(responsConvert.Data.DealId),
+						},
+					},
+				},
+			}
+
+			// Convert data to JSON
+			jsonDataAc, err := json.Marshal(payloadAc)
+			if err != nil {
+				panic(err)
+			}
+
+			// Make the HTTP POST request
+			reqAc, err := http.NewRequest("POST", urlAC, bytes.NewBuffer(jsonDataAc))
+
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
+			reqAc.Header.Add("Content-Type", "application/json")
+			reqAc.Header.Add("Api-Token", "83098f1b9181f163ee582823ba5bdcde7a02db14d75b8fc3dc2eea91738a49a47e100e68")
+
+			clientAc := &http.Client{}
+			respAc, err := clientAc.Do(reqAc)
+			fmt.Println("response", err)
+
+			if err != nil {
+				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+				return
+			}
+
+			defer respAc.Body.Close()
+
+		} else {
 
 			findData, _, _ := h.Query.FindByCRMLeadID(ctx, payload.CRMLeadID)
 
