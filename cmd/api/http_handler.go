@@ -7,6 +7,7 @@ import (
 
 	"middleware/infrastructure"
 	"middleware/internal/config"
+	"middleware/internal/helper"
 	"middleware/internal/httphandler"
 	"middleware/pkg/appmiddleware"
 
@@ -50,9 +51,9 @@ func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.
 			"",
 			nil,
 		)
-
-		response := rresponser.NewResponserError(err)
-		rdecoder.EncodeRestWithResponser(w, rdecoder.NewJSONEncoder(), response)
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 	})
 
 	r.MethodNotAllowed(func(w http.ResponseWriter, r *http.Request) {

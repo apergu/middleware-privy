@@ -11,6 +11,7 @@ import (
 	"gitlab.com/rteja-library3/rresponser"
 
 	"middleware/internal/constants"
+	"middleware/internal/helper"
 )
 
 func BasicAuth(basicUsername, basicPassword string, decorder rdecoder.Decoder) func(http.Handler) http.Handler {
@@ -40,8 +41,8 @@ func basicAuthHandler(next http.Handler, basicUsername, basicPassword string, de
 				}).
 				Error(err)
 
-			response := rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, decorder, response)
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 			return
 		}
 
