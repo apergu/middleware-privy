@@ -188,7 +188,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		if payload.EnterprisePrivyID == "" || payload.PhoneNo == "" || payload.LastName == "" || payload.Email == "" || payload.CustomerName == "" {
+		if (payload.EnterprisePrivyID == "" && payload.EntityStatus == "13") || payload.PhoneNo == "" || payload.LastName == "" || payload.Email == "" || payload.CustomerName == "" {
 
 			message := ""
 			field := ""
