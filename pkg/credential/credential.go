@@ -35,6 +35,10 @@ type Channel interface {
 	CreateChannel(ctx context.Context, param ChannelParam) (ChannelResponse, error)
 }
 
+type Application interface {
+	CreateApplication(ctx context.Context, param ApplicationParam) (ApplicationResponse, error)
+}
+
 type Credential interface {
 	Lead
 	TopUp
@@ -44,4 +48,5 @@ type Credential interface {
 	Merchant
 	Channel
 	TransferBalance
+	Application
 }

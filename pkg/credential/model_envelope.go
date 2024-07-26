@@ -61,6 +61,11 @@ type EnvelopeChannel struct {
 	SuccessTransaction []ChannelResponse       `json:"success_transaction"`
 	FailedTransaction  []ChannelFailedResponse `json:"failed_transaction"`
 }
+type EnvelopeApplication struct {
+	MainEnvelope
+	SuccessTransaction []ApplicationResponse       `json:"success_transaction"`
+	FailedTransaction  []ApplicationFailedResponse `json:"failed_transaction"`
+}
 
 type EnvelopeTopUp struct {
 	MainEnvelope

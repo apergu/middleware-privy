@@ -199,7 +199,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			case payload.CustomerName == "":
 				message = "is required"
 				field = "CustomerName"
-			case payload.EnterprisePrivyID == "":
+			case payload.EnterprisePrivyID == "" && payload.EntityStatus == "13":
 				message = "is required"
 				field = "EnterprisePrivyID"
 			case payload.PhoneNo == "":
