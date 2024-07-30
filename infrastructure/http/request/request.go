@@ -40,6 +40,24 @@ type LineItem struct {
 	CustColAmountBeforeDisc         string `json:"custcol_privy_amountbeforediscount" `
 	// Optional
 }
+type LineItemReq struct {
+	Item                            string `json:"item" validate:"required"`
+	CustColPrivyMerchant            string `json:""merchantID"" validate:"required"`
+	CustColPrivyChannel             string `json:"channelID" validate:"required"`
+	CustColPrivyUnitPriceBeforeDisc string `json:"unitePriceBeforeDiscount" validate:"required"`
+	TaxCode                         string `json:"taxCode" validate:"required"`
+	CustColPrivyMainProduct         string `json:"mainProductID,omitempty"`    // Optional
+	CustColPrivySubProduct          string `json:"subProductID,omitempty"`     // Optional
+	Description                     string `json:"description,omitempty"`      // Optional
+	Quantity                        int    `json:"quantity,omitempty"`         // Optional
+	CustColPrivyStartDateLayanan    string `json:"startDateLayanan,omitempty"` // Optional
+	CustColPrivyDateLayanan         string `json:"dateLayanan,omitempty"`      // Optional
+	CustColPrivyTrxID               string `json:"transactionID" validate:"required"`
+	CustColPaymentGatewayFee        string `json:"paymentGatewayFee" ` // Optional
+	Amount                          string `json:"amount" validate:"required"`
+	CustColAmountBeforeDisc         string `json:"amountBeforeDiscount" `
+	// Optional
+}
 
 type RequestToNetsuit struct {
 	Request     interface{}
@@ -79,6 +97,27 @@ type PaymentGateway struct {
 	CustBody9                        string     `json:"custbody9" validate:"required"`
 	CustBody7                        string     `json:"custbody7" validate:"required"`
 	Lines                            []LineItem `json:"lines" validate:"required,dive,required"`
+}
+type PaymentGatewayReq struct {
+	// RecordType                       string     `json:"recordtype" validate:"required"`
+	// CustomForm                       string     `json:"customform" validate:"required"`
+	CustBodyPrivySoCustID            string        `json:"soCustomerID" validate:"required"`
+	Entity                           string        `json:"customerID" validate:"required"`
+	StartDate                        string        `json:"startDate" validate:"required,datetime=02/01/2006"`
+	EndDate                          string        `json:"endDate" validate:"required,datetime=02/01/2006"`
+	CustBodyPrivyTermOfPayment       string        `json:"termOfPayment" validate:"required"`
+	OtherRefNum                      string        `json:"otherRefNum" validate:"required"`
+	CustBodyPrivyBilling             string        `json:"billType" validate:"required"`
+	CustBodyPrivyIntegrasi           string        `json:"integrationType" validate:"required"`
+	Memo                             string        `json:"memo,omitempty"` // Optional
+	CustBodyPrivyBDA                 string        `json:"bda" validate:"required"`
+	CustBodyPrivyBDM                 string        `json:"bdm" validate:"required"`
+	CustBodyPrivySalesSupport        string        `json:"salesSupport" validate:"required"`
+	CustBodyPrivySalesSupportManager string        `json:"salesSupportManager" validate:"required"`
+	CustBody10                       string        `json:"invoiceType" validate:"required"`
+	CustBody9                        string        `json:"taxReport" validate:"required"`
+	CustBody7                        string        `json:"agreementNpwp" validate:"required"`
+	Lines                            []LineItemReq `json:"lines" validate:"required,dive,required"`
 }
 
 type ResPaymentGateway struct {

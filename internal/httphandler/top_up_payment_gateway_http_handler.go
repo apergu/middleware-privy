@@ -51,7 +51,7 @@ func NewTopUpPaymentGateWayHttpHandler(prop HTTPHandlerProperty, inf *infrastruc
 func (h TopUpPaymentGateWayHttpHandler) TopUpPayment(w http.ResponseWriter, r *http.Request) {
 
 	var err error
-	var payload request.PaymentGateway
+	var payload request.PaymentGatewayReq
 
 	xRequestId := r.Header.Get("X-Request-Id")
 	if xRequestId == "" {
@@ -158,7 +158,50 @@ func (h TopUpPaymentGateWayHttpHandler) TopUpPayment(w http.ResponseWriter, r *h
 		return
 	}
 
-	resTopUp, err := h.Command.TopUpPaymentGateWay(payload)
+	payloadLines := []request.LineItem{}
+
+	for _, v := range payload.Lines {
+		payloadLines = append(payloadLines, request.LineItem{
+			Item:                         v.Item,
+			CustColPrivyMerchant:         v.CustColPrivyMerchant,
+			CustColPrivyChannel:          v.CustColPrivyChannel,
+			TaxCode:                      v.TaxCode,
+			CustColPrivyMainProduct:      v.CustColPrivyMainProduct,
+			CustColPrivySubProduct:       v.CustColPrivySubProduct,
+			Description:                  v.Description,
+			Quantity:                     v.Quantity,
+			CustColPrivyStartDateLayanan: v.CustColPrivyStartDateLayanan,
+			CustColPrivyDateLayanan:      v.CustColPrivyDateLayanan,
+			CustColPrivyTrxID:            v.CustColPrivyTrxID,
+			CustColPaymentGatewayFee:     v.CustColPaymentGatewayFee,
+			Amount:                       v.Amount,
+			CustColAmountBeforeDisc:      v.CustColAmountBeforeDisc,
+		})
+	}
+
+	payloadReq := request.PaymentGateway{
+		RecordType:                       "salesorder",
+		CustomForm:                       "144",
+		CustBodyPrivySoCustID:            payload.CustBodyPrivySoCustID,
+		Entity:                           payload.Entity,
+		StartDate:                        payload.StartDate,
+		EndDate:                          payload.EndDate,
+		CustBodyPrivyTermOfPayment:       payload.CustBodyPrivyTermOfPayment,
+		OtherRefNum:                      payload.OtherRefNum,
+		CustBodyPrivyBilling:             payload.CustBodyPrivyBilling,
+		CustBodyPrivyIntegrasi:           payload.CustBodyPrivyIntegrasi,
+		Memo:                             payload.Memo,
+		CustBodyPrivyBDA:                 payload.CustBodyPrivyBDA,
+		CustBodyPrivyBDM:                 payload.CustBodyPrivyBDM,
+		CustBodyPrivySalesSupport:        payload.CustBodyPrivySalesSupport,
+		CustBodyPrivySalesSupportManager: payload.CustBodyPrivySalesSupportManager,
+		CustBody10:                       payload.CustBody10,
+		CustBody9:                        payload.CustBody9,
+		CustBody7:                        payload.CustBody7,
+		Lines:                            payloadLines,
+	}
+
+	resTopUp, err := h.Command.TopUpPaymentGateWay(payloadReq)
 	if err != nil {
 		helper.LoggerErrorStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWay", err.Error(), "", payload, nil)
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
