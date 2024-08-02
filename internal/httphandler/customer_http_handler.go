@@ -19,6 +19,7 @@ import (
 	"gitlab.com/rteja-library3/rhelper"
 	"gitlab.com/rteja-library3/rresponser"
 
+	"middleware/internal/constants"
 	"middleware/internal/entity"
 	"middleware/internal/helper"
 	"middleware/internal/model"
@@ -127,13 +128,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}
-	// get user from context
-	// user := ctx.Value(constants.SessionUserId).(int64)
-
 	// set created by value
 	payload.CreatedBy = 0
-
-	// fmt.Println("BEFORE ERRROR ")
 
 	if payload.EntityStatus == "6" || payload.EntityStatus == "" {
 		if payload.SubIndustry == "" {
@@ -146,14 +142,10 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// custFind, _, _ := h.Query.FindByCRMLeadID(ctx, payload.CustomerName)
-
-	// if custFind.CustomerName != "" {
-
 	if payload.EntityStatus == "13" || payload.EntityStatus == "7" {
 
 		respCustExist, _, _ := h.Query.FindByName(ctx, payload.CustomerName)
-		fmt.Println("respCustExist", respCustExist)
+
 		if respCustExist.CustomerName != "" && (respCustExist.EntityStatus == "13" || respCustExist.EntityStatus == "7") {
 			err = rapperror.ErrConflict(
 				"",
@@ -169,7 +161,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if payload.EnterprisePrivyID != "" {
-			fmt.Println("respCust FIND NAME")
 			respCust2, _, _ := h.Query.FindByEnterprisePrivyID(ctx, payload.EnterprisePrivyID)
 
 			if respCust2.EnterprisePrivyID != "" && (respCust2.EntityStatus == "13" || respCust2.EntityStatus == "7") {
@@ -220,12 +211,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			})
 
 			fmt.Println("errors", errors)
-			// errorResponse := map[string]interface{}{
-			// 	"code":    422,
-			// 	"success": false,
-			// 	"message": http.StatusUnprocessableEntity,
-			// 	"errors":  errors,
-			// }
 
 			errorToInterface := make(map[string]interface{})
 			for _, v := range errors {
@@ -240,36 +225,11 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			)
 
 			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, "Validation Failed", errors)
-			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 			defer r.Body.Close()
 			return
-
-			// // Convert error response to JSON
-			// responseJSON, marshalErr := json.Marshal(errorResponse)
-			// if marshalErr != nil {
-			// 	// Handle JSON marshaling error
-			// 	fmt.Println("Error encoding JSON:", marshalErr)
-			// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			// 	defer r.Body.Close()
-			// 	return
-			// }
-
-			// // Set the response headers
-			// w.Header().Set("Content-Type", "application/json")
-			// w.WriteHeader(http.StatusUnprocessableEntity) // Set the appropriate HTTP status code
-
-			// // Write the JSON response to the client
-			// _, writeErr := w.Write(responseJSON)
-			// if writeErr != nil {
-			// 	// Handle write error
-			// 	fmt.Println("Error writing response:", writeErr)
-			// }
-			// defer r.Body.Close()
-			// return
 		}
 	}
-	// }
 
 	if payload.SubIndustry != "" {
 		_, _, err := h.Query.FindSubindustry(ctx, payload.SubIndustry)
@@ -277,9 +237,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			payload.SubIndustry = "Others"
 		}
 	}
-
-	println(
-		"payload.CRMLeadID", payload.SubIndustry)
 
 	if len(errors) > 0 {
 		logrus.
@@ -324,7 +281,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	// if payload.CRMLeadID != "" {
 	if payload.EntityStatus == "13" {
-		// _, _, err := h.Command.UpdateLead(ctx, payload.CustomerName, payload)
 		if payload.SubIndustry == "" {
 			payload.SubIndustry = "Others"
 		}
@@ -403,15 +359,16 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 			err = json.Unmarshal(bodyData, &response)
 
-			fmt.Println("response Body", response)
+			if err != nil {
+				fmt.Println("Error:", err)
+
+				return
+			}
 
 			payload.CRMLeadID = strconv.Itoa(response.ID)
 
-			// fmt.Println("respData", response.Data.ID)
-
 			urlConvert := "https://api.getbase.com/v2/lead_conversions"
 
-			// // Replace the following map with your actual data
 			leadID, _ := strconv.Atoi(payload.CRMLeadID)
 			data := map[string]interface{}{
 				"lead_id": leadID,
@@ -439,14 +396,13 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 			reqConvert.Header.Add("Content-Type", "application/json")
 
-			reqConvert.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+			reqConvert.Header.Add("Authorization", fmt.Sprintf("Bearer %s", constants.AuthZendesk))
 
 			clientConvert := &http.Client{}
 			respConvert, err := clientConvert.Do(reqConvert)
 
 			if err != nil {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 				return
 			}
@@ -454,7 +410,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			defer respConvert.Body.Close()
 
 			bodyConvert, err := ioutil.ReadAll(respConvert.Body)
-			// jsonBody := json.RawMessage(body)
 			fmt.Println("TEST", string(bodyConvert))
 			if err != nil {
 				fmt.Println("Error reading body:", err)
@@ -501,7 +456,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 
 			reqStage.Header.Add("Content-Type", "application/json")
-			reqStage.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+			reqStage.Header.Add("Authorization", fmt.Sprintf("Bearer %s", constants.AuthZendesk))
 
 			clientStage := &http.Client{}
 
@@ -622,7 +577,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			reqDetailData, err := http.NewRequest("GET", urlDetailData+payload.CRMLeadID, nil)
 
 			reqDetailData.Header.Add("Content-Type", "application/json")
-			reqDetailData.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+			reqDetailData.Header.Add("Authorization", fmt.Sprintf("Bearer %s", constants.AuthZendesk))
 
 			clientDetailData := &http.Client{}
 			respDetailData, err := clientDetailData.Do(reqDetailData)
@@ -757,7 +712,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 
 			reqGetData.Header.Add("Content-Type", "application/json")
-			reqGetData.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+			reqGetData.Header.Add("Authorization", fmt.Sprintf("Bearer %s", constants.AuthZendesk))
 
 			clientGetData := &http.Client{}
 			respGetData, err := clientGetData.Do(reqGetData)
@@ -770,8 +725,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				defer r.Body.Close()
 				return
 			}
-
-			// fmt.Println("respGetData", customFieldsData["ActiveCampaign Contact ID"].(string))
 
 			defer respGetData.Body.Close()
 
@@ -809,8 +762,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 
 			req.Header.Add("Content-Type", "application/json")
-			req.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
-			// req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
+			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", constants.AuthZendesk))
 
 			client := &http.Client{}
 			resp, err := client.Do(req)
@@ -955,7 +907,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 
 			reqWon.Header.Add("Content-Type", "application/json")
-			reqWon.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+			reqWon.Header.Add("Authorization", fmt.Sprintf("Bearer %s", constants.AuthZendesk))
 			// req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
 
 			clientWon := &http.Client{}
@@ -988,30 +940,12 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// if err != nil || custId == nil {
-		// 	log.Println("payload masuk 13", payload)
-		// 	roleId, meta, err := h.Command.Create(ctx, payload)
-
-		// 	if err != nil {
-		// 		// fmt.Println("error", err.Error())
-		// 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{
-		// 			"roleId": roleId,
-		// 			"meta":   meta,
-		// 		})
-		// 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-		// 		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-		// 		defer r.Body.Close()
-		// 		return
-		// 	}
-		// }
-
 		response, _ := helper.GenerateJSONResponse(http.StatusCreated, true, "Customer successfully created", map[string]interface{}{
 			"roleId": 1,
 			"meta":   nil,
 		})
 		helper.WriteJSONResponse(w, response, http.StatusCreated)
 
-		// // response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 		helper.LoggerSuccessStructfunc(w, r, "CustomerHttpHandler.Create", "Customer", "Customer successfully created", payload.CustomerName)
 	}
 
@@ -1048,7 +982,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		reqDetailData, err := http.NewRequest("GET", urlDetailData+payload.CRMLeadID, nil)
 
 		reqDetailData.Header.Add("Content-Type", "application/json")
-		reqDetailData.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+		reqDetailData.Header.Add("Authorization", fmt.Sprintf("Bearer %s", constants.AuthZendesk))
 
 		clientDetailData := &http.Client{}
 		respDetailData, err := clientDetailData.Do(reqDetailData)
@@ -1067,16 +1001,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = json.Unmarshal(bodyDetailData, &responsDetailData)
-		fmt.Println("response Body", responsDetailData.Data)
-		// customFieldsData := map[string]interface{}{}
-
-		// if responsDetailData.Data != nil {
-
-		// 	customFieldsData = responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{})
-		// 	fmt.Println("responseDetailData", customFieldsData["NPWP"])
-		// 	payload.NPWP = customFieldsData["NPWP"].(string)
-		// 	fmt.Println("responseDetailData", customFieldsData["Enterprise ID"])
-		// }
 
 		resp := entity.Customer{}
 
@@ -1084,7 +1008,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			resp, _, _ = h.Query.FindByCRMLeadID(ctx, payload.CRMLeadID)
 
 		}
-		// respDB, _, _ := h.Query.FindByCRMLeadID(ctx, payload.CRMLeadID)
 
 		resp, _, _ = h.Query.FindByName(ctx, payload.CustomerName)
 
@@ -1163,11 +1086,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				},
 			}
 
-			if payload.NPWP != "" {
-				fmt.Println("NPWP", payload.NPWP)
-				payloadData["custom_fields"].(map[string]interface{})["NPWP"] = payload.NPWP
-			}
-
 			if responsDetailData.Data.(map[string]interface{})["first_name"] != payload.FirstName {
 				payloadData["custom_fields"].(map[string]interface{})["First Name - Adonara"] = payload.FirstName
 			}
@@ -1196,7 +1114,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 			jsonDataZD, err := json.Marshal(sendData)
 
-			println("jsonDataZD", string(jsonDataZD))
 			if err != nil {
 				fmt.Println("Error marshalling JSON:", err)
 				return
@@ -1210,7 +1127,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 
 			reqDetailData.Header.Add("Content-Type", "application/json")
-			reqDetailData.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+			reqDetailData.Header.Add("Authorization", fmt.Sprintf("Bearer %s", constants.AuthZendesk))
 
 			clientDetailData := &http.Client{}
 			respDetailData, err := clientDetailData.Do(reqDetailData)
@@ -1242,7 +1159,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		roleId, meta, err := h.Command.CreateLead2(ctx, payload)
 		if err != nil {
 			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 			return
 		}
@@ -1251,23 +1167,9 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			"roleId": roleId,
 			"meta":   meta,
 		})
-		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 		helper.WriteJSONResponse(w, response, http.StatusCreated)
-		// response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
 		helper.LoggerSuccessStructfunc(w, r, "CustomerHttpHandler.Create", "Customer", "Customer successfully created", payload.CustomerName)
 	}
-	// } else {
-	// 	log.Println("CRM LEAD ID KOSONG", payload)
-	// 	roleId, meta, err := h.Command.CreateLead2(ctx, payload)
-	// 	if err != nil {
-	// 		response = rresponser.NewResponserError(err)
-	// 		rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-	// 		return
-	// 	}
-	// 	response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", roleId, meta)
-	// }
-
-	// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 }
 
 func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) {
@@ -1287,15 +1189,8 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 			}).
 			Error(err)
 
-		// err = rapperror.ErrBadRequest(
-		// 	rapperror.AppErrorCodeBadRequest,
-		// 	"Invalid body",
-		// 	"CustomerHttpHandler.Create",
-		// 	nil,
-		// )
 		if err != nil {
 			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 			return
 		}
@@ -1303,10 +1198,6 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// get user from context
-	// user := ctx.Value(constants.SessionUserId).(int64)
-
-	// set created by value
 	payload.CreatedBy = 0
 
 	errors := payload.ValidateLead()
