@@ -949,12 +949,215 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		helper.LoggerSuccessStructfunc(w, r, "CustomerHttpHandler.Create", "Customer", "Customer successfully created", payload.CustomerName)
 	}
 
+	// if payload.EntityStatus == "6" || payload.EntityStatus == "" {
+	// 	log.Println("payload masuk 6", payload)
+
+	// 	// h.Command.CreateLeadZD(ctx, payload)
+
+	// 	// Replace the following map with your actual data
+	// 	data := map[string]interface{}{
+	// 		"zd_lead_id":          payload.CRMLeadID,
+	// 		"first_name":          payload.FirstName,
+	// 		"last_name":           payload.LastName,
+	// 		"enterprise_privy_id": payload.EnterprisePrivyID,
+	// 		"enterprise_name":     payload.CustomerName,
+	// 		"address":             payload.Address,
+	// 		"email":               payload.Email,
+	// 		"zip":                 payload.ZipCode,
+	// 		"state":               payload.State,
+	// 		"country":             "Indonesia",
+	// 		"city":                payload.City,
+	// 		"npwp":                payload.NPWP,
+	// 		"sub_industry":        payload.SubIndustry,
+	// 		"phone":               payload.PhoneNo,
+	// 	}
+
+	// 	// Convert data to JSON
+	// 	jsonData, err := json.Marshal(data)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+
+	// 	urlDetailData := "https://api.getbase.com/v2/leads/"
+	// 	reqDetailData, err := http.NewRequest("GET", urlDetailData+payload.CRMLeadID, nil)
+
+	// 	reqDetailData.Header.Add("Content-Type", "application/json")
+	// 	reqDetailData.Header.Add("Authorization", fmt.Sprintf("Bearer %s", constants.AuthZendesk))
+
+	// 	clientDetailData := &http.Client{}
+	// 	respDetailData, err := clientDetailData.Do(reqDetailData)
+
+	// 	defer respDetailData.Body.Close()
+
+	// 	bodyDetailData, err := ioutil.ReadAll(respDetailData.Body)
+
+	// 	var responsDetailData struct {
+	// 		Data interface{} `json:"data"`
+	// 	}
+
+	// 	if err != nil {
+	// 		fmt.Println("Error:", err)
+	// 		return
+	// 	}
+
+	// 	err = json.Unmarshal(bodyDetailData, &responsDetailData)
+
+	// 	resp := entity.Customer{}
+
+	// 	if payload.CRMLeadID != "" {
+	// 		resp, _, _ = h.Query.FindByCRMLeadID(ctx, payload.CRMLeadID)
+
+	// 	}
+
+	// 	resp, _, _ = h.Query.FindByName(ctx, payload.CustomerName)
+
+	// 	if payload.EnterprisePrivyID != "" {
+	// 		resp, _, _ = h.Query.FindByEnterprisePrivyID(ctx, payload.EnterprisePrivyID)
+	// 	}
+
+	// 	resp, _, _ = h.Query.FindByEmail(ctx, payload.Email)
+
+	// 	if resp.LastName == "" {
+	// 		// if payload.CRMLeadID == "" {
+	// 		fmt.Println("CREATE LEAD")
+	// 		_, _, err := h.Command.CreateLeadZD(ctx, payload)
+	// 		if err != nil {
+	// 			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+	// 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	// 			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+	// 			return
+	// 		}
+	// 	} else {
+	// 		fmt.Println("UPDATE LEAD")
+	// 		_, _, err := h.Command.UpdateLead2(ctx, payload.CustomerName, payload)
+	// 		if err != nil {
+	// 			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+	// 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	// 			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+	// 			return
+	// 		}
+
+	// 	}
+
+	// 	if payload.RequestFrom != "zendesk" {
+
+	// 		url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
+
+	// 		fmt.Println("url", url)
+
+	// 		// Make the HTTP POST request
+	// 		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+
+	// 		if err != nil {
+	// 			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+	// 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	// 			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+	// 			return
+	// 		}
+
+	// 		req.Header.Add("Content-Type", "application/json")
+	// 		req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
+
+	// 		client := &http.Client{}
+	// 		resp, err := client.Do(req)
+	// 		fmt.Println("response", err)
+
+	// 		if err != nil {
+	// 			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+	// 			// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	// 			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
+	// 			return
+	// 		}
+
+	// 		defer resp.Body.Close()
+	// 	} else {
+	// 		fmt.Println("UPDATE LEAD ZENDESK")
+	// 		fmt.Println("responseDetailData", payload.NPWP)
+
+	// 		payloadData := map[string]interface{}{
+	// 			"first_name": payload.FirstName,
+	// 			"email":      payload.Email,
+	// 			"mobile":     payload.PhoneNo,
+	// 			"custom_fields": map[string]interface{}{
+	// 				"Sub Industry":  payload.SubIndustry,
+	// 				"Lead ID":       payload.CRMLeadID,
+	// 				"Enterprise ID": payload.EnterprisePrivyID,
+	// 				"NPWP":          payload.NPWP,
+	// 			},
+	// 		}
+
+	// 		if responsDetailData.Data.(map[string]interface{})["first_name"] != payload.FirstName {
+	// 			payloadData["custom_fields"].(map[string]interface{})["First Name - Adonara"] = payload.FirstName
+	// 		}
+
+	// 		if responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{})["NPWP"] != "" {
+	// 			payloadData["custom_fields"].(map[string]interface{})["NPWP"] = responsDetailData.Data.(map[string]interface{})["npwp"]
+	// 		}
+
+	// 		if responsDetailData.Data.(map[string]interface{})["last_name"] != payload.LastName {
+	// 			payloadData["custom_fields"].(map[string]interface{})["Last Name - Adonara"] = payload.LastName
+	// 		}
+
+	// 		if responsDetailData.Data.(map[string]interface{})["email"] != payload.Email {
+	// 			payloadData["custom_fields"].(map[string]interface{})["Email - Adonara"] = payload.Email
+	// 		}
+
+	// 		if responsDetailData.Data.(map[string]interface{})["organization_name"] != payload.CustomerName {
+	// 			payloadData["custom_fields"].(map[string]interface{})["Company Name - Adonara"] = payload.CustomerName
+	// 		}
+
+	// 		payloadData["custom_fields"].(map[string]interface{})["NPWP"] = payload.NPWP
+
+	// 		sendData := map[string]interface{}{
+	// 			"data": payloadData,
+	// 		}
+
+	// 		jsonDataZD, err := json.Marshal(sendData)
+
+	// 		if err != nil {
+	// 			fmt.Println("Error marshalling JSON:", err)
+	// 			return
+	// 		}
+
+	// 		urlDetailData := "https://api.getbase.com/v2/leads/" + payload.CRMLeadID
+	// 		reqDetailData, err := http.NewRequest("PUT", urlDetailData, bytes.NewBuffer(jsonDataZD))
+	// 		if err != nil {
+	// 			fmt.Println("Error creating request:", err)
+	// 			return
+	// 		}
+
+	// 		reqDetailData.Header.Add("Content-Type", "application/json")
+	// 		reqDetailData.Header.Add("Authorization", fmt.Sprintf("Bearer %s", constants.AuthZendesk))
+
+	// 		clientDetailData := &http.Client{}
+	// 		respDetailData, err := clientDetailData.Do(reqDetailData)
+	// 		if err != nil {
+	// 			fmt.Println("Error sending request:", err)
+	// 			return
+	// 		}
+	// 		defer respDetailData.Body.Close()
+
+	// 		body, err := ioutil.ReadAll(respDetailData.Body)
+	// 		if err != nil {
+	// 			fmt.Println("Error reading response body:", err)
+	// 			return
+	// 		}
+
+	// 		fmt.Println("response BODY ZD", string(body))
+
+	// 	}
+
+	// 	response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer successfully created", map[string]interface{}{})
+	// 	// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+	// 	helper.WriteJSONResponse(w, response, http.StatusCreated)
+
+	// 	// response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", resp.StatusCode, resp.Body)
+	// 	helper.LoggerSuccessStructfunc(w, r, "CustomerHttpHandler.Create", "Customer", "Customer successfully created", payload.CustomerName)
+	// }
+
 	if payload.EntityStatus == "6" || payload.EntityStatus == "" {
 		log.Println("payload masuk 6", payload)
 
-		// h.Command.CreateLeadZD(ctx, payload)
-
-		// Replace the following map with your actual data
 		data := map[string]interface{}{
 			"zd_lead_id":          payload.CRMLeadID,
 			"first_name":          payload.FirstName,
@@ -972,41 +1175,36 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			"phone":               payload.PhoneNo,
 		}
 
-		// Convert data to JSON
 		jsonData, err := json.Marshal(data)
 		if err != nil {
 			panic(err)
 		}
 
-		urlDetailData := "https://api.getbase.com/v2/leads/"
-		reqDetailData, err := http.NewRequest("GET", urlDetailData+payload.CRMLeadID, nil)
-
-		reqDetailData.Header.Add("Content-Type", "application/json")
-		reqDetailData.Header.Add("Authorization", fmt.Sprintf("Bearer %s", constants.AuthZendesk))
-
-		clientDetailData := &http.Client{}
-		respDetailData, err := clientDetailData.Do(reqDetailData)
-
-		defer respDetailData.Body.Close()
-
-		bodyDetailData, err := ioutil.ReadAll(respDetailData.Body)
-
-		var responsDetailData struct {
-			Data interface{} `json:"data"`
+		urlDetailData := "https://api.getbase.com/v2/leads/" + payload.CRMLeadID
+		headers := map[string]string{
+			"Content-Type":  "application/json",
+			"Authorization": fmt.Sprintf("Bearer %s", constants.AuthZendesk),
 		}
 
+		bodyDetailData, err := helper.HttpRequest("GET", urlDetailData, nil, headers)
 		if err != nil {
-			fmt.Println("Error:", err)
+			log.Println("Error:", err)
 			return
 		}
 
+		var responsDetailData struct {
+			Data map[string]interface{} `json:"data"`
+		}
 		err = json.Unmarshal(bodyDetailData, &responsDetailData)
+		if err != nil {
+			log.Println("Error unmarshalling response:", err)
+			return
+		}
 
 		resp := entity.Customer{}
 
 		if payload.CRMLeadID != "" {
 			resp, _, _ = h.Query.FindByCRMLeadID(ctx, payload.CRMLeadID)
-
 		}
 
 		resp, _, _ = h.Query.FindByName(ctx, payload.CustomerName)
@@ -1018,61 +1216,50 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		resp, _, _ = h.Query.FindByEmail(ctx, payload.Email)
 
 		if resp.LastName == "" {
-			// if payload.CRMLeadID == "" {
-			fmt.Println("CREATE LEAD")
+			log.Println("CREATE LEAD")
 			_, _, err := h.Command.CreateLeadZD(ctx, payload)
 			if err != nil {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 				return
 			}
 		} else {
-			fmt.Println("UPDATE LEAD")
+			log.Println("UPDATE LEAD")
 			_, _, err := h.Command.UpdateLead2(ctx, payload.CustomerName, payload)
 			if err != nil {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 				return
 			}
-
 		}
 
 		if payload.RequestFrom != "zendesk" {
-
 			url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
+			log.Println("url", url)
 
-			fmt.Println("url", url)
-
-			// Make the HTTP POST request
+			headers = map[string]string{
+				"Content-Type": "application/json",
+			}
 			req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
-
 			if err != nil {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 				return
 			}
 
-			req.Header.Add("Content-Type", "application/json")
 			req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
-
 			client := &http.Client{}
 			resp, err := client.Do(req)
-			fmt.Println("response", err)
-
+			log.Println("response", err)
 			if err != nil {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 				return
 			}
-
 			defer resp.Body.Close()
 		} else {
-			fmt.Println("UPDATE LEAD ZENDESK")
-			fmt.Println("responseDetailData", payload.NPWP)
+			log.Println("UPDATE LEAD ZENDESK")
+			log.Println("responseDetailData", payload.NPWP)
 
 			payloadData := map[string]interface{}{
 				"first_name": payload.FirstName,
@@ -1086,23 +1273,23 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				},
 			}
 
-			if responsDetailData.Data.(map[string]interface{})["first_name"] != payload.FirstName {
+			if responsDetailData.Data["first_name"] != payload.FirstName {
 				payloadData["custom_fields"].(map[string]interface{})["First Name - Adonara"] = payload.FirstName
 			}
 
-			if responsDetailData.Data.(map[string]interface{})["custom_fields"].(map[string]interface{})["NPWP"] != "" {
-				payloadData["custom_fields"].(map[string]interface{})["NPWP"] = responsDetailData.Data.(map[string]interface{})["npwp"]
+			if responsDetailData.Data["custom_fields"].(map[string]interface{})["NPWP"] != "" {
+				payloadData["custom_fields"].(map[string]interface{})["NPWP"] = responsDetailData.Data["npwp"]
 			}
 
-			if responsDetailData.Data.(map[string]interface{})["last_name"] != payload.LastName {
+			if responsDetailData.Data["last_name"] != payload.LastName {
 				payloadData["custom_fields"].(map[string]interface{})["Last Name - Adonara"] = payload.LastName
 			}
 
-			if responsDetailData.Data.(map[string]interface{})["email"] != payload.Email {
+			if responsDetailData.Data["email"] != payload.Email {
 				payloadData["custom_fields"].(map[string]interface{})["Email - Adonara"] = payload.Email
 			}
 
-			if responsDetailData.Data.(map[string]interface{})["organization_name"] != payload.CustomerName {
+			if responsDetailData.Data["organization_name"] != payload.CustomerName {
 				payloadData["custom_fields"].(map[string]interface{})["Company Name - Adonara"] = payload.CustomerName
 			}
 
@@ -1113,45 +1300,25 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 
 			jsonDataZD, err := json.Marshal(sendData)
-
 			if err != nil {
-				fmt.Println("Error marshalling JSON:", err)
+				log.Println("Error marshalling JSON:", err)
 				return
 			}
 
-			urlDetailData := "https://api.getbase.com/v2/leads/" + payload.CRMLeadID
-			reqDetailData, err := http.NewRequest("PUT", urlDetailData, bytes.NewBuffer(jsonDataZD))
-			if err != nil {
-				fmt.Println("Error creating request:", err)
-				return
+			headers = map[string]string{
+				"Content-Type":  "application/json",
+				"Authorization": fmt.Sprintf("Bearer %s", constants.AuthZendesk),
 			}
 
-			reqDetailData.Header.Add("Content-Type", "application/json")
-			reqDetailData.Header.Add("Authorization", fmt.Sprintf("Bearer %s", constants.AuthZendesk))
-
-			clientDetailData := &http.Client{}
-			respDetailData, err := clientDetailData.Do(reqDetailData)
+			_, err = helper.HttpRequest("PUT", urlDetailData, jsonDataZD, headers)
 			if err != nil {
-				fmt.Println("Error sending request:", err)
+				log.Println("Error sending request:", err)
 				return
 			}
-			defer respDetailData.Body.Close()
-
-			body, err := ioutil.ReadAll(respDetailData.Body)
-			if err != nil {
-				fmt.Println("Error reading response body:", err)
-				return
-			}
-
-			fmt.Println("response BODY ZD", string(body))
-
 		}
 
 		response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Customer successfully created", map[string]interface{}{})
-		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 		helper.WriteJSONResponse(w, response, http.StatusCreated)
-
-		// response = rresponser.NewResponserSuccessCreated("", "Customer successfully created", resp.StatusCode, resp.Body)
 		helper.LoggerSuccessStructfunc(w, r, "CustomerHttpHandler.Create", "Customer", "Customer successfully created", payload.CustomerName)
 	}
 
