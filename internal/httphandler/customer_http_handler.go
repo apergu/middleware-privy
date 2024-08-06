@@ -1259,7 +1259,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			defer resp.Body.Close()
 		} else {
 			log.Println("UPDATE LEAD ZENDESK")
-			log.Println("responseDetailData", payload.NPWP)
+			log.Println("responseDetailData")
 
 			payloadData := map[string]interface{}{
 				"first_name": payload.FirstName,
@@ -1275,10 +1275,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 			if responsDetailData.Data["first_name"] != payload.FirstName {
 				payloadData["custom_fields"].(map[string]interface{})["First Name - Adonara"] = payload.FirstName
-			}
-
-			if responsDetailData.Data["custom_fields"].(map[string]interface{})["NPWP"] != "" {
-				payloadData["custom_fields"].(map[string]interface{})["NPWP"] = responsDetailData.Data["npwp"]
 			}
 
 			if responsDetailData.Data["last_name"] != payload.LastName {
