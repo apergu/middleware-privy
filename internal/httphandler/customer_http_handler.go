@@ -1233,6 +1233,42 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		payloadData := map[string]interface{}{
+			"first_name": payload.FirstName,
+			"email":      payload.Email,
+			"mobile":     payload.PhoneNo,
+			"custom_fields": map[string]interface{}{
+				"Sub Industry":  payload.SubIndustry,
+				"Lead ID":       payload.CRMLeadID,
+				"Enterprise ID": payload.EnterprisePrivyID,
+				"NPWP":          payload.NPWP,
+			},
+		}
+
+		if responsDetailData.Data["first_name"] != payload.FirstName {
+			payloadData["custom_fields"].(map[string]interface{})["First Name - Adonara"] = payload.FirstName
+		}
+
+		if responsDetailData.Data["last_name"] != payload.LastName {
+			payloadData["custom_fields"].(map[string]interface{})["Last Name - Adonara"] = payload.LastName
+		}
+
+		if responsDetailData.Data["email"] != payload.Email {
+			payloadData["custom_fields"].(map[string]interface{})["Email - Adonara"] = payload.Email
+		}
+
+		if responsDetailData.Data["organization_name"] != payload.CustomerName {
+			payloadData["custom_fields"].(map[string]interface{})["Company Name - Adonara"] = payload.CustomerName
+		}
+
+		payloadData["custom_fields"].(map[string]interface{})["NPWP"] = payload.NPWP
+
+		sendData := map[string]interface{}{
+			"data": payloadData,
+		}
+
+		jsonDataZD, err := json.Marshal(sendData)
+
 		if payload.RequestFrom != "zendesk" {
 			url := "http://apergu.tech:9002/api/v1/privy/zendesk/lead"
 			log.Println("url", url)
@@ -1240,7 +1276,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			headers = map[string]string{
 				"Content-Type": "application/json",
 			}
-			req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+			req, err := http.NewRequest("POST", urlDetailData, bytes.NewBuffer(jsonDataZD))
 			if err != nil {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
@@ -1261,41 +1297,6 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			log.Println("UPDATE LEAD ZENDESK")
 			log.Println("responseDetailData")
 
-			payloadData := map[string]interface{}{
-				"first_name": payload.FirstName,
-				"email":      payload.Email,
-				"mobile":     payload.PhoneNo,
-				"custom_fields": map[string]interface{}{
-					"Sub Industry":  payload.SubIndustry,
-					"Lead ID":       payload.CRMLeadID,
-					"Enterprise ID": payload.EnterprisePrivyID,
-					"NPWP":          payload.NPWP,
-				},
-			}
-
-			if responsDetailData.Data["first_name"] != payload.FirstName {
-				payloadData["custom_fields"].(map[string]interface{})["First Name - Adonara"] = payload.FirstName
-			}
-
-			if responsDetailData.Data["last_name"] != payload.LastName {
-				payloadData["custom_fields"].(map[string]interface{})["Last Name - Adonara"] = payload.LastName
-			}
-
-			if responsDetailData.Data["email"] != payload.Email {
-				payloadData["custom_fields"].(map[string]interface{})["Email - Adonara"] = payload.Email
-			}
-
-			if responsDetailData.Data["organization_name"] != payload.CustomerName {
-				payloadData["custom_fields"].(map[string]interface{})["Company Name - Adonara"] = payload.CustomerName
-			}
-
-			payloadData["custom_fields"].(map[string]interface{})["NPWP"] = payload.NPWP
-
-			sendData := map[string]interface{}{
-				"data": payloadData,
-			}
-
-			jsonDataZD, err := json.Marshal(sendData)
 			if err != nil {
 				log.Println("Error marshalling JSON:", err)
 				return
