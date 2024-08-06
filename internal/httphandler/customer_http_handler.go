@@ -1278,8 +1278,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				"Authorization": "Basic " + base64.StdEncoding.EncodeToString([]byte("admin:admin")),
 				"Content-Type":  "application/json",
 			}
-			req, err := helper.HttpRequest("POST", url, jsonData, headers)
-			log.Println("url", req)
+			_, err := helper.HttpRequest("POST", url, jsonData, headers)
 			if err != nil {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
