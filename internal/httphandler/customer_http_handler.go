@@ -1158,24 +1158,24 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if payload.EntityStatus == "6" || payload.EntityStatus == "" {
 		log.Println("payload masuk 6", payload)
 
-		data := map[string]interface{}{
-			"zd_lead_id":          payload.CRMLeadID,
-			"first_name":          payload.FirstName,
-			"last_name":           payload.LastName,
-			"enterprise_privy_id": payload.EnterprisePrivyID,
-			"enterprise_name":     payload.CustomerName,
-			"address":             payload.Address,
-			"email":               payload.Email,
-			"zip":                 payload.ZipCode,
-			"state":               payload.State,
-			"country":             "Indonesia",
-			"city":                payload.City,
-			"npwp":                payload.NPWP,
-			"sub_industry":        payload.SubIndustry,
-			"phone":               payload.PhoneNo,
-		}
+		// data := map[string]interface{}{
+		// 	"zd_lead_id":          payload.CRMLeadID,
+		// 	"first_name":          payload.FirstName,
+		// 	"last_name":           payload.LastName,
+		// 	"enterprise_privy_id": payload.EnterprisePrivyID,
+		// 	"enterprise_name":     payload.CustomerName,
+		// 	"address":             payload.Address,
+		// 	"email":               payload.Email,
+		// 	"zip":                 payload.ZipCode,
+		// 	"state":               payload.State,
+		// 	"country":             "Indonesia",
+		// 	"city":                payload.City,
+		// 	"npwp":                payload.NPWP,
+		// 	"sub_industry":        payload.SubIndustry,
+		// 	"phone":               payload.PhoneNo,
+		// }
 
-		jsonData, err := json.Marshal(data)
+		// jsonData, err := json.Marshal(data)
 		if err != nil {
 			panic(err)
 		}
@@ -1270,8 +1270,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		jsonDataZD, err := json.Marshal(sendData)
 
 		if payload.RequestFrom != "zendesk" {
-			url := "http://apergu.tech:9002/api/v1/privy/zendesk/lead"
-			log.Println("url", url)
+			// url := "http://apergu.tech:9002/api/v1/privy/zendesk/lead"
+			// log.Println("url", url)
 
 			headers = map[string]string{
 				"Content-Type": "application/json",
