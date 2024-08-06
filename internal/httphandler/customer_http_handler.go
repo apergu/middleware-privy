@@ -1234,7 +1234,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if payload.RequestFrom != "zendesk" {
-			url := os.Getenv("ACZD_BASE") + "api/v1/privy/zendesk/lead"
+			url := "http://apergu.tech:9002/api/v1/privy/zendesk/lead"
 			log.Println("url", url)
 
 			headers = map[string]string{
