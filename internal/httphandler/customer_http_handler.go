@@ -1180,7 +1180,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		urlDetailData := "https://api.getbase.com/v2/leads/" + payload.CRMLeadID
+		urlDetailData := "https://api.getbase.com/v2/leads/"
 		headers := map[string]string{
 			"Content-Type":  "application/json",
 			"Authorization": fmt.Sprintf("Bearer %s", constants.AuthZendesk),
@@ -1307,7 +1307,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				"Authorization": fmt.Sprintf("Bearer %s", constants.AuthZendesk),
 			}
 
-			_, err = helper.HttpRequest("PUT", urlDetailData, jsonDataZD, headers)
+			_, err = helper.HttpRequest("PUT", urlDetailData+payload.CRMLeadID, jsonDataZD, headers)
 			if err != nil {
 				log.Println("Error sending request:", err)
 				return
