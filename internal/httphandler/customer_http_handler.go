@@ -1271,12 +1271,12 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		if payload.RequestFrom != "zendesk" {
 			// url := "http://apergu.tech:9002/api/v1/privy/zendesk/lead"
-			// log.Println("url", url)
 
 			headers = map[string]string{
 				"Content-Type": "application/json",
 			}
 			req, err := http.NewRequest("POST", urlDetailData, bytes.NewBuffer(jsonDataZD))
+			log.Println("url", urlDetailData)
 			if err != nil {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
