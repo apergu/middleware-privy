@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -1234,9 +1233,11 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 
 		payloadData := map[string]interface{}{
-			"first_name": payload.FirstName,
-			"email":      payload.Email,
-			"mobile":     payload.PhoneNo,
+			"first_name":        payload.FirstName,
+			"last_name":         payload.LastName,
+			"email":             payload.Email,
+			"organization_name": payload.CustomerName,
+			"mobile":            payload.PhoneNo,
 			"custom_fields": map[string]interface{}{
 				"Sub Industry":  payload.SubIndustry,
 				"Lead ID":       payload.CRMLeadID,
@@ -1271,28 +1272,21 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		if payload.RequestFrom != "zendesk" {
 			// url := "http://apergu.tech:9002/api/v1/privy/zendesk/lead"
-			// log.Println("url", url)
 
 			headers = map[string]string{
-				"Content-Type": "application/json",
+				"Authorization": fmt.Sprintf("Bearer %s", constants.AuthZendesk),
+				"Content-Type":  "application/json",
 			}
-			req, err := http.NewRequest("POST", urlDetailData, bytes.NewBuffer(jsonDataZD))
+			req, err := helper.HttpRequest("POST", urlDetailData, jsonDataZD, headers)
+			log.Println("url", req)
 			if err != nil {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 				return
 			}
 
-			req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
-			client := &http.Client{}
-			resp, err := client.Do(req)
-			log.Println("response", err)
-			if err != nil {
-				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-				return
-			}
-			defer resp.Body.Close()
+			// req.SetBasicAuth(os.Getenv("BASIC_AUTH_USERNAME"), os.Getenv("BASIC_AUTH_PASSWORD"))
+
 		} else {
 			log.Println("UPDATE LEAD ZENDESK")
 			log.Println("responseDetailData")

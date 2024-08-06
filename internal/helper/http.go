@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -19,6 +20,8 @@ func HttpRequest(method, url string, data []byte, headers map[string]string) ([]
 	}
 
 	resp, err := client.Do(req)
+
+	log.Println("resp : ", resp)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %w", err)
 	}

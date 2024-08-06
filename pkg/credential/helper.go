@@ -35,6 +35,7 @@ func HandleResponse(e echo.Context, statusCode int, message string, data interfa
 func HttpRequest(method, url string, data []byte, headers map[string]string) ([]byte, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(data))
+	log.Println("resp : ", req)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
