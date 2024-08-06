@@ -573,8 +573,8 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 			// GET DETAIL DATA
 
-			urlDetailData := "https://api.getbase.com/v2/leads/"
-			reqDetailData, err := http.NewRequest("GET", urlDetailData+payload.CRMLeadID, nil)
+			urlDetailData := "https://api.getbase.com/v2/leads"
+			reqDetailData, err := http.NewRequest("GET", urlDetailData+"/"+payload.CRMLeadID, nil)
 
 			reqDetailData.Header.Add("Content-Type", "application/json")
 			reqDetailData.Header.Add("Authorization", fmt.Sprintf("Bearer %s", constants.AuthZendesk))
@@ -1180,13 +1180,13 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		urlDetailData := "https://api.getbase.com/v2/leads/"
+		urlDetailData := "https://api.getbase.com/v2/leads"
 		headers := map[string]string{
 			"Content-Type":  "application/json",
 			"Authorization": fmt.Sprintf("Bearer %s", constants.AuthZendesk),
 		}
 
-		bodyDetailData, err := helper.HttpRequest("GET", urlDetailData, nil, headers)
+		bodyDetailData, err := helper.HttpRequest("GET", urlDetailData+"/"+payload.CRMLeadID, nil, headers)
 		if err != nil {
 			log.Println("Error:", err)
 			return
@@ -1271,12 +1271,12 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		if payload.RequestFrom != "zendesk" {
 			// url := "http://apergu.tech:9002/api/v1/privy/zendesk/lead"
+			// log.Println("url", url)
 
 			headers = map[string]string{
 				"Content-Type": "application/json",
 			}
 			req, err := http.NewRequest("POST", urlDetailData, bytes.NewBuffer(jsonDataZD))
-			log.Println("url", urlDetailData)
 			if err != nil {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
@@ -1307,7 +1307,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 				"Authorization": fmt.Sprintf("Bearer %s", constants.AuthZendesk),
 			}
 
-			_, err = helper.HttpRequest("PUT", urlDetailData+payload.CRMLeadID, jsonDataZD, headers)
+			_, err = helper.HttpRequest("PUT", urlDetailData+"/"+payload.CRMLeadID, jsonDataZD, headers)
 			if err != nil {
 				log.Println("Error sending request:", err)
 				return
