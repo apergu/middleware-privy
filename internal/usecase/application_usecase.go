@@ -10,9 +10,12 @@ import (
 )
 
 type ApplicationUsecaseProperty struct {
+	// ApplicationRepo  repository.ApplicationRepository
+	// ApplicationPrivy credential.Credential
+	// MerchantRepo     repository.MerchantRepository
+	CustomerRepo     repository.CustomerRepository
 	ApplicationRepo  repository.ApplicationRepository
 	ApplicationPrivy credential.Credential
-	MerchantRepo     repository.MerchantRepository
 }
 
 type ApplicationQueryUsecase interface {

@@ -1,0 +1,565 @@
+{
+	"info": {
+		"_postman_id": "7d2817e1-1005-4ce5-8bc3-1ea74113dc47",
+		"name": "Privy All API v1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "28500789",
+		"_collection_link": "https://martian-firefly-61591.postman.co/workspace/APERGU~4d77131f-b400-4a0c-b6a4-cf194133f488/collection/28500789-7d2817e1-1005-4ce5-8bc3-1ea74113dc47?action=share&source=collection_link&creator=28500789"
+	},
+	"item": [
+		{
+			"name": "Channel - Create",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "{{basic_password}}",
+						"username": "{{basic_username}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "// {\n//     \"merchantId\": \"MEIDPT4850B2\",\n//     \"channelId\": \"CHNIDPT48123B6\",\n//     \"channelName\": \"Channel HRIS Lintasarta TEST 16 Jan\",\n//     \"channelCode\": \"CHNIDPT48123B6\",\n//     \"address\": \"address\",\n//     \"email\": \"email@email.com\",\n//     \"state\": \"state\",\n//     \"city\": \"city\",\n//     \"zip\": \"zip\",\n//     \"method\": \"POST\"\n// }\n\n\n{\n    \"merchantId\": \"MERC6-FEB24\",\n    \"channelId\": \"CHN-6FEB\",\n    \"channelCode\": \"CHANNEL6FEB\",\n    \"channelName\": \"CHANNEL 6 FEB\",\n    \"address\": \"jl sembego\",\n    \"email\": \"sebuahtitikhitam@gmail.com\",\n    \"state\": \"seleman\",\n    \"city\": \"yogyakarta\",\n    \"zip\": \"55281\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://apergu.tech:9001/api/v1/channel"
+			},
+			"response": [
+				{
+					"name": "Response - Error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"merchantId\": \"13986\",\n    \"channelId\": \"channelId-0003\",\n    \"channelName\": \"channelName\",\n    \"address\": \"address\",\n    \"email\": \"email\",\n    \"state\": \"state\",\n    \"city\": \"city\",\n    \"zip\": \"zip\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://apergu.dev1.my.id/api/v1/channel"
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"code\": \"err_not_found\",\n    \"data\": null,\n    \"message\": \"Channel is not found\",\n    \"meta\": null,\n    \"success\": false\n}"
+				},
+				{
+					"name": "Response - Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"merchantId\": \"13986\",\n    \"channelId\": \"channelId-0003\",\n    \"channelName\": \"channelName\",\n    \"address\": \"address\",\n    \"email\": \"email\",\n    \"state\": \"state\",\n    \"city\": \"city\",\n    \"zip\": \"zip\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://apergu.dev1.my.id/api/v1/channel"
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"code\": \"success\",\n    \"data\": 8,\n    \"message\": \"Channel successfully created\",\n    \"meta\": null,\n    \"success\": true\n}"
+				}
+			]
+		},
+		{
+			"name": "Merchant - Create",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "{{basic_password}}",
+						"username": "{{basic_username}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"enterpriseId\": \"EIDPT1252\",\n    \"merchantId\": \"MEIDPT4850B1\",\n    \"merchantCode\" : \"MC123\",\n    \"merchantName\": \"HRIS Lintasarta Testing\",\n    \"address\": \"address\",\n    \"email\": \"email@email.com\",\n    \"state\": \"state\",\n    \"city\": \"city\",\n    \"zip\": \"zip\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://apergu.tech:9001/api/v1/merchant"
+			},
+			"response": [
+				{
+					"name": "Merchant - Create",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerId\": 5,\n    \"customerName\" : 11112,\n    \"enterpriseId\": \"ENTPRV-1114\",\n    \"merchantId\": \"test-00032\",\n    \"merchantName\": \"merchantNam2e\",\n    \"address\": \"address\",\n    \"email\": \"email\",\n    \"state\": \"state\",\n    \"city\": \"city\",\n    \"zip\": \"zip\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://apergu.dev1.my.id/api/v1/merchant"
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"code\": \"success\",\n    \"data\": 2,\n    \"message\": \"Merchant successfully created\",\n    \"meta\": null,\n    \"success\": true\n}"
+				},
+				{
+					"name": "Merchant - Not Found",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerId\": 5,\n    \"customerName\" : 11112,\n    \"enterpriseId\": \"ENTPRV-1114\",\n    \"merchantId\": \"test-00032\",\n    \"merchantName\": \"merchantNam2e\",\n    \"address\": \"address\",\n    \"email\": \"email\",\n    \"state\": \"state\",\n    \"city\": \"city\",\n    \"zip\": \"zip\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://apergu.dev1.my.id/api/v1/merchant"
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"code\": \"err_not_found\",\n    \"data\": null,\n    \"message\": \"Merchant is not found\",\n    \"meta\": null,\n    \"success\": false\n}"
+				}
+			]
+		},
+		{
+			"name": "Customer - Create",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "{{basic_password}}",
+						"username": "{{basic_username}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "// {\n//     \"customerid\":\"EIDPT1252\",\n//     \"enterprisePrivyId\": \"EIDPT1252\",\n//     \"customerName\": \"PT APLIKASI 152\",\n//     \"firstName\" : \"PT APLIKASI\",\n//     \"lastName\" : \"152\",\n//     \"address\": \"Jalan Pemuda Pemudi, Berkah Singgah\",\n//     \"email\": \"permata@sample4.com\",\n//     \"phoneNo\": \"089123112871\",\n//     \"entityStatus\" : \"13\", // 6 || 13\n//     \"crmLeadId\": \"CRM-234\",\n//     \"npwp\": \"1920384458201205\",\n//     \"state\": \"Tanah Abang\",\n//     \"city\": \"Jakarta\",\n//     \"zip\": \"902123\"\n// }\n\n{\n    // \"customerid\":\"4320\",\n    \"enterprisePrivyId\": \"ENTPRVNVT-5FEB2024\",\n    \"customerName\": \"PT 5 FEB 2024\",\n    \"firstName\" : \"PT 5 FEB\",\n    \"lastName\" : \"2024\",\n    \"address\": \"Jalan Pemuda Pemudi, Berkah Singgah\",\n    \"email\": \"permata@sample232.com\",\n    \"phoneNo\": \"089123112871\",\n    \"entityStatus\" : \"13\", // 6 || 13\n    \"crmLeadId\": \"1298739\",\n    \"npwp\": \"1920384458201205\",\n    \"state\": \"Tanah Abang\",\n    \"city\": \"Jakarta\",\n    \"zip\": \"902123\"\n}\n\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://apergu.tech:9001/api/v1/customer"
+			},
+			"response": [
+				{
+					"name": "Response - Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerid\":\"1114\",\n    \"enterprisePrivyId\": \"ENTPRV-1114\",\n    \"customerName\": \"PT Testing From Postman 4\",\n    \"address\": \"Jalan Pemuda Pemudi, Berkah Singgah\",\n    \"email\": \"permata@sample4.com\",\n    \"phone\": \"089123112871\",\n    \"crmLeadId\": \"LED-001\",\n    \"npwp\": \"1920384458201205\",\n    \"state\": \"Tanah Abang\",\n    \"city\": \"Jakarta\",\n    \"zip\": \"902123\"\n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://apergu.dev1.my.id/api/v1/customer"
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"code\": \"success\",\n    \"data\": 16,\n    \"message\": \"Customer successfully created\",\n    \"meta\": null,\n    \"success\": true\n}"
+				},
+				{
+					"name": "Response - Duplicate",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerid\":\"1114\",\n    \"enterprisePrivyId\": \"ENTPRV-1114\",\n    \"customerName\": \"PT Testing From Postman 4\",\n    \"address\": \"Jalan Pemuda Pemudi, Berkah Singgah\",\n    \"email\": \"permata@sample4.com\",\n    \"phone\": \"089123112871\",\n    \"crmLeadId\": \"LED-001\",\n    \"npwp\": \"1920384458201205\",\n    \"state\": \"Tanah Abang\",\n    \"city\": \"Jakarta\",\n    \"zip\": \"902123\"\n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://apergu.dev1.my.id/api/v1/customer"
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"code\": \"err_duplicate\",\n    \"data\": {\n        \"detail\": \"Key (customer_id)=(ENTPRV-1116) already exists.\"\n    },\n    \"message\": \"Duplicate data\",\n    \"meta\": null,\n    \"success\": false\n}"
+				}
+			]
+		},
+		{
+			"name": "Customer - Create LEAD",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "{{basic_password}}",
+						"username": "{{basic_username}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    // \"customerid\":\"1114\",\n    // \"enterprisePrivyId\": \"ENTPRV-1252\",\n    \"customerName\": \"PT. JAN3 123 2024 1635\",\n    // \"address\": \"Jalan Pemuda Pemudi, Berkah Singgah\",\n    // \"email\": \"permata@sample4.com\",\n    \"phone\": \"089123112871\",\n    \"crmLeadId\": \"\",\n    \"entityStatus\" : \"\"\n    // \"npwp\": \"1920384458201205\",\n    // \"state\": \"Tanah Abang\",\n    // \"city\": \"Jakarta\",\n    // \"zip\": \"902123\"\n}\n\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://apergu.tech:9001/api/v1/customer/lead"
+			},
+			"response": [
+				{
+					"name": "Response - Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerid\":\"1114\",\n    \"enterprisePrivyId\": \"ENTPRV-1114\",\n    \"customerName\": \"PT Testing From Postman 4\",\n    \"address\": \"Jalan Pemuda Pemudi, Berkah Singgah\",\n    \"email\": \"permata@sample4.com\",\n    \"phone\": \"089123112871\",\n    \"crmLeadId\": \"LED-001\",\n    \"npwp\": \"1920384458201205\",\n    \"state\": \"Tanah Abang\",\n    \"city\": \"Jakarta\",\n    \"zip\": \"902123\"\n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://apergu.dev1.my.id/api/v1/customer"
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"code\": \"success\",\n    \"data\": 16,\n    \"message\": \"Customer successfully created\",\n    \"meta\": null,\n    \"success\": true\n}"
+				},
+				{
+					"name": "Response - Duplicate",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerid\":\"1114\",\n    \"enterprisePrivyId\": \"ENTPRV-1114\",\n    \"customerName\": \"PT Testing From Postman 4\",\n    \"address\": \"Jalan Pemuda Pemudi, Berkah Singgah\",\n    \"email\": \"permata@sample4.com\",\n    \"phone\": \"089123112871\",\n    \"crmLeadId\": \"LED-001\",\n    \"npwp\": \"1920384458201205\",\n    \"state\": \"Tanah Abang\",\n    \"city\": \"Jakarta\",\n    \"zip\": \"902123\"\n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://apergu.dev1.my.id/api/v1/customer"
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"code\": \"err_duplicate\",\n    \"data\": {\n        \"detail\": \"Key (customer_id)=(ENTPRV-1116) already exists.\"\n    },\n    \"message\": \"Duplicate data\",\n    \"meta\": null,\n    \"success\": false\n}"
+				}
+			]
+		},
+		{
+			"name": "Customer - Create LEAD Copy",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "{{basic_password}}",
+						"username": "{{basic_username}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n      // \"customerid\":\"1114\",\n    \"enterprisePrivyId\": \"AUF13MAR3PM\",\n    \"customerName\": \"PT AUFUL 13 MAR 3 PM\",\n    // \"address\": \"Jalan Pemuda Pemudi, Berkah Singgah\",\n    // \"email\": \"permata@sample4.com\",\n    \"phone\": \"089123112871\",\n    \"crmLeadId\": \"PT AUFUL 13 MAR 3 PM\",\n    \"entityStatus\" : \"13\"\n    // \"npwp\": \"1920384458201205\",\n    // \"state\": \"Tanah Abang\",\n    // \"city\": \"Jakarta\",\n    // \"zip\": \"902123\"\n}\n\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://apergu.tech:9001/api/v1/customer/lead/:id",
+					"protocol": "http",
+					"host": [
+						"apergu",
+						"tech"
+					],
+					"port": "9001",
+					"path": [
+						"api",
+						"v1",
+						"customer",
+						"lead",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "PT AUFUL 13 MAR 3 PM"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Response - Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerid\":\"1114\",\n    \"enterprisePrivyId\": \"ENTPRV-1114\",\n    \"customerName\": \"PT Testing From Postman 4\",\n    \"address\": \"Jalan Pemuda Pemudi, Berkah Singgah\",\n    \"email\": \"permata@sample4.com\",\n    \"phone\": \"089123112871\",\n    \"crmLeadId\": \"LED-001\",\n    \"npwp\": \"1920384458201205\",\n    \"state\": \"Tanah Abang\",\n    \"city\": \"Jakarta\",\n    \"zip\": \"902123\"\n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://apergu.dev1.my.id/api/v1/customer"
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"code\": \"success\",\n    \"data\": 16,\n    \"message\": \"Customer successfully created\",\n    \"meta\": null,\n    \"success\": true\n}"
+				},
+				{
+					"name": "Response - Duplicate",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerid\":\"1114\",\n    \"enterprisePrivyId\": \"ENTPRV-1114\",\n    \"customerName\": \"PT Testing From Postman 4\",\n    \"address\": \"Jalan Pemuda Pemudi, Berkah Singgah\",\n    \"email\": \"permata@sample4.com\",\n    \"phone\": \"089123112871\",\n    \"crmLeadId\": \"LED-001\",\n    \"npwp\": \"1920384458201205\",\n    \"state\": \"Tanah Abang\",\n    \"city\": \"Jakarta\",\n    \"zip\": \"902123\"\n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://apergu.dev1.my.id/api/v1/customer"
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"code\": \"err_duplicate\",\n    \"data\": {\n        \"detail\": \"Key (customer_id)=(ENTPRV-1116) already exists.\"\n    },\n    \"message\": \"Duplicate data\",\n    \"meta\": null,\n    \"success\": false\n}"
+				}
+			]
+		},
+		{
+			"name": "Customer Usage - Create",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "{{basic_password}}",
+						"username": "{{basic_username}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"customerusageID\" : \"\",\n    \"enterpriseID\": \"ENTPRVNVT-17JAN3\",\n    \"merchantID\": \"MERCQA1-170124\",\n    \"channelID\": \"NVTCHANNEL170124\",\n    \"serviceID\": \"Auto Sign\",\n    \"qty\": 10,\n    \"transactionDate\": \"16/01/2024\",\n    \"transactionID\": \"ENTPRVNVT-17JAN3/MERCQA1-170124/NVTCHANNEL170124/00001\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://apergu.tech:9001/api/v1/customer-usage"
+			},
+			"response": [
+				{
+					"name": "Response - Not found",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerusageID\" : \"8b963330-e6e0-4ca7-a4a4-667c2b729953\",\n    \"enterpriseID\": \"ENT001\",\n    \"enterpriseName\": \"Digital Signature (Uncertified)\",\n    \"customerName\" : \"\",\n    \"merchantID\": \"MRC-001\",\n    \"channelID\": \"CNH-001\",\n    \"serviceID\": \"SRC001\",\n    \"qty\": 10,\n    \"transactionDate\": \"10/10/2023\",\n    \"transactionID\": \"TRNSC/PPC/2023001\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://apergu.dev1.my.id/api/v1/customer-usage"
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"code\": \"err_internal_server\",\n    \"data\": {\n        \"total_transaction_created\": 0,\n        \"total_transaction_failed_created\": 1,\n        \"error\": null,\n        \"success_transaction\": [],\n        \"failed_transaction\": [\n            {\n                \"error\": \"CUSTOMER NOT FOUND\"\n            }\n        ]\n    },\n    \"message\": \"Something went wrong\",\n    \"meta\": null,\n    \"success\": false\n}"
+				},
+				{
+					"name": "Customer Usage - Create",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerusageID\" : \"8b963330-e6e0-4ca7-a4a4-667c2b729953\",\n    \"enterpriseID\": \"Company TEST 123\",\n    \"enterpriseName\": \"Company TEST 123\",\n    \"customerName\" : \"Company TEST 123\",\n    \"merchantID\": \"93\",\n    \"channelID\": \"97\",\n    \"serviceID\": \"Digital Signature (Uncertified)\",\n    \"qty\": 1,\n    \"transactionDate\": \"10/10/2023\",\n    \"transactionID\": \"TRNSC/PPC/2023001\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://apergu.dev1.my.id/api/v1/customer-usage"
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"code\": \"success\",\n    \"data\": 55,\n    \"message\": \"Customer Usage successfully created\",\n    \"meta\": null,\n    \"success\": true\n}"
+				}
+			]
+		},
+		{
+			"name": "Top up",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "{{basic_password}}",
+						"username": "{{basic_username}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sono\" : \"31461\",\n    \"customerid\" : \"24412\",\n    \"merchantid\" : \"92\",\n    \"channelid\" :\"96\",\n    \"startdate\" : \"01/12/2023\",\n    \"enddate\" : \"02/12/2023\",\n    \"duration\" : \"3\",\n    \"billing\" : \"4\",\n    \"itemid\" : \"Airborne\",\n    \"balance\" : 10,\n    \"rate\" : \"10000\",\n    \"prepaid\" : true,\n    \"quotationid\" : \"1234\",\n    \"void_date\" : \"03/12/2023\",\n    \"amount\"  : \"100\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://apergu.tech:9001/api/v1/top-up-data"
+			},
+			"response": []
+		},
+		{
+			"name": "Sales Order",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "{{basic_password}}",
+						"username": "{{basic_username}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\n        \"entity\" : \"11883\",\n        \"orderstatus\" : \"sukses\",\n        \"enterpriseid\" : \"124\",\n        \"startdate\" : \"12/12/2023\",\n        \"enddate\" : \"12/02/2024\",\n        \"trandate\" : \"12/12/2023\",\n        \"memo\" :\"memo\",\n        \"lines\" : [\n            {\n                \"custcol_privy_merchant\" : \"292 - BERSAMA MERCHANT\",\n                \"custcol_privy_channel\" : \"311 - BERSAMA CHANNEL\",\n                \"custcol_privy_unitprice_beforedisc\" : \"19.99\",\n                \"item\" : \"Auto Sign\"\n            }\n        ]\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://apergu.tech:9001/api/v1/sales-order"
+			},
+			"response": []
+		},
+		{
+			"name": "Transfer Balance",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "{{basic_password}}",
+						"username": "{{basic_username}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"customerId\" : \"PT Herbal Abadi\",\n    \"transferDate\" : \"04/01/2024\",\n    \"trxIdFrom\" : \"6969/666/999/00069\",\n    \"trxIdTo\" : \"6969/666/998/00011\",\n    \"merchantTo\" : \"666 - merchant herbal\",\n    \"channelTo\" : \"998 - channel herbal 2\",\n    \"startDate\" : \"01/12/2023\",\n    \"endDate\" : \"31/01/2024\",\n    \"isTrxCreated\" : false,\n    \"quantity\" : 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://apergu.tech:9001/api/v1/transfer-balance"
+			},
+			"response": []
+		},
+		{
+			"name": "Top up to core",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YXBlcmd1OnNlY3JldA==",
+						"type": "text"
+					},
+					{
+						"key": "application-key",
+						"value": "VUNSAT9GP6e5Rc7qv8ZDnh",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topup_uuid\": \"1d9505ed-e7b3-42a0-bf89-4b6cf5b0114e\",\n    \"topup_id\": \"MID-CID-SERVICE/056\",\n    \"enterprise_id\": \"EIDTRAK001\",\n    \"merchant_id\": \"\",\n    \"channel_id\": \"\",\n    \"service_id\": \"ACTION\",\n    \"transaction_date\": \"2024-01-15T00:00:00+07:00\",\n    \"start_period_date\": \"2024-01-15T00:00:00+07:00\",\n    \"end_period_date\": \"2024-12-30T00:00:00+07:00\",\n    \"post_paid\": false,\n    // \"unit_price\" : 10000,\n    \"reversal\": false,\n    \"qty\": 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://stg-b2b-api-service.privy.id/v1/orchestrator-erp-goldengate/webhook/apergu/top-up"
+			},
+			"response": []
+		},
+		{
+			"name": "TESTING@!#",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Api-Token",
+						"value": "47b6869d496b7ad646167994d2c70efedd1e0de7a3ea86adf792ccc597501fb62ad98118"
+					},
+					{
+						"key": "accept",
+						"value": "application/json"
+					}
+				],
+				"url": "https://privy32170.api-us1.com/api/3/contacts/420"
+			},
+			"response": []
+		}
+	]
+}

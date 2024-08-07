@@ -90,6 +90,7 @@ func InitMigration(dsn string) *migrate.Migrate {
 	return InitMigrationWithDBName(dsn, "jatis")
 }
 
+// Errornya disini
 func InitMigrationWithDBName(dsn, dbname string) *migrate.Migrate {
 	db := &pgx.Postgres{}
 

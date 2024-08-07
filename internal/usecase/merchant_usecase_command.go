@@ -11,20 +11,20 @@ import (
 	"middleware/internal/entity"
 	"middleware/internal/model"
 	"middleware/internal/repository"
-	"middleware/pkg/credential"
+	// "middleware/pkg/credential"
 )
 
 type MerchantCommandUsecaseGeneral struct {
-	merchantRepo  repository.MerchantCommandRepository
-	custRepo      repository.CustomerQueryRepository
-	merchantPrivy credential.Merchant
+	merchantRepo repository.MerchantCommandRepository
+	custRepo     repository.CustomerQueryRepository
+	// merchantPrivy credential.Merchant
 }
 
 func NewMerchantCommandUsecaseGeneral(prop MerchantUsecaseProperty) *MerchantCommandUsecaseGeneral {
 	return &MerchantCommandUsecaseGeneral{
-		merchantRepo:  prop.MerchantRepo,
-		merchantPrivy: prop.MerchantPrivy,
-		custRepo:      prop.CustomerRepo,
+		merchantRepo: prop.MerchantRepo,
+		// merchantPrivy: prop.MerchantPrivy,
+		custRepo: prop.CustomerRepo,
 	}
 }
 
@@ -216,38 +216,38 @@ func (r *MerchantCommandUsecaseGeneral) Create(ctx context.Context, merchant mod
 
 	// custrecordcustomer_name ambil dari customer
 
-	privyParam := credential.MerchantParam{
-		RecordType:                  "customrecord_customer_hierarchy",
-		CustRecordCustomerName:      customer.CustomerInternalID,
-		CustRecordEnterpriseID:      merchant.EnterpriseID,
-		CustRecordMerchantID:        merchant.MerchantID,
-		CustRecordPrivyCodeMerchant: merchant.MerchantCode,
-		CustRecordMerchantName:      merchant.MerchantName,
-		CustRecordAddress:           merchant.Address,
-		CustRecordEmail:             merchant.Email,
-		CustRecordPhone:             merchant.PhoneNo,
-		CustRecordState:             merchant.State,
-		CustRecordCity:              merchant.City,
-		CustRecordZip:               merchant.ZipCode,
-		Method:                      "POST",
-	}
+	// privyParam := credential.MerchantParam{
+	// 	RecordType:                  "customrecord_customer_hierarchy",
+	// 	CustRecordCustomerName:      customer.CustomerInternalID,
+	// 	CustRecordEnterpriseID:      merchant.EnterpriseID,
+	// 	CustRecordMerchantID:        merchant.MerchantID,
+	// 	CustRecordPrivyCodeMerchant: merchant.MerchantCode,
+	// 	CustRecordMerchantName:      merchant.MerchantName,
+	// 	CustRecordAddress:           merchant.Address,
+	// 	CustRecordEmail:             merchant.Email,
+	// 	CustRecordPhone:             merchant.PhoneNo,
+	// 	CustRecordState:             merchant.State,
+	// 	CustRecordCity:              merchant.City,
+	// 	CustRecordZip:               merchant.ZipCode,
+	// 	Method:                      "POST",
+	// }
 
-	resp, err := r.merchantPrivy.CreateMerchant(ctx, privyParam)
-	if err != nil {
-		r.merchantRepo.RollbackTx(ctx, tx)
+	// resp, err := r.merchantPrivy.CreateMerchant(ctx, privyParam)
+	// if err != nil {
+	// 	r.merchantRepo.RollbackTx(ctx, tx)
 
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "MerchantCommandUsecaseGeneral.Create",
-				"src":   "merchantPrivy.CreateMerchant",
-				"param": privyParam,
-			}).
-			Error(err)
+	// 	logrus.
+	// 		WithFields(logrus.Fields{
+	// 			"at":    "MerchantCommandUsecaseGeneral.Create",
+	// 			"src":   "merchantPrivy.CreateMerchant",
+	// 			"param": privyParam,
+	// 		}).
+	// 		Error(err)
 
-		return 0, nil, err
-	}
+	// 	return 0, nil, err
+	// }
 
-	insertMerchant.MerchantInternalID = resp.Data.RecordID
+	// insertMerchant.MerchantInternalID = resp.Data.RecordID
 	insertMerchant.CustomerInternalID = customer.CustomerInternalID
 
 	err = r.merchantRepo.Update(ctx, merchantId, insertMerchant, tx)

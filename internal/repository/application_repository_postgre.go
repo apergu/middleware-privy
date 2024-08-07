@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -53,9 +54,23 @@ func (c *ApplicationRepositoryPostgre) query(ctx context.Context, cmd sqlcommand
 
 		err := rows.Scan(
 			&data.ID,
+			&data.CustomerID,
+			&data.EnterpriseID,
 			&data.ApplicationCode,
 			&data.ApplicationID,
 			&data.ApplicationName,
+			&data.Address,
+			&data.Email,
+			&data.PhoneNo,
+			&data.State,
+			&data.City,
+			&data.ZipCode,
+			&data.ApplicationInternalID,
+			&data.CustomerInternalID,
+			&data.CreatedBy,
+			&data.CreatedAt,
+			&data.UpdatedBy,
+			&data.UpdatedAt,
 		)
 		if err != nil {
 			logrus.
@@ -87,9 +102,23 @@ func (c *ApplicationRepositoryPostgre) queryOne(ctx context.Context, cmd sqlcomm
 		QueryRow(ctx, query, args...).
 		Scan(
 			&data.ID,
+			&data.CustomerID,
+			&data.EnterpriseID,
 			&data.ApplicationCode,
 			&data.ApplicationID,
 			&data.ApplicationName,
+			&data.Address,
+			&data.Email,
+			&data.PhoneNo,
+			&data.State,
+			&data.City,
+			&data.ZipCode,
+			&data.ApplicationInternalID,
+			&data.CustomerInternalID,
+			&data.CreatedBy,
+			&data.CreatedAt,
+			&data.UpdatedBy,
+			&data.UpdatedAt,
 		)
 	if err != nil {
 		logrus.
@@ -170,6 +199,8 @@ func (c *ApplicationRepositoryPostgre) buildSort(sort string) string {
 	return `order by applications.updated_at desc`
 }
 
+// ApplicationQueryRepository START
+
 func (c *ApplicationRepositoryPostgre) Find(ctx context.Context, filter ApplicationFilter, limit, skip int64, tx pgx.Tx) ([]entity.Application, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
@@ -218,78 +249,6 @@ func (c *ApplicationRepositoryPostgre) Find(ctx context.Context, filter Applicat
 	}
 
 	return c.query(ctx, cmd, fmt.Sprintf(query, cond, order, limits, skips), args...)
-}
-
-func (c *ApplicationRepositoryPostgre) FindByApplicationID(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.ApplicationFind, error) {
-	var cmd sqlcommand.Command = c.pool
-	if tx != nil {
-		cmd = tx
-	}
-
-	query := `select
-	applications.id,
-	applications.application_id,
-	applications.application_name
-	from
-		applications
-	where
-		applications.application_id = $1
-	limit 1`
-
-	return c.queryOneFind(ctx, cmd, query, enterprisePrivyID)
-}
-
-func (c *ApplicationRepositoryPostgre) FindByName(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.ApplicationFind, error) {
-	var cmd sqlcommand.Command = c.pool
-	if tx != nil {
-		cmd = tx
-	}
-
-	query := `select
-	applications.id,
-	applications.application_id,
-	applications.application_name
-	from
-		applications
-	where
-		applications.application_name = $1
-	limit 1`
-
-	return c.queryOneFind(ctx, cmd, query, enterprisePrivyID)
-}
-
-func (c *ApplicationRepositoryPostgre) FindByMerchantID(ctx context.Context, merchantId string, tx pgx.Tx) (entity.Application, error) {
-	var cmd sqlcommand.Command = c.pool
-	if tx != nil {
-		cmd = tx
-	}
-
-	query := `select
-	applications.id,
-		applications.merchant_id,
-		applications.application_code,
-		applications.application_id,
-		applications.application_name,
-		applications."address",
-		applications."email",
-		applications.phone_no,
-		applications.state,
-		applications."city",
-		applications.zip_code,
-		applications.customer_internalid,
-		applications.merchant_internalid,
-		applications.application_internalid,
-		applications.created_by,
-		applications.created_at,
-		applications.updated_by,
-		applications.updated_at
-	from
-		applications
-	where
-		applications.merchant_id = $1
-	limit 1`
-
-	return c.queryOne(ctx, cmd, query, merchantId)
 }
 
 func (c *ApplicationRepositoryPostgre) Count(ctx context.Context, filter ApplicationFilter, tx pgx.Tx) (int64, error) {
@@ -357,6 +316,114 @@ func (c *ApplicationRepositoryPostgre) FindOneById(ctx context.Context, id int64
 	return c.queryOne(ctx, cmd, query, id)
 }
 
+func (c *ApplicationRepositoryPostgre) FindByEnterprisePrivyID(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.Application, error) {
+	log.Println("enterprisePrivyID : ", enterprisePrivyID)
+	var cmd sqlcommand.Command = c.pool
+	if tx != nil {
+		cmd = tx
+	}
+
+	query := `select
+			applications.id,
+			applications.customer_id,
+			applications.application_id,
+			applications.application_name,
+			applications."address",
+			applications.email,
+			applications.phone_no,
+			applications.state,
+			applications."city",
+			applications.zip_code,
+			applications.created_by,
+			applications.created_at,
+			applications.updated_by,
+			applications.updated_at
+			applications.application_code,
+			applications.customer_internalid,
+			applications.applications_internalid,
+		from
+			applications
+		where
+			applications.application_id = $1
+		limit 1`
+
+	return c.queryOne(ctx, cmd, query, enterprisePrivyID)
+}
+
+// ApplicationQueryRepository END
+
+func (c *ApplicationRepositoryPostgre) FindByApplicationID(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.ApplicationFind, error) {
+	var cmd sqlcommand.Command = c.pool
+	if tx != nil {
+		cmd = tx
+	}
+
+	query := `select
+	applications.id,
+	applications.application_id,
+	applications.application_name
+	from
+		applications
+	where
+		applications.application_id = $1
+	limit 1`
+
+	return c.queryOneFind(ctx, cmd, query, enterprisePrivyID)
+}
+
+func (c *ApplicationRepositoryPostgre) FindByName(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.ApplicationFind, error) {
+	var cmd sqlcommand.Command = c.pool
+	if tx != nil {
+		cmd = tx
+	}
+
+	query := `select
+	applications.id,
+	applications.application_id,
+	applications.application_name
+	from
+		applications
+	where
+		applications.application_name = $1
+	limit 1`
+
+	return c.queryOneFind(ctx, cmd, query, enterprisePrivyID)
+}
+
+// func (c *ApplicationRepositoryPostgre) FindByMerchantID(ctx context.Context, merchantId string, tx pgx.Tx) (entity.Application, error) {
+// 	var cmd sqlcommand.Command = c.pool
+// 	if tx != nil {
+// 		cmd = tx
+// 	}
+
+// 	query := `select
+// 	applications.id,
+// 		applications.merchant_id,
+// 		applications.application_code,
+// 		applications.application_id,
+// 		applications.application_name,
+// 		applications."address",
+// 		applications."email",
+// 		applications.phone_no,
+// 		applications.state,
+// 		applications."city",
+// 		applications.zip_code,
+// 		applications.customer_internalid,
+// 		applications.merchant_internalid,
+// 		applications.application_internalid,
+// 		applications.created_by,
+// 		applications.created_at,
+// 		applications.updated_by,
+// 		applications.updated_at
+// 	from
+// 		applications
+// 	where
+// 		applications.merchant_id = $1
+// 	limit 1`
+
+// 	return c.queryOne(ctx, cmd, query, merchantId)
+// }
+
 func (c *ApplicationRepositoryPostgre) BeginTx(ctx context.Context) (pgx.Tx, error) {
 	return c.pool.BeginTx(ctx, pgx.TxOptions{})
 }
@@ -369,6 +436,7 @@ func (c *ApplicationRepositoryPostgre) RollbackTx(ctx context.Context, tx pgx.Tx
 	return tx.Rollback(ctx)
 }
 
+// ApplicationCommandRepository START
 func (c *ApplicationRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context, id int64, tx pgx.Tx) (entity.Application, error) {
 	if tx == nil {
 		return entity.Application{}, rapperror.ErrInternalServerError(
@@ -382,7 +450,8 @@ func (c *ApplicationRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context,
 
 	query := `select
 		applications."id",
-		applications.merchant_id,
+		applications.customer.id,
+		applications.enterpise_id,
 		applications.application_code,
 		applications.application_id,
 		applications.application_name,
@@ -393,7 +462,6 @@ func (c *ApplicationRepositoryPostgre) FindOneByIdForUpdate(ctx context.Context,
 		applications."city",
 		applications.zip_code,
 		applications.customer_internalid,
-		applications.merchant_internalid,
 		applications.application_internalid,
 		applications.created_by,
 		applications.created_at,
@@ -415,11 +483,24 @@ func (c *ApplicationRepositoryPostgre) Create(ctx context.Context, application e
 		cmd = tx
 	}
 
-	// 1 merchan now can have multi application code above is not necessary
+	duplicateQuery := "SELECT id FROM applications WHERE application_id = $1 AND enterprise_id = $2 LIMIT 1;"
+	fmt.Println("duplicateQuery", duplicateQuery)
+
+	var existingID int64
+	err := cmd.QueryRow(ctx, duplicateQuery, application.ApplicationID, application.EnterpriseID).Scan(&existingID)
+	if err == nil {
+		// Duplicate entry found
+		return 0, fmt.Errorf("duplicate entry with application_id %s", application.ApplicationID)
+	} else if err != pgx.ErrNoRows {
+		// An error occurred while checking for duplicates
+		return 0, pgxerror.FromPgxError(err, "", "ApplicationRepositoryPostgre.Create")
+	}
+
+	//// 1 merchan now can have multi application code above is not necessary
 	var id int64
 	query := `insert into applications (
-		merchant_id,
-		application_code,
+		customer_id,
+		enterprise_id,
 		application_id,
 		application_name,
 		"address",
@@ -428,23 +509,39 @@ func (c *ApplicationRepositoryPostgre) Create(ctx context.Context, application e
 		"state",
 		"city",
 		"zip_code",
+		created_by, 
+		created_at, 
+		updated_by, 
+		updated_at
+		application_code,
 		customer_internalid,
-		merchant_internalid,
 		application_internalid,
-		created_by, created_at, updated_by, updated_at
 	) values (
 		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
 		,$11, $12, $13, $14, $15, $16, $17
 	) RETURNING id`
 
-	err := cmd.
+	err = cmd.
 		QueryRow(
 			ctx,
 			query,
+			application.CustomerID,
 			application.EnterpriseID,
-			application.ApplicationCode,
 			application.ApplicationID,
 			application.ApplicationName,
+			application.Address,
+			application.Email,
+			application.PhoneNo,
+			application.State,
+			application.City,
+			application.ZipCode,
+			application.CreatedBy,
+			application.CreatedAt,
+			application.UpdatedBy,
+			application.UpdatedAt,
+			application.ApplicationCode,
+			application.CustomerInternalID,
+			application.ApplicationInternalID,
 		).
 		Scan(&id)
 
@@ -478,23 +575,32 @@ func (c *ApplicationRepositoryPostgre) Update(ctx context.Context, id int64, app
 		state = $6,
 		"city" = $7,
 		"zip_code" = $8,
-		application_code = $12,
-		customer_internalid = $13,
-		merchant_internalid = $14,
-		application_internalid = $15,
 		updated_by = $9,
 		updated_at = $10
+		application_code = $12,
+		customer_internalid = $13,
+		application_internalid = $14,
 	where
 		id = $11`
 
 	_, err := cmd.Exec(
 		ctx,
 		query,
-		application.EnterpriseID,
+		// application.EnterpriseID,
 		application.ApplicationID,
 		application.ApplicationName,
+		application.Address,
+		application.Email,
+		application.PhoneNo,
+		application.State,
+		application.City,
+		application.ZipCode,
+		application.UpdatedBy,
+		application.UpdatedAt,
 		id,
 		application.ApplicationCode,
+		application.CustomerInternalID,
+		application.ApplicationInternalID,
 	)
 
 	if err != nil {
@@ -523,3 +629,5 @@ func (c *ApplicationRepositoryPostgre) Delete(ctx context.Context, id int64, tx 
 
 	return nil
 }
+
+// ApplicationCommandRepository END

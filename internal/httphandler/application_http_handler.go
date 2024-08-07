@@ -30,9 +30,9 @@ type ApplicationHttpHandler struct {
 
 func NewApplicationHttpHandler(prop HTTPHandlerProperty) http.Handler {
 	ucProp := usecase.ApplicationUsecaseProperty{
-		ApplicationRepo:  repository.NewApplicationRepositoryPostgre(prop.DBPool),
 		ApplicationPrivy: prop.DefaultCredential,
-		MerchantRepo:     repository.NewMerchantRepositoryPostgre(prop.DBPool),
+		CustomerRepo:     repository.NewCustomerRepositoryPostgre(prop.DBPool),
+		ApplicationRepo:  repository.NewApplicationRepositoryPostgre(prop.DBPool),
 	}
 
 	handler := ApplicationHttpHandler{
@@ -63,7 +63,6 @@ func (h ApplicationHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	err = rdecoder.DecodeRest(r, h.Decorder, &payload)
 
 	if err != nil {
-
 		msg := err.Error()
 		re := regexp.MustCompile(`Application\.(\w+)`)
 		custm := re.FindStringSubmatch(msg)
@@ -119,7 +118,7 @@ func (h ApplicationHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 	// user := ctx.Value(constants.SessionUserId).(int64)
 
 	// set created by value
-	// payload.CreatedBy = 0
+	payload.CreatedBy = 0
 
 	errors := payload.Validate()
 	if len(errors) > 0 {
@@ -132,11 +131,11 @@ func (h ApplicationHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		helper.LoggerValidateStructfunc(w, r, "ApplicationHttpHandler.Create", "channel", message, "", payload)
+		helper.LoggerValidateStructfunc(w, r, "CustomerHttpHandler.Create", "application", message, "", payload)
 
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "ApplicationHttpHandler.Create",
+				"at":     "CustomerHttpHandler.Create",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
@@ -171,21 +170,22 @@ func (h ApplicationHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
+	println("payload =>", payload.Address)
 	roleId, meta, err := h.Command.Create(ctx, payload)
+
 	if err != nil {
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}
-	response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Application successfully created", map[string]interface{}{
+	response, _ := helper.GenerateJSONResponse(http.StatusCreated, false, "Application fail created", map[string]interface{}{
 		"roleId": roleId,
 		"meta":   meta,
 	})
 
 	helper.WriteJSONResponse(w, response, http.StatusCreated)
-	helper.LoggerSuccessStructfunc(w, r, "ApplicationHttpHandler.Create", "channel", "Application successfully created", "")
+	helper.LoggerSuccessStructfunc(w, r, "CustomerUsageHttpHandler.Create", "Application", "Application successfully created", "")
 }
 
 func (h ApplicationHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -235,7 +235,7 @@ func (h ApplicationHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 	// user := ctx.Value(constants.SessionUserId).(int64)
 
 	// set created by value
-	// payload.CreatedBy = 0
+	payload.CreatedBy = 0
 
 	errors := payload.Validate()
 	if len(errors) > 0 {
@@ -248,11 +248,11 @@ func (h ApplicationHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		helper.LoggerValidateStructfunc(w, r, "ApplicationHttpHandler.Update", "channel", message, "", payload)
+		helper.LoggerValidateStructfunc(w, r, "CustomerHttpHandler.Update", "channel", message, "", payload)
 
 		logrus.
 			WithFields(logrus.Fields{
-				"at":     "ApplicationHttpHandler.Update",
+				"at":     "CustomerHttpHandler.Update",
 				"src":    "payload.Validate",
 				"params": payload,
 			}).
@@ -297,7 +297,7 @@ func (h ApplicationHttpHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	response = rresponser.NewResponserSuccessOK("", "Application successfully updated", roleId, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-	helper.LoggerSuccessStructfunc(w, r, "ApplicationHttpHandler.Update", "channel", "Application successfully updated", "")
+	helper.LoggerSuccessStructfunc(w, r, "CustomerHttpHandler.Update", "channel", "Application successfully updated", "")
 }
 
 func (h ApplicationHttpHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -328,7 +328,7 @@ func (h ApplicationHttpHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	response = rresponser.NewResponserSuccessOK("", "Application successfully deleted", roleId, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-	helper.LoggerSuccessStructfunc(w, r, "ApplicationHttpHandler.Delete", "channel", "Application successfully deleted", "")
+	helper.LoggerSuccessStructfunc(w, r, "CustomerHttpHandler.Delete", "channel", "Application successfully deleted", "")
 }
 
 func (h ApplicationHttpHandler) Find(w http.ResponseWriter, r *http.Request) {
@@ -377,7 +377,7 @@ func (h ApplicationHttpHandler) Find(w http.ResponseWriter, r *http.Request) {
 
 	response = rresponser.NewResponserSuccessOK("", "Application successfully retrieved", roles, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-	helper.LoggerSuccessStructfunc(w, r, "ApplicationHttpHandler.Find", "channel", "Application successfully retrieved", "")
+	helper.LoggerSuccessStructfunc(w, r, "CustomerHttpHandler.Find", "channel", "Application successfully retrieved", "")
 }
 
 func (h ApplicationHttpHandler) FindById(w http.ResponseWriter, r *http.Request) {
@@ -408,5 +408,5 @@ func (h ApplicationHttpHandler) FindById(w http.ResponseWriter, r *http.Request)
 
 	response = rresponser.NewResponserSuccessOK("", "Application successfully retrieved", role, meta)
 	rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
-	helper.LoggerSuccessStructfunc(w, r, "ApplicationHttpHandler.FindById", "channel", "Application successfully retrieved", "")
+	helper.LoggerSuccessStructfunc(w, r, "CustomerHttpHandler.FindById", "channel", "Application successfully retrieved", "")
 }

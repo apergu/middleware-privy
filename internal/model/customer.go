@@ -30,7 +30,7 @@ type Customer struct {
 	Address1          string `json:"address1"`
 	NPWP              string `json:"npwp" validate:"alphanum,max=255"`
 	State             string `json:"state" validate:"alphanum,max=255"`
-	City              string `json:"city"validate:"alphanum,max=255"`
+	City              string `json:"city" validate:"alphanum,max=255"`
 	ZipCode           string `json:"zip" validate:"alphanum,max=255"`
 	CreatedBy         int64  `json:"-"`
 	SubIndustry       string `json:"subIndustry" validate:"alphanum,max=255"`

@@ -93,6 +93,7 @@ func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.
 				r.Mount("/customer-usage", httphandler.NewCustomerUsageHttpHandler(prop))
 				r.Mount("/transfer-balance", httphandler.NewTransferBalanceHttpHandler(prop))
 				r.Mount("/sales-order", httphandler.NewSalesOrderHttpHandler(prop))
+				r.Mount("/application", httphandler.NewApplicationHttpHandler(prop))
 				r.Mount("/merchant", httphandler.NewMerchantHttpHandler(prop))
 				r.Mount("/channel", httphandler.NewChannelHttpHandler(prop))
 				r.Mount("/divission", httphandler.NewDivissionHttpHandler(prop))
