@@ -221,7 +221,7 @@ func (r *CustomerCommandUsecaseGeneral) Create(ctx context.Context, cust model.C
 		CompanyNameLong:                cust.CustomerName,
 		SubIndustry:                    cust.SubIndustry,
 		CRMLeadID:                      cust.CRMLeadID,
-		BankAccount:                    "103",
+		// BankAccount:                    "103",
 		AddressBook: credential.AddressBook{
 			Addr1: cust.Address,
 			State: cust.State,
@@ -375,8 +375,8 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 		ZipCode:                        cust.ZipCode,
 		CompanyNameLong:                cust.CustomerName,
 		// SubIndustry:                    cust.SubIndustry,
-		CRMLeadID:   cust.CRMLeadID,
-		BankAccount: "103",
+		CRMLeadID: cust.CRMLeadID,
+		// BankAccount: "103",
 		AddressBook: credential.AddressBook{
 			Addr1: cust.Address1,
 			State: cust.State,
@@ -771,7 +771,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead(ctx context.Context, cust mod
 		ZipCode:                        cust.ZipCode,
 		CompanyNameLong:                cust.CustomerName,
 		CRMLeadID:                      cust.CRMLeadID,
-		BankAccount:                    "103",
+		// BankAccount:                    "103",
 		AddressBook: credential.AddressBook{
 			Addr1: cust.Address1,
 			State: cust.State,
@@ -917,7 +917,7 @@ func (r *CustomerCommandUsecaseGeneral) UpdateLead(ctx context.Context, id strin
 		CompanyNameLong:                cust.CustomerName,
 		CRMLeadID:                      cust.CRMLeadID,
 		SubIndustry:                    cust.SubIndustry,
-		BankAccount:                    "103",
+		// BankAccount:                    "103",
 		AddressBook: credential.AddressBook{
 			Addr1: cust.Address1,
 			State: cust.State,

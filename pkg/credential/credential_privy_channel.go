@@ -87,7 +87,7 @@ func (c *CredentialPrivy) CreateChannel(ctx context.Context, param ChannelParam)
 	req.Header.Set("Authorization", credential.TokenType+" "+credential.AccessToken)
 
 	q := req.URL.Query()
-	q.Add("script", "126")
+	q.Add("script", "85")
 	q.Add("deploy", "1")
 
 	req.URL.RawQuery = q.Encode()

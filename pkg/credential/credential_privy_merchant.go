@@ -52,6 +52,7 @@ func (c *CredentialPrivy) CreateMerchant(ctx context.Context, param MerchantPara
 		Info(accessTokenURL)
 	req, _ := http.NewRequest(http.MethodPost, accessTokenURL, strings.NewReader(form.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Accept", "application/json")
 	req.SetBasicAuth(c.username, c.password)
 
 	credential := CredentialResponse{}
@@ -86,7 +87,7 @@ func (c *CredentialPrivy) CreateMerchant(ctx context.Context, param MerchantPara
 	req.Header.Set("Authorization", credential.TokenType+" "+credential.AccessToken)
 
 	q := req.URL.Query()
-	q.Add("script", "126")
+	q.Add("script", "85")
 	q.Add("deploy", "1")
 
 	req.URL.RawQuery = q.Encode()

@@ -137,7 +137,7 @@ func (c *CredentialPrivy) CreateCustomer(ctx context.Context, param CustomerPara
 	req.Header.Set("Authorization", credential.TokenType+" "+credential.AccessToken)
 
 	q := req.URL.Query()
-	q.Add("script", "9")
+	q.Add("script", "86")
 	q.Add("deploy", "1")
 
 	req.URL.RawQuery = q.Encode()
@@ -243,7 +243,7 @@ func (c *CredentialPrivy) CreateLead(ctx context.Context, param LeadParam) (Cust
 	req.Header.Set("Authorization", credential.TokenType+" "+credential.AccessToken)
 
 	q := req.URL.Query()
-	q.Add("script", "126")
+	q.Add("script", "85")
 	q.Add("deploy", "1")
 
 	req.URL.RawQuery = q.Encode()
@@ -349,7 +349,7 @@ func (c *CredentialPrivy) UpdateLead(ctx context.Context, param CustomerParam) (
 	req.Header.Set("Authorization", credential.TokenType+" "+credential.AccessToken)
 
 	q := req.URL.Query()
-	q.Add("script", "126")
+	q.Add("script", "85")
 	q.Add("deploy", "1")
 
 	req.URL.RawQuery = q.Encode()
