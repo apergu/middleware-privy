@@ -104,6 +104,7 @@ func InitMigrationWithDBName(dsn, dbname string) *migrate.Migrate {
 		dbname,
 		driver,
 	)
+
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to create database instance: %v\n", err)
 		os.Exit(1)
