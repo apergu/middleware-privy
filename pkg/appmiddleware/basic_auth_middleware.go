@@ -8,7 +8,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"gitlab.com/rteja-library3/rapperror"
 	"gitlab.com/rteja-library3/rdecoder"
-	"gitlab.com/rteja-library3/rresponser"
 
 	"middleware/internal/constants"
 	"middleware/internal/helper"
@@ -68,8 +67,8 @@ func basicAuthHandler(next http.Handler, basicUsername, basicPassword string, de
 				}).
 				Error(err)
 
-			response := rresponser.NewResponserError(err)
-			rdecoder.EncodeRestWithResponser(w, decorder, response)
+			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 			return
 		}
 

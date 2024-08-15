@@ -314,6 +314,7 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 		UpdatedAt:         tmNow,
 	}
 
+	log.Println("CRMLeadID", cust.CRMLeadID)
 	findCust, _ := r.custRepo.FindByCRMLeadId(ctx, cust.CRMLeadID, tx)
 
 	custId := int64(0)
