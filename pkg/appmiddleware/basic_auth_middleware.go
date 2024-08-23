@@ -2,7 +2,6 @@ package appmiddleware
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
@@ -45,10 +44,6 @@ func basicAuthHandler(next http.Handler, basicUsername, basicPassword string, de
 			return
 		}
 
-		fmt.Println(username)
-		fmt.Println(password)
-		fmt.Println(basicUsername)
-		fmt.Println(basicPassword)
 		usernameMatch := username == basicUsername
 		passwordMatch := password == basicPassword
 
