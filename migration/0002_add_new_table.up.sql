@@ -1,9 +1,9 @@
--- create table if not exists applications (
---     id BIGSERIAL PRIMARY KEY,
---     enterprise_id BIGINT NOT NULL,
---     application_id text  NULL,
---     application_name text  NULL,
--- );
+create table if not exists applications (
+    id BIGSERIAL PRIMARY KEY,
+    enterprise_id BIGINT NOT NULL,
+    application_id text  NULL,
+    application_name text  NULL,
+);
 
 create table if not exists merchants (
     id BIGSERIAL PRIMARY KEY,
