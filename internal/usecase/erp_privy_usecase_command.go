@@ -46,7 +46,7 @@ func (r *ErpPrivyCommandUsecaseGeneral) TopUpBalance(ctx context.Context, param 
 	input := erpprivy.TopUpBalanceParam{
 		TopUPID:         param.TopUPID,
 		EnterpriseId:    param.EnterpriseId,
-		MerchantId:      param.MerchantId,
+		ApplicationId:   param.ApplicationId,
 		ChannelId:       param.ChannelId,
 		ServiceId:       param.ServiceId,
 		PostPaid:        param.PostPaid,
@@ -175,11 +175,11 @@ func (r *ErpPrivyCommandUsecaseGeneral) TransferBalance(ctx context.Context, par
 			ServiceID string "json:\"service_id\""
 		}(param.Origin),
 		Destinations: []struct {
-			TopUPID      string "json:\"topup_id\""
-			EnterpriseId string "json:\"enterprise_id\""
-			MerchantId   string "json:\"merchant_id\""
-			ChannelId    string "json:\"channel_id\""
-			Qty          int    "json:\"qty\""
+			TopUPID       string "json:\"topup_id\""
+			EnterpriseId  string "json:\"enterprise_id\""
+			ApplicationID string "json:\"application_id\""
+			ChannelId     string "json:\"channel_id\""
+			Qty           int    "json:\"qty\""
 		}(param.Destinations),
 	}
 

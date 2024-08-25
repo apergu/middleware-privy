@@ -190,7 +190,7 @@ func (h TopUpPaymentGateWayHttpHandler) TopUpPayment(w http.ResponseWriter, r *h
 		reqTopUpBalance := model.TopUpBalance{
 			TopUPID:         v.TopupID,
 			EnterpriseId:    v.EnterpriseID,
-			MerchantId:      v.MerchantID,
+			ApplicationId:   v.MerchantID,
 			ChannelId:       v.ChannelID,
 			ServiceId:       v.ServiceID,
 			PostPaid:        v.PostPaid,

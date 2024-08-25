@@ -3,7 +3,7 @@ package model
 type TopUpBalance struct {
 	TopUPID         string `json:"topup_id" validate:"required,formatTopUpID"`
 	EnterpriseId    string `json:"enterprise_id" validate:"required"`
-	MerchantId      string `json:"merchant_id"`
+	ApplicationId   string `json:"application_id"`
 	ChannelId       string `json:"channel_id"`
 	ServiceId       string `json:"service_id" validate:"required"`
 	PostPaid        bool   `json:"post_paid"`
@@ -43,10 +43,10 @@ type TransferBalanceERP struct {
 		ServiceID string `json:"service_id" validate:"required,min=1,max=20"`
 	} `json:"origin"`
 	Destinations []struct {
-		TopUPID      string `json:"topup_id" validate:"required,formatTopUpID"`
-		EnterpriseId string `json:"enterprise_id" validate:"required,min=1,max=100"`
-		MerchantId   string `json:"merchant_id" validate:"omitempty,min=1,max=100"`
-		ChannelId    string `json:"channel_id" validate:"omitempty,min=1,max=100"`
-		Qty          int    `json:"qty" validate:"required,min=1,max=2147483647"`
+		TopUPID       string `json:"topup_id" validate:"required,formatTopUpID"`
+		EnterpriseId  string `json:"enterprise_id" validate:"required,min=1,max=100"`
+		ApplicationID string `json:"application_id" validate:"omitempty,min=1,max=100"`
+		ChannelId     string `json:"channel_id" validate:"omitempty,min=1,max=100"`
+		Qty           int    `json:"qty" validate:"required,min=1,max=2147483647"`
 	} `json:"destinations" validate:"required,min=1,dive"`
 }
