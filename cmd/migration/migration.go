@@ -110,7 +110,7 @@ func InitMigrationWithDBName(dsn, dbname string) *migrate.Migrate {
 
 		// Force the migration to the current dirty version to clean it
 		if err := m.Force(int(version)); err != nil {
-			fmt.Printf("Failed to force database to version %d: %v\n", version)
+			fmt.Printf("Failed to force database to version %d: %v\n", version, err)
 		}
 		fmt.Println("Database version forced to clean state.")
 	}
