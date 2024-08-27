@@ -105,6 +105,15 @@ func InitMigrationWithDBName(dsn, dbname string) *migrate.Migrate {
 		driver,
 	)
 
+	if version, dirty, _ := m.Version(); dirty {
+		fmt.Printf("Dirty database detected at version %d.\n", version)
+
+		// Force the migration to the current dirty version to clean it
+		if err := m.Force(int(version)); err != nil {
+			fmt.Printf("Failed to force database to version %d: %v\n", version)
+		}
+		fmt.Println("Database version forced to clean state.")
+	}
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to create database instance: %v\n", err)
 		os.Exit(1)
