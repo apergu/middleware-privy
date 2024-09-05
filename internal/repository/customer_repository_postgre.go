@@ -450,6 +450,8 @@ func (c *CustomerRepositoryPostgre) FindByCustId(ctx context.Context, customerId
 		cmd = tx
 	}
 
+	log.Print("Customer ID : ", customerId)
+
 	query := `select
 		customers.id,
 		customers.customer_id,

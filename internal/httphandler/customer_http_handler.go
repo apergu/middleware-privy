@@ -1203,12 +1203,13 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		resp := entity.Customer{}
 
-		if payload.CustomerID != "" {
-			resp2, _, _ := h.Query.FindByCustId(ctx, payload.CustomerID)
-
-			if resp2.CustomerID == payload.CustomerID {
-				response, _ := helper.GenerateJSONResponse(409, false, fmt.Sprint("Company Name is Already Exist"), map[string]interface{}{})
+		if payload.CustomerName != "" {
+			resp2, _, _ := h.Query.FindByCustId(ctx, payload.CustomerName)
+			fmt.Println("resp2", resp2)
+			if resp2.CustomerName != "" {
+				response, _ := helper.GenerateJSONResponse(409, false, fmt.Sprintf("Company Name %s is Already Exist", resp2.CustomerName), map[string]interface{}{})
 				helper.WriteJSONResponse(w, response, 409)
+				return
 			}
 		}
 
