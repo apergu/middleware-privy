@@ -1,7 +1,6 @@
 package httphandler
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,7 +9,6 @@ import (
 	"middleware/infrastructure"
 	request "middleware/infrastructure/http/request"
 	"middleware/internal/helper"
-	"middleware/internal/model"
 	service "middleware/internal/services/privy"
 	usecaseErpPrivy "middleware/internal/usecase"
 	usecase "middleware/internal/usecase/top_up_payment"
@@ -158,7 +156,7 @@ func (h TopUpPaymentGateWayHttpHandler) TopUpPayment(w http.ResponseWriter, r *h
 		return
 	}
 
-	resTopUp, err := h.Command.TopUpPaymentGateWay(payload)
+	_, err = h.Command.TopUpPaymentGateWay(payload)
 	if err != nil {
 		helper.LoggerErrorStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWay", err.Error(), "", payload, nil)
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
@@ -166,55 +164,7 @@ func (h TopUpPaymentGateWayHttpHandler) TopUpPayment(w http.ResponseWriter, r *h
 		return
 	}
 
-	var resTopUpmodel request.ResPaymentGateway
-
-	resByte, err := json.Marshal(resTopUp)
-	if err != nil {
-		helper.LoggerErrorStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWay", err.Error(), "", payload, nil)
-		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-		return
-	}
-
-	err = json.Unmarshal(resByte, &resTopUpmodel)
-	if err != nil {
-		helper.LoggerErrorStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWay", err.Error(), "", payload, nil)
-		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-		return
-	}
-
-	var arrStr []string
-
-	for _, v := range resTopUpmodel.Data {
-		reqTopUpBalance := model.TopUpBalance{
-			TopUPID:         v.TopupID,
-			EnterpriseId:    v.EnterpriseID,
-			ApplicationId:   v.MerchantID,
-			ChannelId:       v.ChannelID,
-			ServiceId:       v.ServiceID,
-			PostPaid:        v.PostPaid,
-			Qty:             v.Qty,
-			UnitPrice:       v.UnitPrice,
-			StartPeriodDate: v.StartPeriodDate.Format("02/01/2006"),
-			EndPeriodDate:   v.EndPeriodDate.Format("02/01/2006"),
-			TransactionDate: v.TransactionDate.Format("02/01/2006"),
-		}
-
-		_, _, err = h.CommandTopUp.TopUpBalance(context.Background(), reqTopUpBalance, xRequestId)
-		if err != nil {
-			helper.LoggerErrorStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWayWithTopUpBalance", err.Error(), "", reqTopUpBalance, nil)
-			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-			return
-		}
-
-		arrStr = append(arrStr, v.TopupID)
-	}
-
-	res, _ := helper.GenerateJSONResponse(http.StatusCreated, true, "TopUpPayment successfully created", map[string]interface{}{
-		"trx_id": arrStr,
-	})
+	res, _ := helper.GenerateJSONResponse(http.StatusCreated, true, "TopUpPayment successfully created", map[string]interface{}{})
 	helper.LoggerSuccessStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWay", "TopUpPayment successfully created", "")
 	helper.WriteJSONResponse(w, res, http.StatusCreated)
 }
