@@ -24,6 +24,7 @@ type CustomerQueryRepository interface {
 	FindByEmail(ctx context.Context, email string, tx pgx.Tx) (entity.Customer, error)
 	FindByEnterprisePrivyID(ctx context.Context, enterprisePrivyID string, tx pgx.Tx) (entity.Customer, error)
 	FindByName(ctx context.Context, customerName string, tx pgx.Tx) (entity.Customer, error)
+	FindByCustId(ctx context.Context, custId string, tx pgx.Tx) (entity.Customer, error)
 }
 
 type CustomerCommandRepository interface {

@@ -444,6 +444,39 @@ func (c *CustomerRepositoryPostgre) FindByName(ctx context.Context, enterprisePr
 	return c.queryOne(ctx, cmd, query, enterprisePrivyID)
 }
 
+func (c *CustomerRepositoryPostgre) FindByCustId(ctx context.Context, customerId string, tx pgx.Tx) (entity.Customer, error) {
+	var cmd sqlcommand.Command = c.pool
+	if tx != nil {
+		cmd = tx
+	}
+
+	query := `select
+		customers.id,
+		customers.customer_id,
+		customers.customer_type,
+		customers.customer_name,
+		customers.first_name,
+		customers.last_name,
+		customers.email,
+		customers.phone_no,
+		customers."address",
+		customers."crm_lead_id",
+		customers."enterprise_privy_id",
+		customers."customer_internalid",
+		customers.created_by,
+		customers.created_at,
+		customers.updated_by,
+		customers.updated_at,
+		customers.entitystatus
+	from
+		customers
+	where
+		customers.customer_id = $1
+	limit 1`
+
+	return c.queryOne(ctx, cmd, query, customerId)
+}
+
 func (c *CustomerRepositoryPostgre) FindByCRMLeadId(ctx context.Context, crmLeadId string, tx pgx.Tx) (entity.Customer, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
