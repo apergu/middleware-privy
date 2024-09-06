@@ -24,6 +24,13 @@ func validatePath(fl validator.FieldLevel) bool {
 	return re.MatchString(path)
 }
 
+func validateAlphanumSymbol(fl validator.FieldLevel) bool {
+	path := fl.Field().String()
+	regex := `^[0-9a-zA-Z.\-_]+$`
+	re := regexp.MustCompile(regex)
+	return re.MatchString(path)
+}
+
 func InitValidator() {
 
 	enTrans = en.New()
@@ -33,6 +40,7 @@ func InitValidator() {
 
 	v = validator.New()
 	v.RegisterValidation("formatTopUpID", validatePath)
+	v.RegisterValidation("alphanumSymbol", validateAlphanumSymbol)
 
 	en_translations.RegisterDefaultTranslations(v, trans)
 
@@ -42,6 +50,14 @@ func InitValidator() {
 		t, _ := ut.T("formatTopUpID", fe.Field())
 		return t
 	})
+
+	v.RegisterTranslation("alphanumSymbol", trans, func(ut ut.Translator) error {
+		return ut.Add("alphanumSymbol", "{0} must be in a valid format", true)
+	}, func(ut ut.Translator, fe validator.FieldError) string {
+		t, _ := ut.T("alphanumSymbol", fe.Field())
+		return t
+	})
+
 	// this is usually know or extracted from http 'Accept-Language' header
 	// also see
 }

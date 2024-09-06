@@ -1,7 +1,6 @@
 package httphandler
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,7 +9,6 @@ import (
 	"middleware/infrastructure"
 	request "middleware/infrastructure/http/request"
 	"middleware/internal/helper"
-	"middleware/internal/model"
 	service "middleware/internal/services/privy"
 	usecaseErpPrivy "middleware/internal/usecase"
 	usecase "middleware/internal/usecase/top_up_payment"
@@ -51,7 +49,7 @@ func NewTopUpPaymentGateWayHttpHandler(prop HTTPHandlerProperty, inf *infrastruc
 func (h TopUpPaymentGateWayHttpHandler) TopUpPayment(w http.ResponseWriter, r *http.Request) {
 
 	var err error
-	var payload request.PaymentGatewayReq
+	var payload request.PaymentGateway
 
 	xRequestId := r.Header.Get("X-Request-Id")
 	if xRequestId == "" {
@@ -158,50 +156,51 @@ func (h TopUpPaymentGateWayHttpHandler) TopUpPayment(w http.ResponseWriter, r *h
 		return
 	}
 
-	payloadLines := []request.LineItem{}
+	// payloadLines := []request.LineItem{}
 
-	for _, v := range payload.Lines {
-		payloadLines = append(payloadLines, request.LineItem{
-			Item:                         v.Item,
-			CustColPrivyMerchant:         v.CustColPrivyMerchant,
-			CustColPrivyChannel:          v.CustColPrivyChannel,
-			TaxCode:                      v.TaxCode,
-			CustColPrivyMainProduct:      v.CustColPrivyMainProduct,
-			CustColPrivySubProduct:       v.CustColPrivySubProduct,
-			Description:                  v.Description,
-			Quantity:                     v.Quantity,
-			CustColPrivyStartDateLayanan: v.CustColPrivyStartDateLayanan,
-			CustColPrivyDateLayanan:      v.CustColPrivyDateLayanan,
-			CustColPrivyTrxID:            v.CustColPrivyTrxID,
-			CustColPaymentGatewayFee:     v.CustColPaymentGatewayFee,
-			Amount:                       v.Amount,
-			CustColAmountBeforeDisc:      v.CustColAmountBeforeDisc,
-		})
-	}
+	// for _, v := range payload.Lines {
+	// 	payloadLines = append(payloadLines, request.LineItem{
+	// 		Item:                         v.Item,
+	// 		CustColPrivyMerchant:         v.CustColPrivyMerchant,
+	// 		CustColPrivyChannel:          v.CustColPrivyChannel,
+	// 		TaxCode:                      v.TaxCode,
+	// 		CustColPrivyMainProduct:      v.CustColPrivyMainProduct,
+	// 		CustColPrivySubProduct:       v.CustColPrivySubProduct,
+	// 		Description:                  v.Description,
+	// 		Quantity:                     v.Quantity,
+	// 		CustColPrivyStartDateLayanan: v.CustColPrivyStartDateLayanan,
+	// 		CustColPrivyDateLayanan:      v.CustColPrivyDateLayanan,
+	// 		CustColPrivyTrxID:            v.CustColPrivyTrxID,
+	// 		CustColPaymentGatewayFee:     v.CustColPaymentGatewayFee,
+	// 		Amount:                       v.Amount,
+	// 		CustColAmountBeforeDisc:      v.CustColAmountBeforeDisc,
+	// 	})
+	// }
 
-	payloadReq := request.PaymentGateway{
-		RecordType:                       "salesorder",
-		CustomForm:                       "144",
-		CustBodyPrivySoCustID:            payload.CustBodyPrivySoCustID,
-		Entity:                           payload.Entity,
-		StartDate:                        payload.StartDate,
-		EndDate:                          payload.EndDate,
-		CustBodyPrivyTermOfPayment:       payload.CustBodyPrivyTermOfPayment,
-		OtherRefNum:                      payload.OtherRefNum,
-		CustBodyPrivyBilling:             payload.CustBodyPrivyBilling,
-		CustBodyPrivyIntegrasi:           payload.CustBodyPrivyIntegrasi,
-		Memo:                             payload.Memo,
-		CustBodyPrivyBDA:                 payload.CustBodyPrivyBDA,
-		CustBodyPrivyBDM:                 payload.CustBodyPrivyBDM,
-		CustBodyPrivySalesSupport:        payload.CustBodyPrivySalesSupport,
-		CustBodyPrivySalesSupportManager: payload.CustBodyPrivySalesSupportManager,
-		CustBody10:                       payload.CustBody10,
-		CustBody9:                        payload.CustBody9,
-		CustBody7:                        payload.CustBody7,
-		Lines:                            payloadLines,
-	}
+	// payloadReq := request.PaymentGateway{
+	// 	RecordType:                       "salesorder",
+	// 	CustomForm:                       "144",
+	// 	CustBodyPrivySoCustID:            payload.CustBodyPrivySoCustID,
+	// 	Entity:                           payload.Entity,
+	// 	StartDate:                        payload.StartDate,
+	// 	EndDate:                          payload.EndDate,
+	// 	CustBodyPrivyTermOfPayment:       payload.CustBodyPrivyTermOfPayment,
+	// 	OtherRefNum:                      payload.OtherRefNum,
+	// 	CustBodyPrivyBilling:             payload.CustBodyPrivyBilling,
+	// 	CustBodyPrivyIntegrasi:           payload.CustBodyPrivyIntegrasi,
+	// 	Memo:                             payload.Memo,
+	// 	CustBodyPrivyBDA:                 payload.CustBodyPrivyBDA,
+	// 	CustBodyPrivyBDM:                 payload.CustBodyPrivyBDM,
+	// 	CustBodyPrivySalesSupport:        payload.CustBodyPrivySalesSupport,
+	// 	CustBodyPrivySalesSupportManager: payload.CustBodyPrivySalesSupportManager,
+	// 	CustBody10:                       payload.CustBody10,
+	// 	CustBody9:                        payload.CustBody9,
+	// 	CustBody7:                        payload.CustBody7,
+	// 	Lines:                            payloadLines,
+	// }
 
-	resTopUp, err := h.Command.TopUpPaymentGateWay(payloadReq)
+	// resTopUp, err := h.Command.TopUpPaymentGateWay(payloadReq)
+	_, err = h.Command.TopUpPaymentGateWay(payload)
 	if err != nil {
 		helper.LoggerErrorStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWay", err.Error(), "", payload, nil)
 		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
@@ -209,55 +208,7 @@ func (h TopUpPaymentGateWayHttpHandler) TopUpPayment(w http.ResponseWriter, r *h
 		return
 	}
 
-	var resTopUpmodel request.ResPaymentGateway
-
-	resByte, err := json.Marshal(resTopUp)
-	if err != nil {
-		helper.LoggerErrorStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWay", err.Error(), "", payload, nil)
-		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-		return
-	}
-
-	err = json.Unmarshal(resByte, &resTopUpmodel)
-	if err != nil {
-		helper.LoggerErrorStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWay", err.Error(), "", payload, nil)
-		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-		return
-	}
-
-	var arrStr []string
-
-	for _, v := range resTopUpmodel.Data {
-		reqTopUpBalance := model.TopUpBalance{
-			TopUPID:         v.TopupID,
-			EnterpriseId:    v.EnterpriseID,
-			MerchantId:      v.MerchantID,
-			ChannelId:       v.ChannelID,
-			ServiceId:       v.ServiceID,
-			PostPaid:        v.PostPaid,
-			Qty:             v.Qty,
-			UnitPrice:       v.UnitPrice,
-			StartPeriodDate: v.StartPeriodDate.Format("02/01/2006"),
-			EndPeriodDate:   v.EndPeriodDate.Format("02/01/2006"),
-			TransactionDate: v.TransactionDate.Format("02/01/2006"),
-		}
-
-		_, _, err = h.CommandTopUp.TopUpBalance(context.Background(), reqTopUpBalance, xRequestId)
-		if err != nil {
-			helper.LoggerErrorStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWayWithTopUpBalance", err.Error(), "", reqTopUpBalance, nil)
-			response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-			helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
-			return
-		}
-
-		arrStr = append(arrStr, v.TopupID)
-	}
-
-	res, _ := helper.GenerateJSONResponse(http.StatusCreated, true, "TopUpPayment successfully created", map[string]interface{}{
-		"trx_id": arrStr,
-	})
+	res, _ := helper.GenerateJSONResponse(http.StatusCreated, true, "TopUpPayment successfully created", map[string]interface{}{})
 	helper.LoggerSuccessStructfunc(w, r, "TOP_UP_PAYMENT_GATEWAY", "TopUpPaymentGateWay", "TopUpPayment successfully created", "")
 	helper.WriteJSONResponse(w, res, http.StatusCreated)
 }

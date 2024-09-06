@@ -26,7 +26,7 @@ type TopUpBalanceBadRequestResponse struct {
 type TopUpBalanceParam struct {
 	TopUPID         string `json:"topup_id"`
 	EnterpriseId    string `json:"enterprise_id"`
-	MerchantId      string `json:"merchant_id"`
+	ApplicationId   string `json:"application_id"`
 	ChannelId       string `json:"channel_id"`
 	ServiceId       string `json:"service_id"`
 	PostPaid        bool   `json:"post_paid"`
@@ -150,11 +150,11 @@ type TransferBalanceERPParam struct {
 		ServiceID string `json:"service_id"`
 	} `json:"origin"`
 	Destinations []struct {
-		TopUPID      string `json:"topup_id"`
-		EnterpriseId string `json:"enterprise_id"`
-		MerchantId   string `json:"merchant_id"`
-		ChannelId    string `json:"channel_id"`
-		Qty          int    `json:"qty"`
+		TopUPID       string `json:"topup_id"`
+		EnterpriseId  string `json:"enterprise_id"`
+		ApplicationID string `json:"application_id"`
+		ChannelId     string `json:"channel_id"`
+		Qty           int    `json:"qty"`
 	} `json:"destinations"`
 }
 

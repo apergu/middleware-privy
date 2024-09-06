@@ -1,7 +1,5 @@
 package http_request_infrastructure
 
-import "time"
-
 type CustomerDetails struct {
 	CustomForm                 string     `json:"customform" validate:"required"`
 	CustBodyPrivySoCustID      string     `json:"custbody_privy_so_custid" validate:"required"`
@@ -59,6 +57,16 @@ type LineItemReq struct {
 	// Optional
 }
 
+type LineItemPG struct {
+	ServiceID               string `json:"serviceID" validate:"required,alphanumSymbol"`
+	MerchantID              string `json:"merchantID" validate:"required,alphanumSymbol"`
+	ChannelID               string `json:"channelID" validate:"required,alphanumSymbol"`
+	UnitPriceBeforeDiscount int    `json:"unitPriceBeforeDiscount" validate:"required,min=0"`
+	ItemDiscount            int    `json:"itemDiscount" validate:"required,min=0"`
+	StartDateLayanan        string `json:"startDateLayanan" validate:"required,datetime=02/01/2006"`
+	EndDateLayanan          string `json:"endDateLayanan" validate:"required,datetime=02/01/2006"`
+}
+
 type RequestToNetsuit struct {
 	Request     interface{}
 	Response    interface{}
@@ -78,25 +86,11 @@ type RequestToHttpClient struct {
 }
 
 type PaymentGateway struct {
-	RecordType                       string     `json:"recordtype" validate:"required"`
-	CustomForm                       string     `json:"customform" validate:"required"`
-	CustBodyPrivySoCustID            string     `json:"custbody_privy_so_custid" validate:"required"`
-	Entity                           string     `json:"entity" validate:"required"`
-	StartDate                        string     `json:"startdate" validate:"required,datetime=02/01/2006"`
-	EndDate                          string     `json:"enddate" validate:"required,datetime=02/01/2006"`
-	CustBodyPrivyTermOfPayment       string     `json:"custbody_privy_termofpayment" validate:"required"`
-	OtherRefNum                      string     `json:"otherrefnum" validate:"required"`
-	CustBodyPrivyBilling             string     `json:"custbody_privy_billing" validate:"required"`
-	CustBodyPrivyIntegrasi           string     `json:"custbody_privy_integrasi" validate:"required"`
-	Memo                             string     `json:"memo,omitempty"` // Optional
-	CustBodyPrivyBDA                 string     `json:"custbody_privy_bda" validate:"required"`
-	CustBodyPrivyBDM                 string     `json:"custbody_privy_bdm" validate:"required"`
-	CustBodyPrivySalesSupport        string     `json:"custbody_privy_salessupport" validate:"required"`
-	CustBodyPrivySalesSupportManager string     `json:"custbodyprivy_salessupportmanager" validate:"required"`
-	CustBody10                       string     `json:"custbody10" validate:"required"`
-	CustBody9                        string     `json:"custbody9" validate:"required"`
-	CustBody7                        string     `json:"custbody7" validate:"required"`
-	Lines                            []LineItem `json:"lines" validate:"required,dive,required"`
+	EnterpriseID string       `json:"enterPriseID" validate:"required,alphanumSymbol"`
+	CustomerID   string       `json:"customerID" validate:"required,alphanumSymbol"`
+	RequestDate  string       `json:"requestDate" validate:"required,datetime=02/01/2006"`
+	StartDate    string       `json:"startdate" validate:"required,datetime=02/01/2006"`
+	Lines        []LineItemPG `json:"lines" validate:"required,dive,required"`
 }
 type PaymentGatewayReq struct {
 	// RecordType                       string     `json:"recordtype" validate:"required"`
@@ -121,20 +115,20 @@ type PaymentGatewayReq struct {
 }
 
 type ResPaymentGateway struct {
-	Success  bool `json:"success"`
-	RecordID int  `json:"recordId"`
-	Data     []struct {
-		TopupID         string    `json:"topup_id"`
-		EnterpriseID    string    `json:"enterprise_id"`
-		MerchantID      string    `json:"merchant_id"`
-		ChannelID       string    `json:"channel_id"`
-		ServiceID       string    `json:"service_id"`
-		PostPaid        bool      `json:"post_paid"`
-		Qty             int       `json:"qty"`
-		UnitPrice       int       `json:"unit_price"`
-		StartPeriodDate time.Time `json:"start_period_date"`
-		EndPeriodDate   time.Time `json:"end_period_date"`
-		TransactionDate time.Time `json:"transaction_date"`
+	Code         int    `json:"code"`
+	EnterPriseID int    `json:"enterPriseID"`
+	CustomerID   int    `json:"customerID"`
+	RequestDate  string `json:"requestDate"`
+	Success      bool   `json:"success"`
+	Message      string `json:"message"`
+	Data         []struct {
+		TransactionID           string `json:"transactionID"`
+		ServiceID               string `json:"serviceID"`
+		MerchantID              string `json:"merchantID"`
+		ChannelID               string `json:"channelID"`
+		UnitPriceBeforeDiscount int    `json:"unitPriceBeforeDiscount"`
+		ItemDiscount            int    `json:"itemDiscount"`
+		StartDateLayanan        string `json:"startDateLayanan"`
+		EndDateLayanan          string `json:"endDateLayanan"`
 	} `json:"data"`
-	Message string `json:"message"`
 }
