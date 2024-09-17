@@ -2,10 +2,11 @@ package erpprivy
 
 type TopUpBalanceResponse struct {
 	Code int `json:"code"`
-	Data struct {
-		Entity int    `json:"entity"`
-		Status string `json:"status"`
-	} `json:"data"`
+	// Data struct {
+	// 	Entity int    `json:"entity"`
+	// 	Status string `json:"status"`
+	// } `json:"data"`
+	Data    int    `json:"data"`
 	Message string `json:"message"`
 }
 
