@@ -406,8 +406,8 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 		City:                           cust.City,
 		ZipCode:                        cust.ZipCode,
 		CompanyNameLong:                cust.CustomerName,
-		// SubIndustry:                    cust.SubIndustry,
-		CRMLeadID: cust.CRMLeadID,
+		SubIndustry:                    cust.SubIndustry,
+		CRMLeadID:                      cust.CRMLeadID,
 		// BankAccount: "103",
 		AddressBook: credential.AddressBook{
 			Addr1: cust.Address1,

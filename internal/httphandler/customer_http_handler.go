@@ -144,6 +144,13 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	if payload.EntityStatus == "13" || payload.EntityStatus == "7" {
 
+		if payload.SubIndustry != "" {
+			_, _, err := h.Query.FindSubindustry(ctx, payload.SubIndustry)
+			if err != nil {
+				payload.SubIndustry = "Others"
+			}
+		}
+
 		respCustExist, _, _ := h.Query.FindByName(ctx, payload.CustomerName)
 
 		if respCustExist.CustomerName != "" && (respCustExist.EntityStatus == "13" || respCustExist.EntityStatus == "7") {
