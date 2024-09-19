@@ -607,9 +607,9 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if responsDetailData.Data == nil {
-				err = rapperror.ErrNotFound(
+				err = rapperror.ErrUnprocessableEntity(
 					"",
-					"Lead Data is Not Found",
+					"CRM Lead ID "+payload.CRMLeadID+" not found or already Won",
 					"CustomerHttpHandler.Create",
 					nil,
 				)
@@ -1421,8 +1421,9 @@ func (h CustomerHttpHandler) CreateLead(w http.ResponseWriter, r *http.Request) 
 
 	roleId, meta, err := h.Command.CreateLead(ctx, payload)
 	if err != nil {
-		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
+		// response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
 		// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
+		response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, fmt.Sprintf("Company Name %s is Already Exist", payload.CustomerName), map[string]interface{}{})
 		helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 		return
 	}

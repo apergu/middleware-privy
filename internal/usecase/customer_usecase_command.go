@@ -317,6 +317,37 @@ func (r *CustomerCommandUsecaseGeneral) CreateLead2(ctx context.Context, cust mo
 	log.Println("CRMLeadID", cust.CRMLeadID)
 	findCust, _ := r.custRepo.FindByCRMLeadId(ctx, cust.CRMLeadID, tx)
 
+	findCust2, _ := r.custRepo.FindByName(ctx, cust.CustomerName, tx)
+
+	findCust3, _ := r.custRepo.FindByEnterprisePrivyID(ctx, cust.EnterprisePrivyID, tx)
+
+	defer func() {
+		if p := recover(); p != nil {
+			r.custRepo.RollbackTx(ctx, tx)
+			panic(p)
+		} else if err != nil {
+			log.Println("Rolling back transaction due to error:", err)
+			r.custRepo.RollbackTx(ctx, tx)
+		} else {
+			err = r.custRepo.CommitTx(ctx, tx)
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
+
+	if findCust2.CustomerName == cust.CustomerName {
+		return 0, nil, rapperror.ErrConflict(
+			"", "Customer with name "+cust.CustomerName+" already exist", "CustomerCommandUsecaseGeneral.Create", nil,
+		)
+	}
+
+	if findCust3.EnterprisePrivyID == cust.EnterprisePrivyID {
+		return 0, nil, rapperror.ErrConflict(
+			"", "Customer with enterprise privy id "+cust.EnterprisePrivyID+" already exist", "CustomerCommandUsecaseGeneral.Create", nil,
+		)
+	}
+
 	custId := int64(0)
 	if findCust.CRMLeadID != "" {
 		log.Println("response Update", findCust.CRMLeadID)
