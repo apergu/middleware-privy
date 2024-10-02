@@ -6,7 +6,7 @@ type TransferBalance struct {
 	CustomerId   string `json:"customerId"`
 	TransferDate string `json:"transferDate" validate:"required,max=255"`
 	TrxIdFrom    string `json:"trxIdFrom" validate:"required,max=255"`
-	TrxIdTo      string `json:"trxIdTo" validate:"required,max=255"`
+	TrxIdTo      string `json:"trxIdTo" validate:"max=255"`
 	MerchantTo   string `json:"merchantTo"`
 	ChannelTo    string `json:"channelTo"`
 	StartDate    string `json:"startDate"`
