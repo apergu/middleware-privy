@@ -5,10 +5,10 @@ import "github.com/go-playground/validator/v10"
 type TransferBalance struct {
 	CustomerId   string `json:"customerId"`
 	TransferDate string `json:"transferDate" validate:"required,max=255"`
-	TrxIdFrom    string `json:"trxIdFrom" validate:"required,max=255"`
-	TrxIdTo      string `json:"trxIdTo" validate:"max=255"`
-	MerchantTo   string `json:"merchantTo"`
-	ChannelTo    string `json:"channelTo"`
+	TrxIdFrom    string `json:"transactionIdFrom" validate:"required,max=255"`
+	TrxIdTo      string `json:"transactionIdTo" validate:"max=255"`
+	MerchantTo   string `json:"merchantIdTo"`
+	ChannelTo    string `json:"channelIdTo"`
 	StartDate    string `json:"startDate"`
 	EndDate      string `json:"endDate"`
 	IsTrxCreated bool   `json:"isTrxCreated"`

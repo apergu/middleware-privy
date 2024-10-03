@@ -26,7 +26,7 @@ type Customer struct {
 	Usage        int     `json:"usageAmount"`
 	CRMLeadID    string  `json:"crmLeadId" validate:"alphanum,max=255"`
 	// CRMDealID         string  `json:"crmDealId" validate:"max=255"`
-	EnterprisePrivyID string `json:"enterprisePrivyId" validate:"alphanum,max=255"`
+	EnterprisePrivyID string `json:"enterpriseId" validate:"alphanum,max=255"`
 	Address1          string `json:"address1"`
 	NPWP              string `json:"npwp" validate:"alphanum,max=255"`
 	State             string `json:"state" validate:"alphanum,max=255"`
@@ -55,7 +55,7 @@ type Lead struct {
 	Usage        int     `json:"usageAmount"`
 	CRMLeadID    string  `json:"crmLeadId" validate:"max=255"`
 	// CRMDealID         string  `json:"crmDealId" validate:"max=255"`
-	EnterprisePrivyID string `json:"enterprisePrivyId" validate:"max=255"`
+	EnterprisePrivyID string `json:"enterpriseId" validate:"max=255"`
 	Address1          string `json:"address1"`
 	NPWP              string `json:"npwp" validate:"max=255"`
 	State             string `json:"state" validate:"max=255"`
