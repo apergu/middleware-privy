@@ -96,7 +96,7 @@ func InitHttpHandler(pool *pgxpool.Pool, corsOpt cors.Options, prop httphandler.
 				r.Mount("/merchant", httphandler.NewMerchantHttpHandler(prop))
 				r.Mount("/channel", httphandler.NewChannelHttpHandler(prop))
 				r.Mount("/divission", httphandler.NewDivissionHttpHandler(prop))
-				r.Mount("/top-up-data", httphandler.NewTopUpDataHttpHandler(prop))
+				r.Mount("/top-up", httphandler.NewTopUpDataHttpHandler(prop))
 				r.Mount("/usage", httphandler.NewUsageUsecaseHttpHandler(prop))
 				r.Mount("/top-up-payment", httphandler.NewTopUpPaymentUsecaseHttpHandler(prop, inf))
 				r.Mount("/top-up-paymentgateway", httphandler.NewTopUpPaymentGateWayHttpHandler(prop, inf))
