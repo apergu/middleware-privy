@@ -13,10 +13,8 @@ RUN go mod download
 
 # Install migrate tool
 RUN apt-get update && apt-get install -y curl && \
-    curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.0/migrate.linux-amd64.tar.gz -o migrate.tar.gz && \
-    tar -xvzf migrate.tar.gz && \
-    mv migrate.linux-amd64 /usr/local/bin/migrate && \
-    rm migrate.tar.gz
+    go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
 
 # Copy src code from the host and compile it
 COPY . .
