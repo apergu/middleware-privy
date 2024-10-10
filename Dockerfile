@@ -12,7 +12,7 @@ RUN go mod download
 
 
 # Install migrate tool
-RUN apk add --no-cache curl && \
+RUN apt-get update && apt-get install -y curl && \
     curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.0/migrate.linux-amd64.tar.gz | tar xvz && \
     mv migrate.linux-amd64 /usr/local/bin/migrate
 
