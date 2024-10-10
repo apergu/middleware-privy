@@ -1292,7 +1292,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		jsonDataZD, err := json.Marshal(sendData)
 
 		if payload.RequestFrom != "zendesk" {
-			url := "http://apergu.tech:9002/api/v1/privy/zendesk/lead"
+			url := "http://apergu.co.id:9002/api/v1/privy/zendesk/lead"
 
 			headers = map[string]string{
 				"Authorization": "Basic " + base64.StdEncoding.EncodeToString([]byte("admin:admin")),
