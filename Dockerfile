@@ -11,10 +11,11 @@ COPY go.sum .
 RUN go mod download
 
 
-# Install migrate tool
-RUN apt-get update && apt-get install -y curl && \
-    go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+# Install the migrate tool
+RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 
+# Confirm installation
+RUN /go/bin/migrate -version
 
 # Copy src code from the host and compile it
 COPY . .
