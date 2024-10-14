@@ -4,23 +4,22 @@ import "middleware/internal/entity"
 
 type SalesOrder struct {
 	ID           int
-	Entity       string `json:"entity"`
-	EnterpriseID string `json:"enterpriseid"`
-	TranDate     string `json:"trandate"`
+	EnterpriseID string `json:"enterpriseId"`
+	TranDate     string `json:"requestDate"`
 	OrderStatus  string `json:"orderstatus"`
-	StartDate    string `json:"startdate"`
-	EndDate      string `json:"enddate"`
-	Memo         string `json:"memo"`
-	CustBody2    string `json:"custbody2"`
+	StartDate    string `json:"startDate"`
+	EndDate      string `json:"endDate"`
 	Lines        []SalesOrderLines
 }
 
 type SalesOrderLines struct {
-	Merchant            string `json:"custcol_privy_merchant"`
-	Channel             string `json:"custcol_privy_channel"`
-	UnitPriceBeforeDisc string `json:"custcol_privy_unitprice_beforedisc"`
-	Item                string `json:"item"`
-	TaxCode             string `json:"taxcode"`
+	Merchant            string `json:"merchantId"`
+	Channel             string `json:"channelId"`
+	UnitPriceBeforeDisc int    `json:"unitPriceBeforeDiscount"`
+	Item                string `json:"serviceId"`
+	StartDateLayanan    string `json:"startDateLayanan"`
+	EndDateLayanan      string `json:"endDateLayanan"`
+	Quantity            int    `json:"qty"`
 }
 
 func (c SalesOrder) Validate() error {

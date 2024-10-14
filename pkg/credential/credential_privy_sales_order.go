@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -90,7 +91,7 @@ func (c *CredentialPrivy) CreateSalesOrder(ctx context.Context, param SalesOrder
 	req.Header.Set("Authorization", credential.TokenType+" "+credential.AccessToken)
 
 	q := req.URL.Query()
-	q.Add("script", "175")
+	q.Add("script", "94")
 	q.Add("deploy", "1")
 
 	req.URL.RawQuery = q.Encode()
@@ -108,10 +109,12 @@ func (c *CredentialPrivy) CreateSalesOrder(ctx context.Context, param SalesOrder
 		return SalesOrderResponse{}, err
 	}
 
+	fmt.Println("RESPONSE", custResp)
+
 	if len(custResp.SuccessTransaction) == 0 {
 		return SalesOrderResponse{}, rapperror.ErrNotFound(
 			"",
-			"Merchant is not found",
+			"",
 			"",
 			nil,
 		)

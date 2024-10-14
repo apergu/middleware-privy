@@ -3,7 +3,7 @@ package credential
 type SalesOrderParams struct {
 	RecordType   string                  `json:"recordtype"`
 	CustomForm   string                  `json:"customform"`
-	EnterpriseID string                  `json:"custbody_privy_so_enterpriseid"`
+	EnterpriseID string                  `json:"enterprise"`
 	Entity       string                  `json:"custbody_privy_tb_cust"`
 	TranDate     string                  `json:"trandate"`
 	OrderStatus  string                  `json:"orderstatus"`
@@ -17,9 +17,12 @@ type SalesOrderParams struct {
 type SalesOrderLinesParams struct {
 	Merchant            string `json:"custcol_privy_merchant"`
 	Channel             string `json:"custcol_privy_channel"`
-	UnitPriceBeforeDisc string `json:"custcol_privy_unitprice_beforedisc"`
+	UnitPriceBeforeDisc int    `json:"custcol_privy_unitprice_beforedisc"`
 	Item                string `json:"item"`
 	TaxCode             string `json:"taxcode"`
+	StartDateLayanan    string `json:"custcol_privy_start_date_layanan"`
+	EndDateLayanan      string `json:"custcol_privy_end_date_layanan"`
+	Quantity            int    `json:"quantity"`
 }
 
 type SalesOrderResponseData struct {

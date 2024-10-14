@@ -120,13 +120,10 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 	//}
 
 	insertSalesOrder := entity.SalesOrder{
-		Entity:      order.Entity,
 		TranDate:    order.TranDate,
 		OrderStatus: order.OrderStatus,
 		StartDate:   order.StartDate,
 		EndDate:     order.EndDate,
-		Memo:        order.Memo,
-		CustBody2:   order.CustBody2,
 	}
 
 	orderId, err := r.orderRepo.Create(ctx, insertSalesOrder, tx)
@@ -167,6 +164,8 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 			UnitPriceBeforeDisc: v.UnitPriceBeforeDisc,
 			Item:                v.Item,
 			TaxCode:             "5",
+			StartDateLayanan:    v.StartDateLayanan,
+			EndDateLayanan:      v.EndDateLayanan,
 		}
 
 		lines = append(lines, linesPayload)
@@ -175,14 +174,11 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 
 	custPrivyUsgParam := credential.SalesOrderParams{
 		RecordType:   "salesorder",
-		CustomForm:   "144",
+		CustomForm:   "113",
 		EnterpriseID: order.EnterpriseID,
-		Entity:       order.Entity,
 		TranDate:     order.TranDate,
 		StartDate:    order.StartDate,
 		EndDate:      order.EndDate,
-		Memo:         order.Memo,
-		CustBody2:    order.CustBody2,
 		Lines:        lines,
 	}
 
