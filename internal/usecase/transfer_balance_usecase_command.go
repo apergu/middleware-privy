@@ -53,20 +53,20 @@ func (r *TransferBalanceCommandUsecaseGeneral) Create(ctx context.Context, merch
 		UpdatedAt:    tmNow,
 	}
 
-	merchantId, err := r.merchantRepo.Create(ctx, insertTransferBalance, tx)
-	if err != nil {
-		r.merchantRepo.RollbackTx(ctx, tx)
+	// merchantId, err := r.merchantRepo.Create(ctx, insertTransferBalance, tx)
+	// if err != nil {
+	// 	r.merchantRepo.RollbackTx(ctx, tx)
 
-		logrus.
-			WithFields(logrus.Fields{
-				"at":    "TransferBalanceCommandUsecaseGeneral.Create",
-				"src":   "custRepo.Create",
-				"param": insertTransferBalance,
-			}).
-			Error(err)
+	// 	logrus.
+	// 		WithFields(logrus.Fields{
+	// 			"at":    "TransferBalanceCommandUsecaseGeneral.Create",
+	// 			"src":   "custRepo.Create",
+	// 			"param": insertTransferBalance,
+	// 		}).
+	// 		Error(err)
 
-		return 0, nil, err
-	}
+	// 	return 0, nil, err
+	// }
 
 	// find customer by merchant.EnterpriseID
 	// customer_filter := repository.CustomerFilter{
@@ -114,7 +114,7 @@ func (r *TransferBalanceCommandUsecaseGeneral) Create(ctx context.Context, merch
 
 	insertTransferBalance.InternalId = resp.Data.RecordID
 
-	err = r.merchantRepo.Update(ctx, merchantId, insertTransferBalance, tx)
+	// err = r.merchantRepo.Update(ctx, merchantId, insertTransferBalance, tx)
 	if err != nil {
 		r.merchantRepo.RollbackTx(ctx, tx)
 
@@ -148,7 +148,7 @@ func (r *TransferBalanceCommandUsecaseGeneral) Create(ctx context.Context, merch
 		)
 	}
 
-	return merchantId, nil, nil
+	return 12, nil, nil
 }
 
 func (r *TransferBalanceCommandUsecaseGeneral) Update(ctx context.Context, id int64, merchant model.TransferBalance) (int64, interface{}, error) {

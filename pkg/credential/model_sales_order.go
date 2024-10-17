@@ -21,7 +21,7 @@ type SalesOrderLinesParams struct {
 	Item                string `json:"item"`
 	TaxCode             string `json:"taxcode"`
 	StartDateLayanan    string `json:"custcol_privy_start_date_layanan"`
-	EndDateLayanan      string `json:"custcol_privy_end_date_layanan"`
+	EndDateLayanan      string `json:"custcol_privy_date_layanan"`
 	Quantity            int    `json:"quantity"`
 }
 

@@ -166,6 +166,7 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 			TaxCode:             "5",
 			StartDateLayanan:    v.StartDateLayanan,
 			EndDateLayanan:      v.EndDateLayanan,
+			Quantity:            v.Quantity,
 		}
 
 		lines = append(lines, linesPayload)

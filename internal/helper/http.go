@@ -34,3 +34,10 @@ func HttpRequest(method, url string, data []byte, headers map[string]string) ([]
 
 	return body, nil
 }
+
+func IFEmpty(input, defaultValue string) string {
+	if input == "" {
+		return defaultValue
+	}
+	return input
+}

@@ -294,7 +294,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 		if payload.CRMLeadID == "" {
 
-			url := "https://api.getbase.com/v2/deals"
+			url := "https://api.getbase.com/v2/leads"
 			payloadData := map[string]interface{}{
 				"data": map[string]interface{}{
 					"first_name":        payload.FirstName,
@@ -311,68 +311,59 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Convert data to JSON
-
 			jsonData, err := json.Marshal(payloadData)
 			if err != nil {
 				panic(err)
 			}
-			reqData, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 
+			reqData, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 			if err != nil {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 				return
 			}
 
 			reqData.Header.Add("Content-Type", "application/json")
-			reqData.Header.Add("Authorization", "Bearer	26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
+			reqData.Header.Add("Authorization", "Bearer 26bed09778079a78eb96acb73feb1cb2d9b36267e992caa12b0d960c8f760e2c")
 
 			clientData := &http.Client{}
 			respData, err := clientData.Do(reqData)
 
 			if err != nil {
 				response, _ := helper.GenerateJSONResponse(helper.GetErrorStatusCode(err), false, err.Error(), map[string]interface{}{})
-				// rdecoder.EncodeRestWithResponser(w, h.Decorder, response)
 				helper.WriteJSONResponse(w, response, helper.GetErrorStatusCode(err))
 				return
 			}
-
 			defer respData.Body.Close()
 
 			bodyData, err := ioutil.ReadAll(respData.Body)
 
-			var responsData struct {
-				Data interface{} `json:"data"`
-			}
-
 			if err != nil {
 				fmt.Println("Error:", err)
 				return
 			}
 
-			err = json.Unmarshal(bodyData, &responsData)
-			fmt.Println("response Body", responsData)
+			fmt.Println("Response Status:", respData.Status)
+			fmt.Println("Response Body Data:", string(bodyData))
 
-			var response struct {
-				ID int `json:"id"`
+			type Response struct {
+				Data struct {
+					ID int `json:"id"`
+				} `json:"data"`
 			}
 
-			if err != nil {
-				fmt.Println("Error:", err)
-
-				return
-			}
+			var response Response
 
 			err = json.Unmarshal(bodyData, &response)
-
 			if err != nil {
 				fmt.Println("Error:", err)
-
 				return
 			}
 
-			payload.CRMLeadID = strconv.Itoa(response.ID)
+			// Access the ID from the nested data object
+			fmt.Println("Lead ID:", response.Data.ID)
+
+			payload.CRMLeadID = strconv.Itoa(response.Data.ID)
 
 			urlConvert := "https://api.getbase.com/v2/lead_conversions"
 
