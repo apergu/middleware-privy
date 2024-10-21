@@ -96,6 +96,16 @@ func (h SalesOrderHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	payload.Lines = append(payload.Lines, model.SalesOrderLines{
+		Merchant:            payload.Lines[0].Merchant,
+		Channel:             payload.Lines[0].Channel,
+		UnitPriceBeforeDisc: payload.PaymentFee,
+		Item:                "421",
+		StartDateLayanan:    payload.Lines[0].StartDateLayanan,
+		EndDateLayanan:      payload.Lines[0].EndDateLayanan,
+		Quantity:            1,
+	})
+
 	orderId, meta, err := h.Command.Create(ctx, payload)
 	if err != nil {
 		response = rresponser.NewResponserError(err)

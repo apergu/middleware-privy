@@ -19,7 +19,7 @@ type TransferBalanceParam struct {
 }
 
 type TransferBalanceResponseData struct {
-	RecordID int64 `json:"recordId"`
+	RecordID any `json:"recordId"`
 }
 
 type TransferBalanceResponse struct {

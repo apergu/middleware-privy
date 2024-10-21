@@ -170,7 +170,7 @@ func (h CustomerHttpHandler) Create(w http.ResponseWriter, r *http.Request) {
 		if payload.EnterprisePrivyID != "" {
 			respCust2, _, _ := h.Query.FindByEnterprisePrivyID(ctx, payload.EnterprisePrivyID)
 
-			if respCust2.EnterprisePrivyID != "" && (respCust2.EntityStatus == "13" || respCust2.EntityStatus == "7") {
+			if respCust2.EnterprisePrivyID != "" && (respCust2.EntityStatus == "13") {
 
 				err := rapperror.ErrConflict(
 					"",

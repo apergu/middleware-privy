@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"log"
 	"middleware/pkg/credential"
@@ -89,7 +90,7 @@ func (r *SalesOrderCommandUsecaseGeneral) insertDetail(ctx context.Context, line
 	return nil
 }
 
-func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order model.SalesOrder) (int64, interface{}, error) {
+func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order model.SalesOrder) (any, interface{}, error) {
 	tx, err := r.orderRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
@@ -225,7 +226,15 @@ func (r *SalesOrderCommandUsecaseGeneral) Create(ctx context.Context, order mode
 		)
 	}
 
-	return 12, nil, nil
+	var result []string
+
+	// Unmarshal the JSON string into the slice
+	err = json.Unmarshal([]byte(test.Data.RecordID.(string)), &result)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return result, nil, nil
 }
 
 func (r *SalesOrderCommandUsecaseGeneral) Update(ctx context.Context, id int64, order model.SalesOrder) (int64, interface{}, error) {

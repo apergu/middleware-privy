@@ -52,8 +52,8 @@ type EnvelopeTransferBalance struct {
 
 type EnvelopeSalesOrder struct {
 	MainEnvelope
-	SuccessTransaction []SalesOrderResponse     `json:"success_transaction"`
-	FailedTransaction  []MerchantFailedResponse `json:"failed_transaction"`
+	SuccessTransaction []SalesOrderResponse       `json:"success_transaction"`
+	FailedTransaction  []SalesOrderFailedResponse `json:"failed_transaction"`
 }
 
 type EnvelopeChannel struct {

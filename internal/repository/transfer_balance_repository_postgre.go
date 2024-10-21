@@ -336,7 +336,7 @@ func (c *TransferBalanceRepositoryPostgre) FindOneByIdForUpdate(ctx context.Cont
 	return c.queryOne(ctx, cmd, query, id)
 }
 
-func (c *TransferBalanceRepositoryPostgre) Create(ctx context.Context, topup entity.TransferBalance, tx pgx.Tx) (int64, error) {
+func (c *TransferBalanceRepositoryPostgre) Create(ctx context.Context, topup entity.TransferBalance, tx pgx.Tx) (any, error) {
 	var cmd sqlcommand.Command = c.pool
 	if tx != nil {
 		cmd = tx

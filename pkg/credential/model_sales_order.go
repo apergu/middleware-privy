@@ -26,12 +26,12 @@ type SalesOrderLinesParams struct {
 }
 
 type SalesOrderResponseData struct {
-	RecordID int64 `json:"recordId"`
+	RecordID any `json:"recordId"`
 }
 
 type SalesOrderResponse struct {
-	Message string               `json:"message"`
-	Data    MerchantResponseData `json:"data"`
+	Message string                 `json:"message"`
+	Data    SalesOrderResponseData `json:"data"`
 }
 
 type SalesOrderFailedResponse struct {

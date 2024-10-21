@@ -21,7 +21,7 @@ type TransferBalanceQueryRepository interface {
 type TransferBalanceCommandRepository interface {
 	Command
 	FindOneByIdForUpdate(ctx context.Context, id int64, tx pgx.Tx) (entity.TransferBalance, error)
-	Create(ctx context.Context, TransferBalance entity.TransferBalance, tx pgx.Tx) (int64, error)
+	Create(ctx context.Context, TransferBalance entity.TransferBalance, tx pgx.Tx) (any, error)
 	Update(ctx context.Context, id int64, TransferBalance entity.TransferBalance, tx pgx.Tx) error
 	Update2(ctx context.Context, id int64, TransferBalance entity.TransferBalance, tx pgx.Tx) error
 	Delete(ctx context.Context, id int64, tx pgx.Tx) error

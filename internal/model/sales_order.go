@@ -7,6 +7,7 @@ type SalesOrder struct {
 	EnterpriseID string `json:"enterpriseId"`
 	TranDate     string `json:"requestDate"`
 	OrderStatus  string `json:"orderstatus"`
+	PaymentFee   int    `json:"paymentFee"`
 	StartDate    string `json:"startDate"`
 	EndDate      string `json:"endDate"`
 	Lines        []SalesOrderLines

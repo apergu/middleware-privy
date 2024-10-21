@@ -22,7 +22,7 @@ type TransferBalanceQueryUsecase interface {
 }
 
 type TransferBalanceCommandUsecase interface {
-	Create(ctx context.Context, cust model.TransferBalance) (int64, interface{}, error)
+	Create(ctx context.Context, cust model.TransferBalance) (any, interface{}, error)
 	Update(ctx context.Context, id int64, cust model.TransferBalance) (int64, interface{}, error)
 	Delete(ctx context.Context, id int64) (int64, interface{}, error)
 }

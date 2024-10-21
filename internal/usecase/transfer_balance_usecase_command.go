@@ -28,7 +28,7 @@ func NewTransferBalanceCommandUsecaseGeneral(prop TransferBalanceUsecaseProperty
 	}
 }
 
-func (r *TransferBalanceCommandUsecaseGeneral) Create(ctx context.Context, merchant model.TransferBalance) (int64, interface{}, error) {
+func (r *TransferBalanceCommandUsecaseGeneral) Create(ctx context.Context, merchant model.TransferBalance) (any, interface{}, error) {
 	tx, err := r.merchantRepo.BeginTx(ctx)
 	if err != nil {
 		return 0, nil, err
@@ -112,7 +112,7 @@ func (r *TransferBalanceCommandUsecaseGeneral) Create(ctx context.Context, merch
 		return 0, nil, err
 	}
 
-	insertTransferBalance.InternalId = resp.Data.RecordID
+	// insertTransferBalance.InternalId = resp.Data.RecordID
 
 	// err = r.merchantRepo.Update(ctx, merchantId, insertTransferBalance, tx)
 	if err != nil {
@@ -148,7 +148,7 @@ func (r *TransferBalanceCommandUsecaseGeneral) Create(ctx context.Context, merch
 		)
 	}
 
-	return 12, nil, nil
+	return resp.Data.RecordID, nil, nil
 }
 
 func (r *TransferBalanceCommandUsecaseGeneral) Update(ctx context.Context, id int64, merchant model.TransferBalance) (int64, interface{}, error) {
